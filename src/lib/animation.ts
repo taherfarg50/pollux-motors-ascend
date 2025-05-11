@@ -1,3 +1,4 @@
+
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -12,9 +13,8 @@ export const initSmoothScroll = () => {
   const lenis = new Lenis({
     duration: 1.2,
     easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-    // Use correct properties according to Lenis API
     orientation: 'vertical', // instead of gestureDirection which isn't in LenisOptions
-    smooth: true,
+    smoothWheel: true, // Changed from 'smooth' to 'smoothWheel' based on Lenis API
     touchMultiplier: 2,
   });
 
