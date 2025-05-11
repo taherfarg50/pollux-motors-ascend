@@ -1,10 +1,12 @@
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import BlogCard from '@/components/BlogCard';
 import { Button } from '@/components/ui/button';
 import { ChevronRight } from 'lucide-react';
+import gsap from 'gsap';
+import { useReducedMotion } from '@/lib/animation';
 
 // Sample blog posts data
 const blogs = [
@@ -85,6 +87,13 @@ const blogs = [
 const Blog = () => {
   const [activeTag, setActiveTag] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const heroRef = useRef<HTMLDivElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const subtitleRef = useRef<HTMLParagraphElement>(null);
+  const featuredPostRef = useRef<HTMLDivElement>(null);
+  const filtersRef = useRef<HTMLDivElement>(null);
+  const newsletterRef = useRef<HTMLDivElement>(null);
+  const prefersReducedMotion = useReducedMotion();
   
   // Filter blogs based on active tag and search query
   const filteredBlogs = blogs.filter(blog => {
@@ -98,12 +107,94 @@ const Blog = () => {
   // Get unique tags from all blogs
   const allTags = ['all', ...Array.from(new Set(blogs.flatMap(blog => blog.tags.map(tag => tag.toLowerCase()))))];
 
+  // Initialize animations
+  useEffect(() => {
+    if (prefersReducedMotion) return;
+    
+    // Hero animations
+    if (titleRef.current && subtitleRef.current) {
+      const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+      
+      tl.fromTo(
+        titleRef.current, 
+        { y: 50, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.8 }
+      )
+      .fromTo(
+        subtitleRef.current,
+        { y: 30, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.7 },
+        "-=0.5"
+      );
+    }
+    
+    // Featured post animation
+    if (featuredPostRef.current) {
+      gsap.fromTo(
+        featuredPostRef.current,
+        { y: 50, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.8,
+          scrollTrigger: {
+            trigger: featuredPostRef.current,
+            start: "top bottom-=100",
+            toggleActions: "play none none none"
+          }
+        }
+      );
+    }
+    
+    // Filters animations
+    if (filtersRef.current) {
+      gsap.fromTo(
+        filtersRef.current.children,
+        { y: 20, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.5,
+          stagger: 0.05,
+          scrollTrigger: {
+            trigger: filtersRef.current,
+            start: "top bottom-=50",
+            toggleActions: "play none none none"
+          }
+        }
+      );
+    }
+    
+    // Newsletter section animation
+    if (newsletterRef.current) {
+      gsap.fromTo(
+        newsletterRef.current.children,
+        { y: 30, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.6,
+          stagger: 0.1,
+          scrollTrigger: {
+            trigger: newsletterRef.current,
+            start: "top bottom-=100",
+            toggleActions: "play none none none"
+          }
+        }
+      );
+    }
+    
+    return () => {
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+    };
+  }, [prefersReducedMotion]);
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
       <main>
         {/* Hero Section */}
-        <section className="relative h-[40vh] overflow-hidden">
+        <section ref={heroRef} className="relative h-[40vh] overflow-hidden">
           <div className="absolute inset-0 bg-black">
             <img 
               src="https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?q=80&w=2944&auto=format&fit=crop&ixlib=rb-4.0.3" 
@@ -113,10 +204,10 @@ const Blog = () => {
             <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-black"></div>
           </div>
           <div className="relative h-full flex flex-col justify-center items-center">
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-gradient mb-4 text-center">
+            <h1 ref={titleRef} className="text-4xl md:text-6xl lg:text-7xl font-bold text-gradient mb-4 text-center">
               Pollux Blog
             </h1>
-            <p className="text-gray-300 max-w-xl text-center px-4">
+            <p ref={subtitleRef} className="text-gray-300 max-w-xl text-center px-4">
               Insights, stories, and news from the world of luxury automotive excellence.
             </p>
           </div>
@@ -126,7 +217,7 @@ const Blog = () => {
         <section className="py-24">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             {/* Filter and Search */}
-            <div className="mb-12">
+            <div ref={filtersRef} className="mb-12">
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                 {/* Tag Filter */}
                 <div className="flex flex-wrap gap-2">
@@ -159,7 +250,7 @@ const Blog = () => {
             </div>
             
             {/* Featured Post */}
-            <div className="mb-16">
+            <div ref={featuredPostRef} className="mb-16">
               <div className="relative group rounded-lg overflow-hidden">
                 <div className="aspect-[21/9] overflow-hidden">
                   <img 
@@ -192,8 +283,8 @@ const Blog = () => {
             
             {/* Blog Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredBlogs.map((blog) => (
-                <BlogCard key={blog.id} blog={blog} />
+              {filteredBlogs.map((blog, index) => (
+                <BlogCard key={blog.id} blog={blog} index={index} />
               ))}
             </div>
             
@@ -207,7 +298,7 @@ const Blog = () => {
         </section>
         
         {/* Newsletter Section */}
-        <section className="py-24 bg-secondary">
+        <section ref={newsletterRef} className="py-24 bg-secondary">
           <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 className="text-3xl md:text-4xl font-bold mb-6">Stay Updated</h2>
             <p className="text-gray-300 mb-8">
@@ -235,5 +326,8 @@ const Blog = () => {
     </div>
   );
 };
+
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+gsap.registerPlugin(ScrollTrigger);
 
 export default Blog;

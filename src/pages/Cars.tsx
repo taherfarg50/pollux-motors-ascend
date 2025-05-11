@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Search, ChevronDown, Filter } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -7,17 +7,89 @@ import CarCard from '@/components/CarCard';
 import FilterSidebar from '@/components/FilterSidebar';
 import { Button } from '@/components/ui/button';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink } from '@/components/ui/pagination';
+import gsap from 'gsap';
+import { useReducedMotion } from '@/lib/animation';
 
 const Cars = () => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [activeFilter, setActiveFilter] = useState('all');
+  const heroRef = useRef<HTMLElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const subtitleRef = useRef<HTMLParagraphElement>(null);
+  const filtersRef = useRef<HTMLDivElement>(null);
+  const ctaRef = useRef<HTMLElement>(null);
+  const prefersReducedMotion = useReducedMotion();
+
+  // Initialize animations
+  useEffect(() => {
+    if (prefersReducedMotion) return;
+    
+    // Hero section animations
+    if (titleRef.current && subtitleRef.current) {
+      const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+      
+      tl.fromTo(
+        titleRef.current, 
+        { y: 50, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.8 }
+      )
+      .fromTo(
+        subtitleRef.current,
+        { y: 30, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.7 },
+        "-=0.5"
+      );
+    }
+    
+    // Filters animations
+    if (filtersRef.current) {
+      gsap.fromTo(
+        filtersRef.current,
+        { y: 30, opacity: 0 },
+        { 
+          y: 0, 
+          opacity: 1, 
+          duration: 0.8,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: filtersRef.current,
+            start: "top bottom-=50",
+            toggleActions: "play none none none"
+          }
+        }
+      );
+    }
+    
+    // CTA section animation
+    if (ctaRef.current) {
+      gsap.fromTo(
+        ctaRef.current,
+        { y: 50, opacity: 0 },
+        { 
+          y: 0, 
+          opacity: 1, 
+          duration: 0.8,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: ctaRef.current,
+            start: "top bottom-=100",
+            toggleActions: "play none none none"
+          }
+        }
+      );
+    }
+    
+    return () => {
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+    };
+  }, [prefersReducedMotion]);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
       <main>
         {/* Hero Section for Cars page */}
-        <section className="relative h-[40vh] overflow-hidden">
+        <section ref={heroRef} className="relative h-[40vh] overflow-hidden">
           <div className="absolute inset-0 bg-black">
             <img 
               src="https://images.unsplash.com/photo-1583121274602-3e2820c69888?q=80&w=2000&auto=format&fit=crop" 
@@ -27,17 +99,17 @@ const Cars = () => {
             <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black"></div>
           </div>
           <div className="relative h-full flex flex-col justify-center items-center">
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-gradient mb-4 text-center">
+            <h1 ref={titleRef} className="text-4xl md:text-6xl lg:text-7xl font-bold text-gradient mb-4 text-center">
               Our Collection
             </h1>
-            <p className="text-gray-300 max-w-xl text-center px-4">
+            <p ref={subtitleRef} className="text-gray-300 max-w-xl text-center px-4">
               Discover the pinnacle of automotive excellence with our curated selection of luxury vehicles.
             </p>
           </div>
         </section>
 
         {/* Search and Filter */}
-        <section className="section-container py-12">
+        <section ref={filtersRef} className="section-container py-12">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">
             <div className="relative w-full md:w-96">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
@@ -102,6 +174,7 @@ const Cars = () => {
                 power: "750 hp",
                 range: "Electric + Gas"
               }}
+              index={0}
             />
             <CarCard 
               id={2}
@@ -116,6 +189,7 @@ const Cars = () => {
                 power: "900 hp",
                 range: "Electric"
               }}
+              index={1}
             />
             <CarCard 
               id={3}
@@ -130,6 +204,7 @@ const Cars = () => {
                 power: "680 hp",
                 range: "Hybrid"
               }}
+              index={2}
             />
             <CarCard 
               id={4}
@@ -144,6 +219,7 @@ const Cars = () => {
                 power: "520 hp",
                 range: "Electric"
               }}
+              index={3}
             />
             <CarCard 
               id={5}
@@ -158,6 +234,7 @@ const Cars = () => {
                 power: "1100 hp",
                 range: "Gas"
               }}
+              index={4}
             />
             <CarCard 
               id={6}
@@ -172,6 +249,7 @@ const Cars = () => {
                 power: "450 hp",
                 range: "Electric"
               }}
+              index={5}
             />
           </div>
           
@@ -191,7 +269,7 @@ const Cars = () => {
         </section>
 
         {/* CTA Section */}
-        <section className="py-24 relative overflow-hidden">
+        <section ref={ctaRef} className="py-24 relative overflow-hidden">
           <div className="absolute inset-0 z-0">
             <div className="h-full w-full">
               <img 
@@ -222,5 +300,8 @@ const Cars = () => {
     </div>
   );
 };
+
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+gsap.registerPlugin(ScrollTrigger);
 
 export default Cars;

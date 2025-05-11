@@ -2,11 +2,24 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
+import { useHeroAnimation } from '@/lib/animation';
 
 const Hero = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const heroContainerRef = useRef<HTMLDivElement>(null);
   const heroContentRef = useRef<HTMLDivElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const subtitleRef = useRef<HTMLParagraphElement>(null);
+  const ctaRef = useRef<HTMLDivElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
+  
+  // Setup hero animations
+  useHeroAnimation({
+    container: heroContentRef,
+    title: titleRef,
+    subtitle: subtitleRef,
+    cta: ctaRef
+  });
   
   useEffect(() => {
     if (videoRef.current) {
@@ -48,7 +61,7 @@ const Hero = () => {
   }, []);
 
   return (
-    <div className="relative h-screen overflow-hidden">
+    <div ref={heroContainerRef} className="relative h-screen overflow-hidden">
       {/* Video background with loading overlay */}
       <div className="absolute inset-0 bg-black">
         <div className={`absolute inset-0 z-10 bg-black transition-opacity duration-1000 ${isLoaded ? 'opacity-0' : 'opacity-100'}`}>
@@ -104,50 +117,33 @@ const Hero = () => {
       {/* Hero content */}
       <div 
         ref={heroContentRef}
-        className={`relative h-full flex flex-col justify-center transition-all duration-1000 ${
-          isLoaded ? 'opacity-100' : 'opacity-0'
-        }`}
+        className="relative h-full flex flex-col justify-center"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-start space-y-8">
-          <div className="overflow-hidden">
-            <h2 
-              className={`animate-on-scroll text-pollux-red font-medium text-sm md:text-base uppercase tracking-wider transform transition-transform duration-1000 ${
-                isLoaded ? 'translate-y-0' : 'translate-y-full'
-              }`}
-              style={{ transitionDelay: '300ms' }}
-            >
-              Experience Luxury Redefined
-            </h2>
-          </div>
+          <h2 
+            ref={titleRef}
+            className="text-pollux-red font-medium text-sm md:text-base uppercase tracking-wider"
+          >
+            Experience Luxury Redefined
+          </h2>
           
-          <div className="overflow-hidden">
-            <h1 
-              className={`animate-on-scroll text-4xl md:text-6xl lg:text-8xl font-bold text-gradient max-w-4xl leading-tight transform transition-transform duration-1000 ${
-                isLoaded ? 'translate-y-0' : 'translate-y-full'
-              }`}
-              style={{ transitionDelay: '500ms' }}
-            >
-              The New Era of Automotive Excellence
-            </h1>
-          </div>
+          <h1 
+            ref={subtitleRef}
+            className="text-4xl md:text-6xl lg:text-8xl font-bold text-gradient max-w-4xl leading-tight"
+          >
+            The New Era of Automotive Excellence
+          </h1>
           
-          <div className="overflow-hidden">
-            <p 
-              className={`animate-on-scroll text-gray-300 max-w-lg text-base md:text-lg transform transition-transform duration-1000 ${
-                isLoaded ? 'translate-y-0' : 'translate-y-full'
-              }`}
-              style={{ transitionDelay: '700ms' }}
-            >
-              Discover a perfect blend of power, innovation, and design with Pollux Motors' 
-              cutting-edge lineup of luxury vehicles engineered for the modern driver.
-            </p>
-          </div>
+          <p 
+            className="text-gray-300 max-w-lg text-base md:text-lg"
+          >
+            Discover a perfect blend of power, innovation, and design with Pollux Motors' 
+            cutting-edge lineup of luxury vehicles engineered for the modern driver.
+          </p>
           
           <div 
-            className={`animate-on-scroll flex flex-wrap gap-4 mt-8 transform transition-all duration-1000 ${
-              isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0'
-            }`}
-            style={{ transitionDelay: '900ms' }}
+            ref={ctaRef}
+            className="flex flex-wrap gap-4 mt-8"
           >
             <Link
               to="/cars"
@@ -166,10 +162,7 @@ const Hero = () => {
           
           {/* Floating features badges */}
           <div 
-            className={`absolute bottom-32 right-10 lg:right-20 max-w-xs transform transition-all duration-1000 hidden md:block ${
-              isLoaded ? 'translate-x-0 opacity-100' : 'translate-x-20 opacity-0'
-            }`}
-            style={{ transitionDelay: '1100ms' }}
+            className="absolute bottom-32 right-10 lg:right-20 max-w-xs hidden md:block"
           >
             <div className="glass-card p-4 rounded-lg animate-float">
               <div className="flex items-center gap-3">
@@ -205,10 +198,7 @@ const Hero = () => {
 
         {/* Scroll indicator */}
         <div 
-          className={`absolute bottom-12 left-1/2 transform -translate-x-1/2 flex flex-col items-center transition-all duration-1000 ${
-            isLoaded ? 'opacity-100' : 'opacity-0'
-          }`}
-          style={{ transitionDelay: '1300ms' }}
+          className="absolute bottom-12 left-1/2 transform -translate-x-1/2 flex flex-col items-center"
         >
           <span className="text-gray-400 text-sm mb-2">Scroll to explore</span>
           <div className="w-5 h-10 border-2 border-gray-400 rounded-full flex justify-center">

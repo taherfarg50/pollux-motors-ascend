@@ -1,7 +1,9 @@
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
+import gsap from 'gsap';
+import { useReducedMotion } from '@/lib/animation';
 
 interface CarSpecs {
   speed: string;
@@ -18,13 +20,76 @@ interface CarCardProps {
   price: string;
   image: string;
   specs: CarSpecs;
+  index?: number; // For staggered animations
 }
 
-const CarCard = ({ id, name, category, year, price, image, specs }: CarCardProps) => {
+const CarCard = ({ id, name, category, year, price, image, specs, index = 0 }: CarCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const imageRef = useRef<HTMLImageElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const prefersReducedMotion = useReducedMotion();
+
+  // Entry animation
+  useEffect(() => {
+    if (!cardRef.current || prefersReducedMotion) return;
+    
+    gsap.set(cardRef.current, { y: 50, opacity: 0 });
+    
+    const animation = gsap.to(cardRef.current, {
+      y: 0,
+      opacity: 1,
+      duration: 0.7,
+      ease: 'power3.out',
+      delay: 0.1 * index, // Stagger based on index
+      scrollTrigger: {
+        trigger: cardRef.current,
+        start: 'top bottom-=100',
+        toggleActions: 'play none none none'
+      }
+    });
+    
+    return () => {
+      animation.kill();
+    };
+  }, [index, prefersReducedMotion]);
+
+  // Hover animations
+  useEffect(() => {
+    if (!cardRef.current || !imageRef.current || prefersReducedMotion) return;
+    
+    if (isHovered) {
+      // Scale the image and add a subtle glow
+      gsap.to(imageRef.current, {
+        scale: 1.1,
+        duration: 0.7,
+        ease: 'power2.out'
+      });
+      
+      // Add a subtle glow to the card
+      gsap.to(cardRef.current, {
+        boxShadow: '0 5px 30px rgba(255, 30, 30, 0.15)',
+        duration: 0.5
+      });
+    } else {
+      // Reset the image scale
+      gsap.to(imageRef.current, {
+        scale: 1,
+        duration: 0.7,
+        ease: 'power2.out'
+      });
+      
+      // Reset the card glow
+      gsap.to(cardRef.current, {
+        boxShadow: 'none',
+        duration: 0.5
+      });
+    }
+  }, [isHovered, prefersReducedMotion]);
 
   return (
     <div 
+      ref={cardRef}
       className="group relative bg-secondary rounded-lg overflow-hidden transition-all duration-500 h-[400px]"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -39,15 +104,16 @@ const CarCard = ({ id, name, category, year, price, image, specs }: CarCardProps
       {/* Car image */}
       <div className="h-[250px] overflow-hidden">
         <img 
+          ref={imageRef}
           src={image} 
           alt={name} 
-          className={`w-full h-full object-cover transition-transform duration-700 ${isHovered ? 'scale-110' : 'scale-100'}`}
+          className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
       </div>
       
       {/* Car info */}
-      <div className="absolute bottom-0 left-0 right-0 p-6">
+      <div ref={contentRef} className="absolute bottom-0 left-0 right-0 p-6">
         <h3 className="text-2xl font-bold mb-1">
           {name}
           <span className="text-sm ml-2 font-normal text-gray-400">{year}</span>

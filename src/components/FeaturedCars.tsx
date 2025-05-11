@@ -1,8 +1,10 @@
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
+import gsap from 'gsap';
+import { useReducedMotion } from '@/lib/animation';
 
 interface Car {
   id: number;
@@ -63,6 +65,48 @@ const cars: Car[] = [
 const FeaturedCars = () => {
   const [currentCar, setCurrentCar] = useState(0);
   const isMobile = useIsMobile();
+  const sectionRef = useRef<HTMLElement>(null);
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const carsTitleRef = useRef<HTMLDivElement>(null);
+  const prefersReducedMotion = useReducedMotion();
+  
+  // Initialize carousel and section animations
+  useEffect(() => {
+    if (!sectionRef.current || !carsTitleRef.current || prefersReducedMotion) return;
+    
+    // Title reveal animation
+    gsap.fromTo(
+      carsTitleRef.current.children,
+      { y: 40, opacity: 0 },
+      {
+        y: 0,
+        opacity: 1,
+        stagger: 0.2,
+        duration: 0.8,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: carsTitleRef.current,
+          start: "top bottom-=100",
+          toggleActions: "play none none none"
+        }
+      }
+    );
+    
+    return () => {
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+    };
+  }, [prefersReducedMotion]);
+  
+  // Car change animation
+  useEffect(() => {
+    if (!carouselRef.current || prefersReducedMotion) return;
+    
+    gsap.to(carouselRef.current, {
+      x: `-${currentCar * 100}%`,
+      duration: 0.7,
+      ease: "power2.out"
+    });
+  }, [currentCar, prefersReducedMotion]);
   
   const nextCar = () => {
     setCurrentCar((prev) => (prev + 1) % cars.length);
@@ -73,9 +117,9 @@ const FeaturedCars = () => {
   };
 
   return (
-    <section className="py-24 relative overflow-hidden">
+    <section ref={sectionRef} className="py-24 relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
+        <div ref={carsTitleRef} className="text-center mb-16">
           <h2 className="text-sm font-medium tracking-wider text-pollux-red uppercase">
             Our Premium Selection
           </h2>
@@ -86,6 +130,7 @@ const FeaturedCars = () => {
 
         <div className="relative">
           <div 
+            ref={carouselRef}
             className="flex transition-transform duration-700 ease-out"
             style={{ transform: `translateX(-${currentCar * 100}%)` }}
           >
@@ -177,5 +222,8 @@ const FeaturedCars = () => {
     </section>
   );
 };
+
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+gsap.registerPlugin(ScrollTrigger);
 
 export default FeaturedCars;

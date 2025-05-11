@@ -1,7 +1,9 @@
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
+import gsap from 'gsap';
+import { useReducedMotion } from '@/lib/animation';
 
 interface BlogPost {
   id: number;
@@ -18,23 +20,101 @@ interface BlogPost {
 
 interface BlogCardProps {
   blog: BlogPost;
+  index?: number; // For staggered animations
 }
 
-const BlogCard = ({ blog }: BlogCardProps) => {
+const BlogCard = ({ blog, index = 0 }: BlogCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
+  const cardRef = useRef<HTMLElement>(null);
+  const imageRef = useRef<HTMLImageElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const prefersReducedMotion = useReducedMotion();
+
+  // Entry animation
+  useEffect(() => {
+    if (!cardRef.current || prefersReducedMotion) return;
+    
+    gsap.set(cardRef.current, { y: 30, opacity: 0 });
+    
+    const animation = gsap.to(cardRef.current, {
+      y: 0,
+      opacity: 1,
+      duration: 0.8,
+      ease: 'power3.out',
+      delay: 0.1 * index, // Stagger based on index
+      scrollTrigger: {
+        trigger: cardRef.current,
+        start: 'top bottom-=100',
+        toggleActions: 'play none none none'
+      }
+    });
+    
+    return () => {
+      animation.kill();
+    };
+  }, [index, prefersReducedMotion]);
+
+  // Hover animations
+  useEffect(() => {
+    if (!cardRef.current || !imageRef.current || !titleRef.current || prefersReducedMotion) return;
+    
+    if (isHovered) {
+      // Image zoom effect
+      gsap.to(imageRef.current, {
+        scale: 1.1,
+        duration: 0.7,
+        ease: 'power2.out'
+      });
+      
+      // Title color change
+      gsap.to(titleRef.current, {
+        color: '#e31937', // Pollux red color
+        duration: 0.3
+      });
+      
+      // Subtle card lift
+      gsap.to(cardRef.current, {
+        y: -8,
+        boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)',
+        duration: 0.4,
+        ease: 'power2.out'
+      });
+    } else {
+      // Reset animations
+      gsap.to(imageRef.current, {
+        scale: 1,
+        duration: 0.7,
+        ease: 'power2.out'
+      });
+      
+      gsap.to(titleRef.current, {
+        color: 'white', // Reset to original color
+        duration: 0.3
+      });
+      
+      gsap.to(cardRef.current, {
+        y: 0,
+        boxShadow: 'none',
+        duration: 0.4,
+        ease: 'power2.out'
+      });
+    }
+  }, [isHovered, prefersReducedMotion]);
 
   return (
     <article 
-      className="group relative flex flex-col bg-secondary rounded-lg overflow-hidden h-full transition-all duration-500 transform hover:-translate-y-2"
+      ref={cardRef}
+      className="group relative flex flex-col bg-secondary rounded-lg overflow-hidden h-full transition-all duration-500"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Image */}
       <div className="aspect-[16/9] overflow-hidden">
         <img 
+          ref={imageRef}
           src={blog.image} 
           alt={blog.title} 
-          className={`w-full h-full object-cover transition-transform duration-700 ${isHovered ? 'scale-110' : 'scale-100'}`}
+          className="w-full h-full object-cover"
         />
       </div>
       
@@ -53,7 +133,7 @@ const BlogCard = ({ blog }: BlogCardProps) => {
         </div>
         
         {/* Title */}
-        <h3 className="text-xl font-bold mb-3">
+        <h3 ref={titleRef} className="text-xl font-bold mb-3">
           <Link 
             to={`/blog/${blog.id}`}
             className="hover:text-pollux-red transition-colors"
