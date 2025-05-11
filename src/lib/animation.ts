@@ -3,6 +3,7 @@ import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from '@studio-freight/lenis';
+import { useState } from 'react';
 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger);
@@ -12,7 +13,8 @@ export const initSmoothScroll = () => {
   const lenis = new Lenis({
     duration: 1.2,
     easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-    direction: 'vertical',
+    // Remove direction property as it doesn't exist in LenisOptions
+    // direction: 'vertical',
     gestureDirection: 'vertical',
     smooth: true,
     smoothTouch: false,
@@ -55,9 +57,6 @@ export const useReducedMotion = () => {
   
   return prefersReducedMotion;
 };
-
-// Missing import
-import { useState } from 'react';
 
 // Animation helper functions
 

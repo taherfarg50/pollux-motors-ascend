@@ -46,7 +46,7 @@ export const ScrollProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     if (typeof target === 'string') {
       const element = document.querySelector(target);
       if (element) {
-        lenis.scrollTo(element, { offset: -100 });
+        lenis.scrollTo(element as HTMLElement, { offset: -100 });
       }
     } else {
       lenis.scrollTo(target, { offset: -100 });
