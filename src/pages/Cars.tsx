@@ -1,24 +1,80 @@
 
 import { useState, useRef, useEffect } from 'react';
-import { Search, ChevronDown, Filter } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Search, ChevronDown, Filter, Car as CarIcon } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import CarCard from '@/components/CarCard';
-import FilterSidebar from '@/components/FilterSidebar';
+import FilterSidebar, { FilterOptions } from '@/components/FilterSidebar';
 import { Button } from '@/components/ui/button';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink } from '@/components/ui/pagination';
+import { useToast } from '@/components/ui/use-toast';
+import { useCars, Car } from '@/lib/supabase';
 import gsap from 'gsap';
 import { useReducedMotion } from '@/lib/animation';
 
 const Cars = () => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [activeFilter, setActiveFilter] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [currentFilters, setCurrentFilters] = useState<FilterOptions>({
+    priceRange: [50000, 200000],
+    categories: [],
+    features: [],
+    years: []
+  });
+
+  const { data: cars, isLoading, error } = useCars();
+  const { toast } = useToast();
+  
   const heroRef = useRef<HTMLElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const subtitleRef = useRef<HTMLParagraphElement>(null);
   const filtersRef = useRef<HTMLDivElement>(null);
   const ctaRef = useRef<HTMLElement>(null);
   const prefersReducedMotion = useReducedMotion();
+
+  // Filter cars based on current filters
+  const filteredCars = cars?.filter(car => {
+    // Filter by search query
+    if (searchQuery && !car.name.toLowerCase().includes(searchQuery.toLowerCase())) {
+      return false;
+    }
+    
+    // Filter by category
+    if (activeFilter !== 'all' && car.category.toLowerCase() !== activeFilter.toLowerCase()) {
+      return false;
+    }
+    
+    // Filter by category selection in sidebar
+    if (currentFilters.categories.length > 0 && 
+        !currentFilters.categories.includes(car.category)) {
+      return false;
+    }
+    
+    // Filter by year
+    if (currentFilters.years.length > 0 && 
+        !currentFilters.years.includes(car.year)) {
+      return false;
+    }
+    
+    // Filter by price range
+    const price = parseInt(car.price.replace(/[$,]/g, ''));
+    if (price < currentFilters.priceRange[0] || price > currentFilters.priceRange[1]) {
+      return false;
+    }
+    
+    return true;
+  }) || [];
+
+  // Apply filters from sidebar
+  const handleApplyFilters = (filters: FilterOptions) => {
+    setCurrentFilters(filters);
+    toast({
+      title: "Filters Applied",
+      description: `Showing ${filteredCars.length} vehicles matching your criteria.`,
+    });
+  };
 
   // Initialize animations
   useEffect(() => {
@@ -116,6 +172,8 @@ const Cars = () => {
               <input 
                 type="search"
                 placeholder="Search models..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full bg-white/5 border border-border rounded-full py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-pollux-red"
               />
             </div>
@@ -160,112 +218,80 @@ const Cars = () => {
             </div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <CarCard 
-              id={1}
-              name="Astra GT-X"
-              category="sport"
-              year="2025"
-              price="$125,000"
-              image="https://images.unsplash.com/photo-1553440569-bcc63803a83d?q=80&w=2825&auto=format&fit=crop&ixlib=rb-4.0.3"
-              specs={{
-                speed: "320 km/h",
-                acceleration: "2.8s",
-                power: "750 hp",
-                range: "Electric + Gas"
-              }}
-              index={0}
-            />
-            <CarCard 
-              id={2}
-              name="Celestial S-500"
-              category="sedan"
-              year="2025"
-              price="$180,000"
-              image="https://images.unsplash.com/photo-1580414057403-c5f451f30e1c?q=80&w=2787&auto=format&fit=crop&ixlib=rb-4.0.3"
-              specs={{
-                speed: "350 km/h",
-                acceleration: "2.3s",
-                power: "900 hp",
-                range: "Electric"
-              }}
-              index={1}
-            />
-            <CarCard 
-              id={3}
-              name="Solari Quantum E"
-              category="sport"
-              year="2025"
-              price="$145,000"
-              image="https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3"
-              specs={{
-                speed: "310 km/h",
-                acceleration: "3.0s",
-                power: "680 hp",
-                range: "Hybrid"
-              }}
-              index={2}
-            />
-            <CarCard 
-              id={4}
-              name="Atlas SUV-X"
-              category="suv"
-              year="2025"
-              price="$95,000"
-              image="https://images.unsplash.com/photo-1661956602944-249bcd04b63f?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3"
-              specs={{
-                speed: "240 km/h",
-                acceleration: "4.2s",
-                power: "520 hp",
-                range: "Electric"
-              }}
-              index={3}
-            />
-            <CarCard 
-              id={5}
-              name="Phoenix GT"
-              category="sport"
-              year="2025"
-              price="$210,000"
-              image="https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3"
-              specs={{
-                speed: "370 km/h",
-                acceleration: "2.1s",
-                power: "1100 hp",
-                range: "Gas"
-              }}
-              index={4}
-            />
-            <CarCard 
-              id={6}
-              name="Nova Sedan"
-              category="sedan"
-              year="2025"
-              price="$85,000"
-              image="https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3"
-              specs={{
-                speed: "280 km/h",
-                acceleration: "3.5s",
-                power: "450 hp",
-                range: "Electric"
-              }}
-              index={5}
-            />
-          </div>
+          {isLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {Array(6).fill(0).map((_, i) => (
+                <div key={i} className="bg-secondary rounded-lg h-[400px] animate-pulse">
+                  <div className="h-[250px] bg-secondary/50 rounded-t-lg flex items-center justify-center">
+                    <CarIcon className="w-16 h-16 text-secondary/30" />
+                  </div>
+                  <div className="p-6">
+                    <div className="h-6 bg-secondary/50 rounded-full w-2/3 mb-2"></div>
+                    <div className="h-4 bg-secondary/50 rounded-full w-1/3 mb-8"></div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="h-8 bg-secondary/50 rounded"></div>
+                      <div className="h-8 bg-secondary/50 rounded"></div>
+                      <div className="h-8 bg-secondary/50 rounded"></div>
+                      <div className="h-8 bg-secondary/50 rounded"></div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : filteredCars?.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {filteredCars.map((car, index) => (
+                <Link key={car.id} to={`/cars/${car.id}`}>
+                  <CarCard 
+                    id={car.id}
+                    name={car.name}
+                    category={car.category}
+                    year={car.year}
+                    price={car.price}
+                    image={car.image}
+                    specs={car.specs}
+                    index={index}
+                  />
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-16">
+              <CarIcon className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
+              <h3 className="text-2xl font-bold mb-2">No Cars Found</h3>
+              <p className="text-gray-400 mb-8">
+                We couldn't find any cars matching your current filters. Try adjusting your search criteria.
+              </p>
+              <Button onClick={() => {
+                setSearchQuery('');
+                setActiveFilter('all');
+                setCurrentFilters({
+                  priceRange: [50000, 200000],
+                  categories: [],
+                  features: [],
+                  years: []
+                });
+              }}>
+                Clear All Filters
+              </Button>
+            </div>
+          )}
           
-          <Pagination className="mt-16">
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationLink href="#" isActive>1</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink href="#">2</PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink href="#">3</PaginationLink>
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
+          {filteredCars?.length > 0 && (
+            <Pagination className="mt-16">
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationLink href="#" isActive>1</PaginationLink>
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationLink href="#">2</PaginationLink>
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationLink href="#">3</PaginationLink>
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          )}
         </section>
 
         {/* CTA Section */}
@@ -289,14 +315,22 @@ const Cars = () => {
               <p className="text-lg text-gray-300 mb-8">
                 Schedule a test drive today and discover why Pollux Motors is redefining luxury automotive excellence.
               </p>
-              <Button className="bg-pollux-red hover:bg-red-700 text-white px-8 py-6 text-lg">
-                Book a Test Drive
+              <Button asChild size="lg" className="bg-pollux-red hover:bg-red-700 text-white px-8 py-6 text-lg">
+                <Link to="/contact">Book a Test Drive</Link>
               </Button>
             </div>
           </div>
         </section>
       </main>
       <Footer />
+      
+      {/* Filter Sidebar */}
+      <FilterSidebar 
+        isOpen={isFilterOpen} 
+        onClose={() => setIsFilterOpen(false)}
+        onApplyFilters={handleApplyFilters}
+        initialFilters={currentFilters}
+      />
     </div>
   );
 };

@@ -71,6 +71,23 @@ const CarCard = ({ id, name, category, year, price, image, specs, index = 0 }: C
         boxShadow: '0 5px 30px rgba(255, 30, 30, 0.15)',
         duration: 0.5
       });
+      
+      // Animate content
+      if (contentRef.current) {
+        gsap.to(contentRef.current.querySelector('.specs-container'), {
+          opacity: 1,
+          y: 0,
+          duration: 0.5,
+          ease: 'power2.out'
+        });
+        
+        gsap.to(contentRef.current.querySelector('.action-button'), {
+          opacity: 1,
+          scale: 1,
+          duration: 0.5,
+          ease: 'back.out(1.7)'
+        });
+      }
     } else {
       // Reset the image scale
       gsap.to(imageRef.current, {
@@ -84,6 +101,23 @@ const CarCard = ({ id, name, category, year, price, image, specs, index = 0 }: C
         boxShadow: 'none',
         duration: 0.5
       });
+      
+      // Reset content
+      if (contentRef.current) {
+        gsap.to(contentRef.current.querySelector('.specs-container'), {
+          opacity: 0,
+          y: 10,
+          duration: 0.3,
+          ease: 'power2.in'
+        });
+        
+        gsap.to(contentRef.current.querySelector('.action-button'), {
+          opacity: 0,
+          scale: 0.5,
+          duration: 0.3,
+          ease: 'power2.in'
+        });
+      }
     }
   }, [isHovered, prefersReducedMotion]);
 
@@ -108,6 +142,7 @@ const CarCard = ({ id, name, category, year, price, image, specs, index = 0 }: C
           src={image} 
           alt={name} 
           className="w-full h-full object-cover"
+          loading="lazy" // Add lazy loading for better performance
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
       </div>
@@ -121,9 +156,7 @@ const CarCard = ({ id, name, category, year, price, image, specs, index = 0 }: C
         <p className="text-xl font-medium text-pollux-red mb-4">{price}</p>
         
         <div 
-          className={`grid grid-cols-2 gap-3 transition-all duration-500 ${
-            isHovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-          }`}
+          className="specs-container grid grid-cols-2 gap-3 transition-all duration-500 opacity-0 translate-y-10"
         >
           <div className="flex flex-col">
             <span className="text-xs text-gray-400">Top Speed</span>
@@ -145,9 +178,7 @@ const CarCard = ({ id, name, category, year, price, image, specs, index = 0 }: C
         
         <Link 
           to={`/cars/${id}`}
-          className={`absolute bottom-6 right-6 w-10 h-10 flex items-center justify-center rounded-full bg-pollux-red transition-all duration-500 ${
-            isHovered ? 'opacity-100 scale-100' : 'opacity-0 scale-50'
-          }`}
+          className="action-button absolute bottom-6 right-6 w-10 h-10 flex items-center justify-center rounded-full bg-pollux-red transition-all duration-500 opacity-0 scale-50"
         >
           <ChevronRight className="w-5 h-5 text-white" />
         </Link>

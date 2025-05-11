@@ -7,6 +7,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ScrollProvider } from "./context/ScrollContext";
 import Index from "./pages/Index";
 import Cars from "./pages/Cars";
+import CarDetail from "./pages/CarDetail";
+import CarComparison from "./pages/CarComparison";
 import Models3D from "./pages/Models3D";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
@@ -29,6 +31,8 @@ const App = () => {
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/cars" element={<Cars />} />
+              <Route path="/cars/:id" element={<CarDetail />} />
+              <Route path="/compare" element={<CarComparison />} />
               <Route path="/models" element={<Models3D />} />
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
