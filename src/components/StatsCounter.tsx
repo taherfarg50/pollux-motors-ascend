@@ -25,6 +25,7 @@ const StatsCounter = ({ stats, title, subtitle, className }: StatsCounterProps) 
   const [ref, inView] = useInView({
     triggerOnce: true,
     threshold: 0.3,
+    rootMargin: '0px 0px -100px 0px' // Trigger a bit before it comes fully into view
   });
 
   return (
@@ -32,12 +33,14 @@ const StatsCounter = ({ stats, title, subtitle, className }: StatsCounterProps) 
       {(title || subtitle) && (
         <div className="text-center mb-12">
           {subtitle && (
-            <p className="text-sm font-medium tracking-wider text-pollux-red uppercase">
+            <p className="text-sm font-medium tracking-wider text-pollux-red uppercase animate-fade-in" 
+               style={{ animationDelay: '0.1s' }}>
               {subtitle}
             </p>
           )}
           {title && (
-            <h2 className="mt-2 text-3xl md:text-4xl font-bold">
+            <h2 className="mt-2 text-3xl md:text-4xl font-bold animate-fade-in"
+                style={{ animationDelay: '0.2s' }}>
               {title}
             </h2>
           )}
@@ -67,6 +70,7 @@ const StatsCounter = ({ stats, title, subtitle, className }: StatsCounterProps) 
                   suffix={stat.suffix} 
                   decimals={stat.decimals || 0}
                   className="animate-digital-flicker"
+                  duration={1500 + (index * 200)}
                 />
               ) : (
                 <span>0</span>
