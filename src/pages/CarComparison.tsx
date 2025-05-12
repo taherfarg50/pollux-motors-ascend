@@ -1,203 +1,234 @@
 
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { ChevronLeft, X, Plus } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { useCars, Car } from '@/lib/supabase';
-import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import ComparisonTable from '@/components/ComparisonTable';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
+import { useToast } from '@/components/ui/use-toast';
+import { Car, useCars, useCar } from '@/lib/supabase';
+import { ChevronLeft, PlusCircle } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const CarComparison = () => {
+  const { data: allCars = [], isLoading: isLoadingAllCars } = useCars();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  // Extract car IDs from URL query params
+  const carIds = searchParams.get('cars')?.split(',').map(Number).filter(Boolean) || [];
+  
+  // State for selected cars and available cars
   const [selectedCars, setSelectedCars] = useState<Car[]>([]);
-  const [isSelectDialogOpen, setIsSelectDialogOpen] = useState(false);
-  const [addToPosition, setAddToPosition] = useState(0);
-  const { data: cars } = useCars();
+  const [availableForComparison, setAvailableForComparison] = useState<Car[]>([]);
+  const [newCarId, setNewCarId] = useState<string>('');
 
-  const maxCarsToCompare = 3;
-
-  const addCar = (position: number) => {
-    setAddToPosition(position);
-    setIsSelectDialogOpen(true);
-  };
-
-  const selectCar = (car: Car) => {
-    const newSelectedCars = [...selectedCars];
-    
-    if (addToPosition >= selectedCars.length) {
-      newSelectedCars.push(car);
-    } else {
-      newSelectedCars[addToPosition] = car;
-    }
-    
-    setSelectedCars(newSelectedCars);
-    setIsSelectDialogOpen(false);
-  };
-
-  const removeCar = (index: number) => {
-    setSelectedCars(selectedCars.filter((_, i) => i !== index));
-  };
-
-  // Initialize with at least one car if available
+  // Fetch data for each car ID
   useEffect(() => {
-    if (cars && cars.length > 0 && selectedCars.length === 0) {
-      setSelectedCars([cars[0]]);
+    if (carIds.length === 0) {
+      setSelectedCars([]);
+      return;
     }
-  }, [cars]);
 
-  // Comparison specs
-  const comparisonCategories = [
-    { name: "Performance", specs: ["speed", "acceleration", "power"] },
-    { name: "General", specs: ["range", "price", "year"] },
-  ];
+    // Load cars in parallel
+    const loadCars = async () => {
+      try {
+        const carsPromises = carIds.map(id => fetch(`https://gjsektwcdvontsnyqobx.supabase.co/rest/v1/cars?id=eq.${id}&select=*,specs:car_specs(*)`, {
+          headers: {
+            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdqc2VrdHdjZHZvbnRzbnlxb2J4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY5ODM1ODcsImV4cCI6MjA2MjU1OTU4N30.GCOueFVU9bWOXriqGrekpsyhvJ70SFg6l9j5BnEVRzo',
+            'Content-Type': 'application/json'
+          }
+        }).then(res => res.json()));
+        
+        const carsData = await Promise.all(carsPromises);
+        
+        const cars = carsData
+          .flat()
+          .filter(car => car) // Remove any null results
+          .map(car => ({
+            ...car,
+            specs: {
+              speed: car.specs[0]?.speed || 'N/A',
+              acceleration: car.specs[0]?.acceleration || 'N/A',
+              power: car.specs[0]?.power || 'N/A',
+              range: car.specs[0]?.range || 'N/A'
+            }
+          }));
+
+        setSelectedCars(cars);
+
+      } catch (error) {
+        console.error("Error loading cars for comparison:", error);
+        toast({
+          title: "Error loading cars",
+          description: "There was a problem loading the selected cars for comparison.",
+          variant: "destructive",
+        });
+      }
+    };
+
+    loadCars();
+  }, [carIds, toast]);
+
+  // Update available cars when all cars or selected cars change
+  useEffect(() => {
+    if (allCars.length > 0) {
+      const selectedIds = new Set(selectedCars.map(car => car.id));
+      const available = allCars.filter(car => !selectedIds.has(car.id));
+      setAvailableForComparison(available);
+    }
+  }, [allCars, selectedCars]);
+
+  // Update URL when selected cars change
+  const updateUrlParams = (cars: Car[]) => {
+    if (cars.length > 0) {
+      const carIdsParam = cars.map(car => car.id).join(',');
+      setSearchParams({ cars: carIdsParam });
+    } else {
+      setSearchParams({});
+    }
+  };
+
+  // Add a car to comparison
+  const handleAddCar = () => {
+    if (!newCarId) return;
+    
+    const carIdNumber = parseInt(newCarId);
+    if (selectedCars.length >= 4) {
+      toast({
+        title: "Maximum cars reached",
+        description: "You can compare up to 4 cars at once.",
+      });
+      return;
+    }
+    
+    if (carIds.includes(carIdNumber)) {
+      toast({
+        description: "This car is already in your comparison.",
+      });
+      return;
+    }
+    
+    const updatedCarIds = [...carIds, carIdNumber];
+    setSearchParams({ cars: updatedCarIds.join(',') });
+    setNewCarId('');
+  };
+
+  // Remove a car from comparison
+  const handleRemoveCar = (carId: number) => {
+    const updatedCars = selectedCars.filter(car => car.id !== carId);
+    updateUrlParams(updatedCars);
+  };
+
+  // Share comparison
+  const handleShareComparison = () => {
+    const url = `${window.location.origin}${window.location.pathname}?cars=${carIds.join(',')}`;
+    
+    if (navigator.share) {
+      navigator.share({
+        title: 'Car Comparison - Pollux Motors',
+        text: 'Check out this car comparison from Pollux Motors',
+        url: url,
+      }).catch(err => {
+        console.error('Error sharing:', err);
+      });
+    } else {
+      navigator.clipboard.writeText(url).then(() => {
+        toast({
+          title: "Comparison link copied",
+          description: "Share this link with others to show them your comparison.",
+        });
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
-      <main className="pt-24 pb-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Header */}
-          <div className="mb-8">
-            <Link 
-              to="/cars"
-              className="inline-flex items-center text-sm text-gray-400 hover:text-white transition-colors mb-4"
+      <main className="pt-24 pb-16 px-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center mb-6">
+            <Button
+              variant="ghost"
+              className="mr-4 p-0"
+              onClick={() => navigate('/cars')}
             >
-              <ChevronLeft className="w-4 h-4 mr-1" />
+              <ChevronLeft className="h-5 w-5 mr-1" />
               Back to Cars
-            </Link>
-            <h1 className="text-3xl md:text-4xl font-bold">Compare Models</h1>
-            <p className="text-gray-400 mt-2">Compare up to {maxCarsToCompare} vehicles side by side</p>
+            </Button>
+            <h1 className="text-3xl font-bold">Car Comparison</h1>
           </div>
-
-          {/* Comparison Table */}
-          <div className="bg-secondary/30 rounded-lg overflow-hidden border border-border">
-            {/* Car Selection Header */}
-            <div className="grid grid-cols-4 border-b border-border">
-              <div className="p-6 font-medium">
-                <span className="text-gray-400">Models</span>
+          
+          <div className="glass-card p-6 mb-8">
+            <div className="flex flex-wrap items-end gap-4">
+              <div className="w-full md:w-64">
+                <label htmlFor="car-select" className="block text-sm font-medium mb-1">
+                  Add a car to compare
+                </label>
+                <Select value={newCarId} onValueChange={setNewCarId}>
+                  <SelectTrigger id="car-select" className="w-full">
+                    <SelectValue placeholder="Select a car" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableForComparison.map((car) => (
+                      <SelectItem key={car.id} value={car.id.toString()}>
+                        {car.name} {car.model || ''}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               
-              {Array(maxCarsToCompare).fill(0).map((_, index) => {
-                const car = selectedCars[index];
-                
-                return (
-                  <div key={index} className="p-4 border-l border-border">
-                    {car ? (
-                      <div className="flex flex-col items-center">
-                        <div className="relative w-full">
-                          <img 
-                            src={car.image} 
-                            alt={car.name} 
-                            className="w-full aspect-[16/9] object-cover rounded-md"
-                          />
-                          <button
-                            onClick={() => removeCar(index)}
-                            className="absolute top-2 right-2 w-6 h-6 bg-black/60 rounded-full flex items-center justify-center hover:bg-black/80"
-                          >
-                            <X size={14} />
-                          </button>
-                        </div>
-                        <h3 className="mt-3 font-medium text-center">{car.name}</h3>
-                        <p className="text-sm text-gray-400">{car.year}</p>
-                      </div>
-                    ) : (
-                      <div 
-                        className="flex flex-col items-center justify-center h-40 border-2 border-dashed border-gray-600 rounded-md cursor-pointer hover:border-gray-400 transition-colors"
-                        onClick={() => addCar(index)}
-                      >
-                        <Plus size={24} className="text-gray-400 mb-2" />
-                        <span className="text-sm text-gray-400">Add Vehicle</span>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
+              <Button 
+                onClick={handleAddCar} 
+                disabled={!newCarId || selectedCars.length >= 4}
+                className="bg-pollux-red hover:bg-red-700"
+              >
+                <PlusCircle className="mr-2 h-4 w-4" />
+                Add to Comparison
+              </Button>
+              
+              {selectedCars.length > 0 && (
+                <Button 
+                  variant="outline" 
+                  className="ml-auto"
+                  onClick={handleShareComparison}
+                >
+                  Share Comparison
+                </Button>
+              )}
             </div>
             
-            {/* Comparison Data */}
-            {comparisonCategories.map(category => (
-              <div key={category.name}>
-                {/* Category Header */}
-                <div className="grid grid-cols-4 border-b border-border bg-secondary/50">
-                  <div className="p-4 font-medium">
-                    {category.name}
-                  </div>
-                  <div className="col-span-3"></div>
-                </div>
-                
-                {/* Category Specs */}
-                {category.specs.map(spec => (
-                  <div key={spec} className="grid grid-cols-4 border-b border-border">
-                    <div className="p-4 capitalize text-gray-300">
-                      {spec === 'speed' ? 'Top Speed' : 
-                       spec === 'acceleration' ? '0-100 km/h' :
-                       spec === 'power' ? 'Horsepower' : spec}
-                    </div>
-                    
-                    {Array(maxCarsToCompare).fill(0).map((_, index) => {
-                      const car = selectedCars[index];
-                      let value = "—";
-                      
-                      if (car) {
-                        if (spec === 'price') {
-                          value = car.price;
-                        } else if (spec === 'year') {
-                          value = car.year;
-                        } else if (Object.prototype.hasOwnProperty.call(car.specs, spec)) {
-                          value = car.specs[spec as keyof typeof car.specs];
-                        }
-                      }
-                      
-                      return (
-                        <div key={index} className="p-4 border-l border-border font-medium text-center">
-                          {value}
-                        </div>
-                      );
-                    })}
-                  </div>
-                ))}
+            {selectedCars.length > 0 && (
+              <div className="text-sm text-muted-foreground mt-2">
+                {selectedCars.length}/4 cars selected
               </div>
-            ))}
+            )}
           </div>
+          
+          <div className="mb-4">
+            <h2 className="text-xl font-semibold mb-4">Comparison Table</h2>
+            <ComparisonTable cars={selectedCars} onRemoveCar={handleRemoveCar} />
+          </div>
+          
+          {selectedCars.length === 0 && !isLoadingAllCars && (
+            <div className="text-center py-16 bg-secondary/20 rounded-lg">
+              <h3 className="text-xl font-medium">No cars selected for comparison</h3>
+              <p className="text-gray-400 mt-2 mb-6">Add cars to compare their specifications side by side</p>
+              <Button onClick={() => navigate('/cars')}>Browse Cars</Button>
+            </div>
+          )}
         </div>
       </main>
-      
       <Footer />
-      
-      {/* Car Selection Dialog */}
-      <Dialog open={isSelectDialogOpen} onOpenChange={setIsSelectDialogOpen}>
-        <DialogContent className="max-w-3xl">
-          <DialogTitle>Select a Vehicle</DialogTitle>
-          <DialogDescription>
-            Choose a vehicle to add to your comparison
-          </DialogDescription>
-          
-          <ScrollArea className="h-[60vh] my-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-1">
-              {cars?.map(car => (
-                <button
-                  key={car.id}
-                  className="flex gap-4 p-3 rounded-lg hover:bg-secondary/60 transition-colors text-left"
-                  onClick={() => selectCar(car)}
-                  disabled={selectedCars.some(c => c.id === car.id)}
-                >
-                  <img 
-                    src={car.image} 
-                    alt={car.name} 
-                    className="w-20 h-16 object-cover rounded"
-                  />
-                  <div>
-                    <h4 className="font-medium">{car.name}</h4>
-                    <p className="text-sm text-gray-400">{car.year} • {car.price}</p>
-                    <p className="text-xs text-gray-500 mt-1">{car.category}</p>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </ScrollArea>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
