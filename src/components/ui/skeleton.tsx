@@ -11,10 +11,15 @@ function Skeleton({
     <div
       className={cn(
         "rounded-md bg-secondary/80", 
-        shimmer && "shine",
+        shimmer && "shine will-change-opacity",
         pulse && "animate-pulse",
         className
       )}
+      style={{ 
+        backfaceVisibility: 'hidden', // Performance optimization
+        perspective: '1000px',
+        transform: 'translateZ(0)' // Force GPU acceleration
+      }}
       {...props}
     />
   )

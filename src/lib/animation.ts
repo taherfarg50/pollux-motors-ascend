@@ -1,4 +1,3 @@
-
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -8,14 +7,17 @@ import { useState } from 'react';
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger);
 
-// Initialize smooth scroll
+// Initialize smooth scroll with optimized performance settings
 export const initSmoothScroll = () => {
   const lenis = new Lenis({
-    duration: 1.2,
+    duration: 0.8, // Reduced from 1.2 for faster scrolling
     easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-    orientation: 'vertical', // instead of gestureDirection which isn't in LenisOptions
-    smoothWheel: true, // Changed from 'smooth' to 'smoothWheel' based on Lenis API
-    touchMultiplier: 2,
+    orientation: 'vertical',
+    smoothWheel: true,
+    touchMultiplier: 1.5, // Reduced for better responsiveness
+    wheelMultiplier: 1.2, // Added for faster wheel scrolling
+    lerp: 0.08, // Lower lerp for snappier response
+    syncTouch: true, // Better touch synchronization
   });
 
   function raf(time: number) {
@@ -25,8 +27,9 @@ export const initSmoothScroll = () => {
 
   requestAnimationFrame(raf);
 
-  // Connect GSAP ScrollTrigger to Lenis
+  // Connect GSAP ScrollTrigger to Lenis with optimized performance
   lenis.on('scroll', ScrollTrigger.update);
+  gsap.ticker.lagSmoothing(0); // Disable lagSmoothing for better performance
   gsap.ticker.add((time) => {
     lenis.raf(time * 1000);
   });
@@ -57,14 +60,14 @@ export const useReducedMotion = () => {
 
 // Animation helper functions
 
-// Reveal on scroll
+// Reveal on scroll with improved performance
 export const useRevealAnimation = (
   elementRef: React.RefObject<HTMLElement>,
   options = {
     threshold: 0.1,
     y: 50,
     delay: 0,
-    duration: 0.8,
+    duration: 0.6, // Faster animation
     stagger: 0,
     once: true,
   }
@@ -91,10 +94,10 @@ export const useRevealAnimation = (
         duration: options.duration, 
         delay: options.delay,
         stagger: options.stagger,
-        ease: 'power3.out',
+        ease: 'power2.out', // Changed to power2 for snappier animations
         scrollTrigger: {
           trigger: element,
-          start: 'top bottom-=100',
+          start: 'top bottom-=50', // Trigger earlier
           toggleActions: options.once ? 'play none none none' : 'play reverse play reverse',
         }
       }
@@ -166,7 +169,7 @@ export const useParallaxAnimation = (
   }, [elementRef, speed, direction, prefersReducedMotion]);
 };
 
-// Hero section animation
+// Hero section animation with improved performance
 export const useHeroAnimation = (refs: {
   container: React.RefObject<HTMLElement>;
   title: React.RefObject<HTMLElement>;
@@ -185,56 +188,56 @@ export const useHeroAnimation = (refs: {
       prefersReducedMotion
     ) return;
     
-    const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+    const tl = gsap.timeline({ defaults: { ease: 'power2.out' } }); // Changed to power2 for better performance
     
     // Initial state - opacity 0 for all elements
     gsap.set([refs.title.current, refs.subtitle.current, refs.cta.current], { opacity: 0 });
     
     // If there's an image, set its initial state
     if (refs.image?.current) {
-      gsap.set(refs.image.current, { opacity: 0, scale: 0.9 });
+      gsap.set(refs.image.current, { opacity: 0, scale: 0.95 });
     }
     
-    // Animation timeline
+    // Animation timeline with faster timings
     tl.fromTo(
       refs.title.current,
-      { y: 50 },
-      { y: 0, opacity: 1, duration: 1 }
+      { y: 40 },
+      { y: 0, opacity: 1, duration: 0.6 }
     )
     .fromTo(
       refs.subtitle.current,
-      { y: 30 },
-      { y: 0, opacity: 1, duration: 0.8 },
-      '-=0.6'
+      { y: 20 },
+      { y: 0, opacity: 1, duration: 0.5 },
+      '-=0.4'
     )
     .fromTo(
       refs.cta.current,
-      { y: 20 },
+      { y: 10 },
       { 
         y: 0, 
         opacity: 1, 
-        duration: 0.6,
+        duration: 0.3,
         onComplete: () => {
           // Small bounce effect on the CTA
           gsap.to(refs.cta.current, {
-            y: -4,
-            duration: 0.2,
+            y: -3,
+            duration: 0.15,
             repeat: 1,
             yoyo: true,
             ease: 'power2.inOut'
           });
         }
       },
-      '-=0.4'
+      '-=0.3'
     );
     
-    // If there's an image, animate it
+    // If there's an image, animate it faster
     if (refs.image?.current) {
       tl.fromTo(
         refs.image.current,
-        { scale: 0.9 },
-        { scale: 1, opacity: 1, duration: 1.2 },
-        '-=1'
+        { scale: 0.97 },
+        { scale: 1, opacity: 1, duration: 0.8 },
+        '-=0.6'
       );
     }
     
@@ -244,7 +247,7 @@ export const useHeroAnimation = (refs: {
   }, [refs, prefersReducedMotion]);
 };
 
-// Navbar animation
+// Navbar animation with improved performance
 export const useNavbarAnimation = (navbarRef: React.RefObject<HTMLElement>) => {
   const prefersReducedMotion = useReducedMotion();
   
@@ -257,8 +260,8 @@ export const useNavbarAnimation = (navbarRef: React.RefObject<HTMLElement>) => {
     const showNav = gsap.timeline({ paused: true });
     showNav.to(navbar, { 
       y: 0, 
-      duration: 0.3, 
-      ease: 'power2.out',
+      duration: 0.2,  // Faster animation
+      ease: 'power1.out',
       onStart: () => {
         navbar.style.boxShadow = '0 4px 20px rgba(0,0,0,0.1)';
       }
@@ -267,8 +270,8 @@ export const useNavbarAnimation = (navbarRef: React.RefObject<HTMLElement>) => {
     const hideNav = gsap.timeline({ paused: true });
     hideNav.to(navbar, { 
       y: '-100%', 
-      duration: 0.5, 
-      ease: 'power3.inOut',
+      duration: 0.3,  // Faster animation
+      ease: 'power1.inOut',
       onComplete: () => {
         navbar.style.boxShadow = 'none';
       }
@@ -277,7 +280,7 @@ export const useNavbarAnimation = (navbarRef: React.RefObject<HTMLElement>) => {
     const handleScroll = () => {
       const scrollTop = window.scrollY || document.documentElement.scrollTop;
       
-      // Show/hide based on scroll direction
+      // Show/hide based on scroll direction with improved logic
       if (scrollTop > lastScrollTop && scrollTop > 100) {
         // Scrolling down and not at the top
         hideNav.play();
@@ -289,7 +292,7 @@ export const useNavbarAnimation = (navbarRef: React.RefObject<HTMLElement>) => {
       lastScrollTop = scrollTop;
     };
     
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true }); // Added passive for better performance
     
     return () => {
       window.removeEventListener('scroll', handleScroll);

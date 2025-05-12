@@ -14,20 +14,27 @@ export function ScrollIndicator({
   className, 
   barClassName,
   fillClassName,
-  smoothing = 0.1
+  smoothing = 0.06 // Reduced from 0.1 for snappier response
 }: ScrollIndicatorProps) {
   const { scrollProgress } = useScroll();
   const [smoothProgress, setSmoothProgress] = useState(0);
   
   useEffect(() => {
-    // Apply smoothing to the scroll progress
+    // Apply optimized smoothing to the scroll progress
     let animationFrameId: number;
+    let previousTime = 0;
     
-    const animate = () => {
+    const animate = (time: number) => {
+      // Calculate delta time for consistent animation regardless of frame rate
+      const deltaTime = previousTime ? Math.min(1, (time - previousTime) / 16) : 1;
+      previousTime = time;
+      
       setSmoothProgress(prev => {
-        // Apply smoothing factor - closer to 1 is smoother but slower to respond
-        return prev + (scrollProgress - prev) * smoothing;
+        // Apply improved smoothing with delta time compensation
+        const factor = Math.min(1, smoothing * deltaTime * 60);
+        return prev + (scrollProgress - prev) * factor;
       });
+      
       animationFrameId = requestAnimationFrame(animate);
     };
     
@@ -43,7 +50,10 @@ export function ScrollIndicator({
       <div className={cn("h-full bg-black/10", barClassName)}>
         <div 
           className={cn("h-full bg-pollux-red transition-transform", fillClassName)} 
-          style={{ transform: `translateX(${smoothProgress * 100 - 100}%)` }}
+          style={{ 
+            transform: `translateX(${smoothProgress * 100 - 100}%)`,
+            willChange: 'transform' // Hint to browser to optimize this animation
+          }}
         />
       </div>
     </div>

@@ -1,13 +1,16 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
-// Types for car data
+// Updated Types for car data
 export interface CarSpecs {
   speed: string;
   acceleration: string;
   power: string;
   range: string;
+  topSpeed?: string;
+  batteryCapacity?: string;
+  driveTrain?: string;
+  chargingTime?: string;
 }
 
 export interface Car {
@@ -22,38 +25,50 @@ export interface Car {
   description?: string;
   featured?: boolean;
   color?: string;
+  gallery?: string[]; // Multiple images for car detail view
+  options?: {
+    interior?: string[];
+    wheels?: string[];
+    technology?: string[];
+  };
+  performance?: {
+    maxPower?: string;
+    torque?: string;
+    driveMode?: string;
+  };
 }
 
-// Fetch all cars from Supabase
+// Fetch all cars with optimized query 
 export const fetchCars = async (): Promise<Car[]> => {
-  const { data: cars, error: carsError } = await supabase
+  console.time('fetchCars'); // Performance measurement
+  
+  // Optimized query using a single request with array relationships
+  const { data, error } = await supabase
     .from('cars')
-    .select('id, name, model, category, year, price, image, description, featured, color');
+    .select(`
+      id, name, model, category, year, price, image, description, featured, color,
+      car_specs (speed, acceleration, power, range, topSpeed, batteryCapacity, driveTrain, chargingTime)
+    `);
   
-  if (carsError) {
-    console.error("Error fetching cars:", carsError);
-    throw new Error(carsError.message);
+  if (error) {
+    console.error("Error fetching cars:", error);
+    throw new Error(error.message);
   }
   
-  const { data: specs, error: specsError } = await supabase
-    .from('car_specs')
-    .select('car_id, speed, acceleration, power, range');
-  
-  if (specsError) {
-    console.error("Error fetching car specs:", specsError);
-    throw new Error(specsError.message);
-  }
-  
-  // Map the specs to their respective cars
-  return cars.map(car => {
-    const carSpecs = specs.find(spec => spec.car_id === car.id);
+  const cars = data.map(car => {
+    const carSpecs = car.car_specs && car.car_specs[0] ? car.car_specs[0] : null;
+    
     return {
       ...car,
       specs: carSpecs ? {
-        speed: carSpecs.speed,
-        acceleration: carSpecs.acceleration,
-        power: carSpecs.power,
-        range: carSpecs.range
+        speed: carSpecs.speed || "N/A",
+        acceleration: carSpecs.acceleration || "N/A",
+        power: carSpecs.power || "N/A",
+        range: carSpecs.range || "N/A",
+        topSpeed: carSpecs.topSpeed,
+        batteryCapacity: carSpecs.batteryCapacity,
+        driveTrain: carSpecs.driveTrain,
+        chargingTime: carSpecs.chargingTime
       } : {
         speed: "N/A",
         acceleration: "N/A",
@@ -62,73 +77,88 @@ export const fetchCars = async (): Promise<Car[]> => {
       }
     };
   });
+  
+  console.timeEnd('fetchCars'); // Performance measurement
+  return cars;
 };
 
-// Fetch a single car by ID
+// Fetch a single car by ID with optimized query
 export const fetchCarById = async (id: number): Promise<Car> => {
-  // Using our custom database function to get car with specs in one query
+  console.time(`fetchCarById:${id}`); // Performance measurement
+  
+  // Fixed the ambiguous car_id issue by using aliases in the query
+  // Using a single query with join instead of RPC
   const { data, error } = await supabase
-    .rpc('get_car_with_specs', { car_id: id });
+    .from('cars')
+    .select(`
+      id, name, model, category, year, price, image, description, featured, color,
+      specs:car_specs(speed, acceleration, power, range, topSpeed, batteryCapacity, driveTrain, chargingTime)
+    `)
+    .eq('id', id)
+    .single();
   
   if (error) {
     console.error(`Error fetching car with ID ${id}:`, error);
     throw new Error(error.message);
   }
   
-  if (!data || data.length === 0) {
+  if (!data) {
     throw new Error(`Car with ID ${id} not found`);
   }
   
-  const carData = data[0];
+  // Extract specs from the nested object
+  const specsData = data.specs && data.specs[0] ? data.specs[0] : null;
   
-  // Type assertion for the specs object since we know the structure from our DB function
-  // Using type casting to tell TypeScript this is a Record with specific string keys
-  const specsObject = carData.specs as Record<string, string>;
-  
-  // Properly type the specs object to match our CarSpecs interface
-  const specs: CarSpecs = {
-    speed: specsObject.speed || "N/A",
-    acceleration: specsObject.acceleration || "N/A",
-    power: specsObject.power || "N/A",
-    range: specsObject.range || "N/A"
+  const result: Car = {
+    ...data,
+    specs: {
+      speed: specsData?.speed || "N/A",
+      acceleration: specsData?.acceleration || "N/A",
+      power: specsData?.power || "N/A",
+      range: specsData?.range || "N/A",
+      topSpeed: specsData?.topSpeed,
+      batteryCapacity: specsData?.batteryCapacity,
+      driveTrain: specsData?.driveTrain,
+      chargingTime: specsData?.chargingTime
+    }
   };
   
-  return {
-    ...carData,
-    specs
-  };
+  console.timeEnd(`fetchCarById:${id}`); // Performance measurement
+  return result;
 };
 
-// Fetch featured cars
+// Fetch featured cars with optimized query
 export const fetchFeaturedCars = async (): Promise<Car[]> => {
-  const { data: cars, error: carsError } = await supabase
+  console.time('fetchFeaturedCars'); // Performance measurement
+  
+  // Optimized query using a single request with array relationships
+  const { data, error } = await supabase
     .from('cars')
-    .select('id, name, model, category, year, price, image, description, featured, color')
+    .select(`
+      id, name, model, category, year, price, image, description, featured, color,
+      car_specs (speed, acceleration, power, range, topSpeed, batteryCapacity, driveTrain, chargingTime)
+    `)
     .eq('featured', true);
   
-  if (carsError) {
-    console.error("Error fetching featured cars:", carsError);
-    throw new Error(carsError.message);
+  if (error) {
+    console.error("Error fetching featured cars:", error);
+    throw new Error(error.message);
   }
   
-  const { data: specs, error: specsError } = await supabase
-    .from('car_specs')
-    .select('car_id, speed, acceleration, power, range');
-  
-  if (specsError) {
-    console.error("Error fetching car specs:", specsError);
-    throw new Error(specsError.message);
-  }
-  
-  return cars.map(car => {
-    const carSpecs = specs.find(spec => spec.car_id === car.id);
+  const cars = data.map(car => {
+    const carSpecs = car.car_specs && car.car_specs[0] ? car.car_specs[0] : null;
+    
     return {
       ...car,
       specs: carSpecs ? {
-        speed: carSpecs.speed,
-        acceleration: carSpecs.acceleration,
-        power: carSpecs.power,
-        range: carSpecs.range
+        speed: carSpecs.speed || "N/A",
+        acceleration: carSpecs.acceleration || "N/A",
+        power: carSpecs.power || "N/A",
+        range: carSpecs.range || "N/A",
+        topSpeed: carSpecs.topSpeed,
+        batteryCapacity: carSpecs.batteryCapacity,
+        driveTrain: carSpecs.driveTrain,
+        chargingTime: carSpecs.chargingTime
       } : {
         speed: "N/A",
         acceleration: "N/A",
@@ -137,6 +167,9 @@ export const fetchFeaturedCars = async (): Promise<Car[]> => {
       }
     };
   });
+  
+  console.timeEnd('fetchFeaturedCars'); // Performance measurement
+  return cars;
 };
 
 // User favorites functions
