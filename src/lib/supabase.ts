@@ -81,12 +81,16 @@ export const fetchCarById = async (id: number): Promise<Car> => {
   
   const carData = data[0];
   
+  // Type assertion for the specs object since we know the structure from our DB function
+  // Using type casting to tell TypeScript this is a Record with specific string keys
+  const specsObject = carData.specs as Record<string, string>;
+  
   // Properly type the specs object to match our CarSpecs interface
   const specs: CarSpecs = {
-    speed: carData.specs.speed || "N/A",
-    acceleration: carData.specs.acceleration || "N/A",
-    power: carData.specs.power || "N/A",
-    range: carData.specs.range || "N/A"
+    speed: specsObject.speed || "N/A",
+    acceleration: specsObject.acceleration || "N/A",
+    power: specsObject.power || "N/A",
+    range: specsObject.range || "N/A"
   };
   
   return {
