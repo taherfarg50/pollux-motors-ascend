@@ -9,13 +9,142 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      car_specs: {
+        Row: {
+          acceleration: string
+          car_id: number
+          created_at: string
+          id: number
+          power: string
+          range: string
+          speed: string
+          updated_at: string
+        }
+        Insert: {
+          acceleration: string
+          car_id: number
+          created_at?: string
+          id?: number
+          power: string
+          range: string
+          speed: string
+          updated_at?: string
+        }
+        Update: {
+          acceleration?: string
+          car_id?: number
+          created_at?: string
+          id?: number
+          power?: string
+          range?: string
+          speed?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "car_specs_car_id_fkey"
+            columns: ["car_id"]
+            isOneToOne: false
+            referencedRelation: "cars"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cars: {
+        Row: {
+          category: string
+          color: string | null
+          created_at: string
+          description: string | null
+          featured: boolean | null
+          id: number
+          image: string
+          model: string | null
+          name: string
+          price: string
+          updated_at: string
+          year: string
+        }
+        Insert: {
+          category: string
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          featured?: boolean | null
+          id?: number
+          image: string
+          model?: string | null
+          name: string
+          price: string
+          updated_at?: string
+          year: string
+        }
+        Update: {
+          category?: string
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          featured?: boolean | null
+          id?: number
+          image?: string
+          model?: string | null
+          name?: string
+          price?: string
+          updated_at?: string
+          year?: string
+        }
+        Relationships: []
+      }
+      user_favorites: {
+        Row: {
+          car_id: number | null
+          created_at: string
+          id: string
+          user_id: string | null
+        }
+        Insert: {
+          car_id?: number | null
+          created_at?: string
+          id?: string
+          user_id?: string | null
+        }
+        Update: {
+          car_id?: number | null
+          created_at?: string
+          id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_favorites_car_id_fkey"
+            columns: ["car_id"]
+            isOneToOne: false
+            referencedRelation: "cars"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_car_with_specs: {
+        Args: { car_id: number }
+        Returns: {
+          id: number
+          name: string
+          model: string
+          category: string
+          year: string
+          price: string
+          image: string
+          description: string
+          featured: boolean
+          color: string
+          specs: Json
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

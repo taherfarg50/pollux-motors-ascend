@@ -1,142 +1,284 @@
-
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { Menu, X, User, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Menu, X } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuTrigger 
+} from '@/components/ui/dropdown-menu';
 
-const navLinks = [
-  { name: 'Home', path: '/' },
-  { name: 'Cars', path: '/cars' },
-  { name: 'Compare', path: '/compare' },
-  { name: '3D Models', path: '/models' },
-  { name: 'About', path: '/about' },
-  { name: 'Blog', path: '/blog' },
-  { name: 'Contact', path: '/contact' }
-];
-
-export const Navbar = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const location = useLocation();
-
+const Navbar = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [hasScrolled, setHasScrolled] = useState(false);
+  const { pathname } = useLocation();
+  const { user, signOut } = useAuth();
+  
+  // Scroll effect to change navbar background
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 10) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
+      setHasScrolled(window.scrollY > 10);
     };
-
+    
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    
+    // Initial check in case page is loaded scrolled down
+    handleScroll();
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, []);
+  
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+  
+  const closeMenu = () => {
+    setIsMenuOpen(false);
+  };
 
-  // Close mobile menu when route changes
+  // Prevent scrolling when mobile menu is open
   useEffect(() => {
-    setIsMobileMenuOpen(false);
-  }, [location.pathname]);
-
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isMenuOpen]);
+  
   return (
-    <nav 
-      className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300 backdrop-blur-lg",
-        isScrolled ? "bg-black/80 py-2 shadow-lg" : "bg-transparent py-4"
-      )}
-    >
+    <nav className={cn(
+      'fixed top-0 w-full z-50 transition-all duration-300',
+      hasScrolled || isMenuOpen ? 'bg-background/90 backdrop-blur-lg border-b border-border shadow-sm' : 'bg-transparent'
+    )}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center">
-          <div className="flex-shrink-0">
-            <Link to="/" className="flex items-center">
-              <h1 className="text-xl font-bold text-white">
-                <span className="text-pollux-red">POLLUX</span> MOTORS
-              </h1>
+        <div className="flex justify-between items-center h-16">
+          {/* Logo */}
+          <Link to="/" className="flex items-center" onClick={closeMenu}>
+            <span className="text-xl font-bold text-pollux-red">POLLUX</span>
+            <span className="ml-1 text-xl font-light">Motors</span>
+          </Link>
+          
+          {/* Desktop navigation */}
+          <div className="hidden md:flex space-x-6">
+            <Link 
+              to="/" 
+              className={`transition-colors hover:text-pollux-red ${pathname === '/' ? 'text-pollux-red' : 'text-foreground'}`}
+            >
+              Home
             </Link>
-          </div>
-          
-          {/* Desktop Navigation */}
-          <div className="hidden md:block">
-            <div className="ml-10 flex items-center space-x-6">
-              {navLinks.map((link) => {
-                const isActive = location.pathname === link.path || 
-                  (link.path !== '/' && location.pathname.startsWith(link.path));
-                
-                return (
-                  <Link
-                    key={link.name}
-                    to={link.path}
-                    className={cn(
-                      "text-sm font-medium transition-colors relative",
-                      isActive 
-                        ? "text-white after:content-[''] after:absolute after:bottom-[-5px] after:left-0 after:w-full after:h-0.5 after:bg-pollux-red" 
-                        : "text-gray-300 hover:text-white"
-                    )}
+            <Link 
+              to="/cars" 
+              className={`transition-colors hover:text-pollux-red ${pathname === '/cars' ? 'text-pollux-red' : 'text-foreground'}`}
+            >
+              Cars
+            </Link>
+            <Link 
+              to="/compare" 
+              className={`transition-colors hover:text-pollux-red ${pathname === '/compare' ? 'text-pollux-red' : 'text-foreground'}`}
+            >
+              Compare
+            </Link>
+            <Link 
+              to="/models" 
+              className={`transition-colors hover:text-pollux-red ${pathname === '/models' ? 'text-pollux-red' : 'text-foreground'}`}
+            >
+              3D Models
+            </Link>
+            <DropdownMenu>
+              <DropdownMenuTrigger className={`flex items-center transition-colors hover:text-pollux-red ${['/about', '/blog', '/contact'].includes(pathname) ? 'text-pollux-red' : 'text-foreground'}`}>
+                About
+                <ChevronDown size={16} className="ml-1" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem>
+                  <Link 
+                    to="/about"
+                    className="w-full"
+                    onClick={closeMenu}
                   >
-                    {link.name}
+                    About Us
                   </Link>
-                );
-              })}
-              <Link
-                to="/contact"
-                className="inline-flex items-center justify-center px-5 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-pollux-red hover:bg-red-700 transition-colors"
-              >
-                Test Drive
-              </Link>
-            </div>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Link 
+                    to="/blog" 
+                    className="w-full"
+                    onClick={closeMenu}
+                  >
+                    Blog
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Link 
+                    to="/contact" 
+                    className="w-full"
+                    onClick={closeMenu}
+                  >
+                    Contact
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
           
-          {/* Mobile Navigation Toggle */}
+          {/* User menu */}
+          <div className="hidden md:flex items-center">
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger className="flex items-center transition-colors hover:text-pollux-red gap-2">
+                  <User size={20} />
+                  <span className="text-sm">My Account</span>
+                  <ChevronDown size={16} />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem>
+                    <Link 
+                      to="/profile"
+                      className="w-full"
+                    >
+                      Profile
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => signOut()}>
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Link 
+                to="/auth" 
+                className="transition-colors hover:text-pollux-red flex items-center gap-2"
+              >
+                <User size={20} />
+                <span>Sign In</span>
+              </Link>
+            )}
+          </div>
+          
+          {/* Mobile menu button */}
           <div className="md:hidden">
             <button 
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="text-gray-300 hover:text-white focus:outline-none"
-              aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+              onClick={toggleMenu}
+              className="text-foreground focus:outline-none"
+              aria-label={isMenuOpen ? "Close menu" : "Open menu"}
             >
-              {isMobileMenuOpen ? (
-                <X className="h-6 w-6" />
+              {isMenuOpen ? (
+                <X size={24} />
               ) : (
-                <Menu className="h-6 w-6" />
+                <Menu size={24} />
               )}
             </button>
           </div>
         </div>
       </div>
-
-      {/* Mobile Navigation Menu */}
-      <div className={cn(
-        "fixed inset-0 bg-black/95 z-40 transform transition-transform duration-300 ease-in-out md:hidden",
-        isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
-      )}>
-        <div className="pt-20 p-5 h-full flex flex-col">
-          <div className="flex flex-col space-y-6">
-            {navLinks.map((link) => {
-              const isActive = location.pathname === link.path || 
-                (link.path !== '/' && location.pathname.startsWith(link.path));
-              
-              return (
-                <Link
-                  key={link.name}
-                  to={link.path}
-                  className={cn(
-                    "text-xl font-medium transition-colors",
-                    isActive ? "text-pollux-red" : "text-gray-300 hover:text-white"
-                  )}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  {link.name}
-                </Link>
-              );
-            })}
-            <Link
-              to="/contact"
-              className="inline-flex items-center justify-center px-5 py-3 mt-4 border border-transparent text-lg font-medium rounded-md text-white bg-pollux-red hover:bg-red-700 transition-colors"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Test Drive
-            </Link>
+      
+      {/* Mobile menu */}
+      <div className={`md:hidden fixed inset-0 z-50 bg-background transform transition-transform ease-in-out duration-300 ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+        <div className="flex justify-between items-center h-16 px-4 border-b border-border">
+          <Link to="/" className="flex items-center" onClick={closeMenu}>
+            <span className="text-xl font-bold text-pollux-red">POLLUX</span>
+            <span className="ml-1 text-xl font-light">Motors</span>
+          </Link>
+          <button 
+            onClick={toggleMenu}
+            className="text-foreground focus:outline-none"
+            aria-label="Close menu"
+          >
+            <X size={24} />
+          </button>
+        </div>
+        <div className="px-4 py-6 space-y-6">
+          <Link 
+            to="/" 
+            className={`block text-lg font-medium ${pathname === '/' ? 'text-pollux-red' : 'text-foreground'}`}
+            onClick={closeMenu}
+          >
+            Home
+          </Link>
+          <Link 
+            to="/cars" 
+            className={`block text-lg font-medium ${pathname === '/cars' ? 'text-pollux-red' : 'text-foreground'}`}
+            onClick={closeMenu}
+          >
+            Cars
+          </Link>
+          <Link 
+            to="/compare" 
+            className={`block text-lg font-medium ${pathname === '/compare' ? 'text-pollux-red' : 'text-foreground'}`}
+            onClick={closeMenu}
+          >
+            Compare
+          </Link>
+          <Link 
+            to="/models" 
+            className={`block text-lg font-medium ${pathname === '/models' ? 'text-pollux-red' : 'text-foreground'}`}
+            onClick={closeMenu}
+          >
+            3D Models
+          </Link>
+          <div className="py-2 border-t border-border">
+            <p className="text-sm text-muted-foreground mb-4">Company</p>
+            <div className="space-y-4">
+              <Link 
+                to="/about" 
+                className={`block ${pathname === '/about' ? 'text-pollux-red' : 'text-foreground'}`}
+                onClick={closeMenu}
+              >
+                About Us
+              </Link>
+              <Link 
+                to="/blog" 
+                className={`block ${pathname === '/blog' ? 'text-pollux-red' : 'text-foreground'}`}
+                onClick={closeMenu}
+              >
+                Blog
+              </Link>
+              <Link 
+                to="/contact" 
+                className={`block ${pathname === '/contact' ? 'text-pollux-red' : 'text-foreground'}`}
+                onClick={closeMenu}
+              >
+                Contact
+              </Link>
+            </div>
           </div>
-          <div className="mt-auto pb-8">
-            <p className="text-gray-500 text-sm">© 2025 Pollux Motors. All rights reserved.</p>
+          <div className="py-4 border-t border-border">
+            {user ? (
+              <div className="space-y-4">
+                <Link
+                  to="/profile"
+                  className="block text-lg font-medium"
+                  onClick={closeMenu}
+                >
+                  My Profile
+                </Link>
+                <button
+                  onClick={() => {
+                    signOut();
+                    closeMenu();
+                  }}
+                  className="block text-lg font-medium text-pollux-red"
+                >
+                  Sign Out
+                </button>
+              </div>
+            ) : (
+              <Link
+                to="/auth"
+                className="block text-lg font-medium text-pollux-red"
+                onClick={closeMenu}
+              >
+                Sign In
+              </Link>
+            )}
           </div>
         </div>
       </div>

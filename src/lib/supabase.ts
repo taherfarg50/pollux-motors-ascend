@@ -24,90 +24,144 @@ export interface Car {
   color?: string;
 }
 
-// Mock car data since we don't have a real Supabase table yet
-const mockCars: Car[] = [
-  {
-    id: 1,
-    name: "Model X",
-    model: "Performance",
-    category: "SUV",
-    year: "2025",
-    price: "$89,990",
-    image: "https://images.unsplash.com/photo-1560958089-b8a1929cea89?q=80&w=1771&auto=format&fit=crop",
-    specs: {
-      speed: "155 mph",
-      acceleration: "2.5s",
-      power: "1,020 hp",
-      range: "348 mi"
-    },
-    description: "The Model X is the safest, quickest, most capable SUV ever—with seating for up to seven, storage for all your gear and 348 miles of range on a single charge.",
-    featured: true,
-    color: "Stealth Grey"
-  },
-  {
-    id: 2,
-    name: "Roadster",
-    model: "Signature",
-    category: "Sports",
-    year: "2025",
-    price: "$200,000",
-    image: "https://images.unsplash.com/photo-1611740677496-3e0ef978784a?q=80&w=1770&auto=format&fit=crop",
-    specs: {
-      speed: "250+ mph",
-      acceleration: "1.9s",
-      power: "1,400 hp",
-      range: "620 mi"
-    },
-    description: "The quickest car in the world, with record-setting acceleration, range and performance.",
-    featured: true,
-    color: "Red Multi-Coat"
-  },
-  {
-    id: 3,
-    name: "Model S",
-    model: "Plaid",
-    category: "Sedan",
-    year: "2025",
-    price: "$89,990",
-    image: "https://images.unsplash.com/photo-1620891549027-942fdc95d3f5?q=80&w=1932&auto=format&fit=crop",
-    specs: {
-      speed: "200 mph",
-      acceleration: "1.99s",
-      power: "1,020 hp",
-      range: "396 mi"
-    },
-    description: "With the longest range and quickest acceleration of any electric vehicle in production, Model S is the highest performing sedan ever built.",
-    featured: true,
-    color: "Pearl White"
-  }
-];
-
-// Fetch all cars - using mock data until Supabase table is set up
-export const fetchCars = async () => {
-  // In the future, replace this with an actual Supabase query
-  // const { data, error } = await supabase.from('cars').select('*');
+// Fetch all cars from Supabase
+export const fetchCars = async (): Promise<Car[]> => {
+  const { data: cars, error: carsError } = await supabase
+    .from('cars')
+    .select('id, name, model, category, year, price, image, description, featured, color');
   
-  // For now, return our mock data
-  return mockCars;
+  if (carsError) {
+    console.error("Error fetching cars:", carsError);
+    throw new Error(carsError.message);
+  }
+  
+  const { data: specs, error: specsError } = await supabase
+    .from('car_specs')
+    .select('car_id, speed, acceleration, power, range');
+  
+  if (specsError) {
+    console.error("Error fetching car specs:", specsError);
+    throw new Error(specsError.message);
+  }
+  
+  // Map the specs to their respective cars
+  return cars.map(car => {
+    const carSpecs = specs.find(spec => spec.car_id === car.id);
+    return {
+      ...car,
+      specs: carSpecs ? {
+        speed: carSpecs.speed,
+        acceleration: carSpecs.acceleration,
+        power: carSpecs.power,
+        range: carSpecs.range
+      } : {
+        speed: "N/A",
+        acceleration: "N/A",
+        power: "N/A",
+        range: "N/A"
+      }
+    };
+  });
 };
 
-// Fetch a single car by ID - using mock data until Supabase table is set up
-export const fetchCarById = async (id: number) => {
-  // In the future, replace with actual query
-  // const { data, error } = await supabase
-  //   .from('cars')
-  //   .select('*')
-  //   .eq('id', id)
-  //   .single();
+// Fetch a single car by ID
+export const fetchCarById = async (id: number): Promise<Car> => {
+  // Using our custom database function to get car with specs in one query
+  const { data, error } = await supabase
+    .rpc('get_car_with_specs', { car_id: id });
   
-  // For now, find car in our mock data
-  const car = mockCars.find(car => car.id === id);
+  if (error) {
+    console.error(`Error fetching car with ID ${id}:`, error);
+    throw new Error(error.message);
+  }
   
-  if (!car) {
+  if (!data || data.length === 0) {
     throw new Error(`Car with ID ${id} not found`);
   }
   
-  return car;
+  const carData = data[0];
+  return {
+    ...carData,
+    specs: carData.specs
+  };
+};
+
+// Fetch featured cars
+export const fetchFeaturedCars = async (): Promise<Car[]> => {
+  const { data: cars, error: carsError } = await supabase
+    .from('cars')
+    .select('id, name, model, category, year, price, image, description, featured, color')
+    .eq('featured', true);
+  
+  if (carsError) {
+    console.error("Error fetching featured cars:", carsError);
+    throw new Error(carsError.message);
+  }
+  
+  const { data: specs, error: specsError } = await supabase
+    .from('car_specs')
+    .select('car_id, speed, acceleration, power, range');
+  
+  if (specsError) {
+    console.error("Error fetching car specs:", specsError);
+    throw new Error(specsError.message);
+  }
+  
+  return cars.map(car => {
+    const carSpecs = specs.find(spec => spec.car_id === car.id);
+    return {
+      ...car,
+      specs: carSpecs ? {
+        speed: carSpecs.speed,
+        acceleration: carSpecs.acceleration,
+        power: carSpecs.power,
+        range: carSpecs.range
+      } : {
+        speed: "N/A",
+        acceleration: "N/A",
+        power: "N/A",
+        range: "N/A"
+      }
+    };
+  });
+};
+
+// User favorites functions
+export const fetchUserFavorites = async (userId: string): Promise<number[]> => {
+  const { data, error } = await supabase
+    .from('user_favorites')
+    .select('car_id')
+    .eq('user_id', userId);
+  
+  if (error) {
+    console.error("Error fetching user favorites:", error);
+    throw new Error(error.message);
+  }
+  
+  return data.map(item => item.car_id);
+};
+
+export const toggleFavorite = async (userId: string, carId: number, isFavorite: boolean) => {
+  if (isFavorite) {
+    const { error } = await supabase
+      .from('user_favorites')
+      .delete()
+      .match({ user_id: userId, car_id: carId });
+    
+    if (error) {
+      console.error("Error removing favorite:", error);
+      throw new Error(error.message);
+    }
+  } else {
+    const { error } = await supabase
+      .from('user_favorites')
+      .insert({ user_id: userId, car_id: carId });
+    
+    if (error) {
+      console.error("Error adding favorite:", error);
+      throw new Error(error.message);
+    }
+  }
 };
 
 // React Query hooks
@@ -118,10 +172,38 @@ export const useCars = () => {
   });
 };
 
+export const useFeaturedCars = () => {
+  return useQuery({
+    queryKey: ['featuredCars'],
+    queryFn: fetchFeaturedCars,
+  });
+};
+
 export const useCar = (id: number) => {
   return useQuery({
     queryKey: ['car', id],
     queryFn: () => fetchCarById(id),
     enabled: !!id, // Only run the query if id is provided
+  });
+};
+
+export const useUserFavorites = (userId?: string) => {
+  return useQuery({
+    queryKey: ['userFavorites', userId],
+    queryFn: () => fetchUserFavorites(userId as string),
+    enabled: !!userId, // Only run the query if userId is provided
+  });
+};
+
+export const useToggleFavorite = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: ({ userId, carId, isFavorite }: 
+      { userId: string; carId: number; isFavorite: boolean }) => 
+      toggleFavorite(userId, carId, isFavorite),
+    onSuccess: (_, { userId }) => {
+      queryClient.invalidateQueries({ queryKey: ['userFavorites', userId] });
+    }
   });
 };

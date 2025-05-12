@@ -4,6 +4,7 @@ import { useParams, Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Car as CarIcon } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import FavoriteButton from '@/components/FavoriteButton';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { useCar } from '@/lib/supabase';
@@ -205,9 +206,12 @@ const CarDetail = () => {
               {/* Car Info */}
               <div ref={contentRef}>
                 <div className={`${isLoading ? "animate-pulse" : ""}`}>
-                  <h1 className="text-4xl font-bold mb-2">
-                    {displayCar.name}
-                  </h1>
+                  <div className="flex justify-between items-start">
+                    <h1 className="text-4xl font-bold mb-2">
+                      {displayCar.name}
+                    </h1>
+                    {!isLoading && <FavoriteButton carId={displayCar.id} />}
+                  </div>
                   
                   <div className="flex items-center mt-2 mb-4">
                     <span className="px-2 py-1 bg-pollux-red/80 text-white text-xs rounded-full">
