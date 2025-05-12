@@ -80,9 +80,18 @@ export const fetchCarById = async (id: number): Promise<Car> => {
   }
   
   const carData = data[0];
+  
+  // Properly type the specs object to match our CarSpecs interface
+  const specs: CarSpecs = {
+    speed: carData.specs.speed || "N/A",
+    acceleration: carData.specs.acceleration || "N/A",
+    power: carData.specs.power || "N/A",
+    range: carData.specs.range || "N/A"
+  };
+  
   return {
     ...carData,
-    specs: carData.specs
+    specs
   };
 };
 

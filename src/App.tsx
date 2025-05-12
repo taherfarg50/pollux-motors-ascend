@@ -21,14 +21,14 @@ import { useState } from "react";
 
 const App = () => {
   // Create a new QueryClient instance inside the component function
-  // This ensures it's created in a proper React render context
   const [queryClient] = useState(() => new QueryClient());
 
   return (
+    // Fixed the order of providers - React context providers need to be properly nested
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <AuthProvider>
-          <ScrollProvider>
+        <ScrollProvider>
+          <AuthProvider>
             <TooltipProvider>
               <Toaster />
               <Sonner />
@@ -47,8 +47,8 @@ const App = () => {
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </TooltipProvider>
-          </ScrollProvider>
-        </AuthProvider>
+          </AuthProvider>
+        </ScrollProvider>
       </BrowserRouter>
     </QueryClientProvider>
   );
