@@ -1,7 +1,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, Car as CarIcon } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Car as CarIcon, Gauge, Clock3, Zap, Route } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import FavoriteButton from '@/components/FavoriteButton';
@@ -10,6 +10,10 @@ import { useToast } from '@/components/ui/use-toast';
 import { useCar } from '@/lib/supabase';
 import gsap from 'gsap';
 import { useReducedMotion } from '@/lib/animation';
+import { ScrollIndicator } from '@/components/ui/scroll-indicator';
+import { Skeleton } from '@/components/ui/skeleton';
+import StatsCounter from '@/components/StatsCounter';
+import { Separator } from '@/components/ui/separator';
 
 // Sample car data to use when real data is loading
 const fallbackCar = {
@@ -130,8 +134,34 @@ const CarDetail = () => {
 
   const displayCar = car || fallbackCar;
   
+  // Performance stats for StatsCounter
+  const performanceStats = [
+    {
+      label: "Top Speed",
+      value: parseInt(displayCar.specs.speed) || 250,
+      suffix: " km/h"
+    },
+    {
+      label: "0-100 km/h",
+      value: parseFloat(displayCar.specs.acceleration) || 3.2,
+      suffix: "s",
+      decimals: 1
+    },
+    {
+      label: "Horsepower",
+      value: parseInt(displayCar.specs.power) || 450,
+      suffix: " hp"
+    },
+    {
+      label: "Range",
+      value: parseInt(displayCar.specs.range) || 550,
+      suffix: " km"
+    }
+  ];
+  
   return (
     <div className="min-h-screen bg-background text-foreground">
+      <ScrollIndicator />
       <Navbar />
       <main>
         {/* Hero Section with Car Image */}
@@ -174,28 +204,28 @@ const CarDetail = () => {
                 <div className="absolute left-4 right-4 top-1/2 -translate-y-1/2 flex justify-between">
                   <button 
                     onClick={prevImage}
-                    className="w-10 h-10 rounded-full bg-black/60 flex items-center justify-center text-white hover:bg-black/80 transition"
+                    className="w-10 h-10 rounded-full bg-black/60 flex items-center justify-center text-white hover:bg-black/80 transition hover:scale-110"
                     aria-label="Previous image"
                   >
                     <ChevronLeft className="w-5 h-5" />
                   </button>
                   <button
                     onClick={nextImage}
-                    className="w-10 h-10 rounded-full bg-black/60 flex items-center justify-center text-white hover:bg-black/80 transition"
+                    className="w-10 h-10 rounded-full bg-black/60 flex items-center justify-center text-white hover:bg-black/80 transition hover:scale-110"
                     aria-label="Next image"
                   >
                     <ChevronRight className="w-5 h-5" />
                   </button>
                 </div>
                 
-                {/* Image Indicators */}
+                {/* Image Indicators with enhanced animation */}
                 <div className="flex justify-center space-x-2 mt-4">
                   {carImages.map((_, idx) => (
                     <button
                       key={idx}
                       onClick={() => setActiveImageIndex(idx)}
-                      className={`w-2 h-2 rounded-full transition-all ${
-                        idx === activeImageIndex ? "bg-pollux-red w-6" : "bg-white/30"
+                      className={`h-2 rounded-full transition-all duration-300 ${
+                        idx === activeImageIndex ? "bg-pollux-red w-6 animate-pulse-slow" : "bg-white/30 w-2"
                       }`}
                       aria-label={`Go to image ${idx + 1}`}
                     ></button>
@@ -207,20 +237,20 @@ const CarDetail = () => {
               <div ref={contentRef}>
                 <div className={`${isLoading ? "animate-pulse" : ""}`}>
                   <div className="flex justify-between items-start">
-                    <h1 className="text-4xl font-bold mb-2">
+                    <h1 className="text-4xl font-bold mb-2 animate-reveal" style={{ animationDelay: '0.3s' }}>
                       {displayCar.name}
                     </h1>
                     {!isLoading && <FavoriteButton carId={displayCar.id} />}
                   </div>
                   
                   <div className="flex items-center mt-2 mb-4">
-                    <span className="px-2 py-1 bg-pollux-red/80 text-white text-xs rounded-full">
+                    <span className="px-2 py-1 bg-pollux-red/80 text-white text-xs rounded-full shine">
                       {displayCar.category}
                     </span>
                     <span className="ml-2 text-gray-400">{displayCar.year}</span>
                   </div>
                   
-                  <h2 className="text-3xl font-bold mb-6 text-pollux-red">
+                  <h2 className="text-3xl font-bold mb-6 text-pollux-red digital-readout animate-digital-flicker">
                     {displayCar.price}
                   </h2>
                   
@@ -230,12 +260,13 @@ const CarDetail = () => {
                   
                   <div className="flex flex-wrap gap-4 mb-8">
                     <Button 
-                      className="bg-pollux-red hover:bg-red-700 px-8 py-6"
+                      className="bg-pollux-red hover:bg-red-700 px-8 py-6 group"
                       onClick={handleBookTestDrive}
                     >
                       Book a Test Drive
+                      <span className="ml-2 inline-block group-hover:translate-x-1 transition-transform">→</span>
                     </Button>
-                    <Button variant="outline" className="px-8 py-6">
+                    <Button variant="outline" className="px-8 py-6 hover-glow">
                       Customize & Order
                     </Button>
                   </div>
@@ -245,29 +276,52 @@ const CarDetail = () => {
           </div>
         </div>
         
-        {/* Specifications */}
+        {/* Performance Stats with dynamic counter */}
         <section className="py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-2xl font-bold mb-8">Specifications</h2>
+            <StatsCounter 
+              title="Performance Specifications" 
+              subtitle="Technical Details" 
+              stats={performanceStats}
+            />
+          </div>
+        </section>
+        
+        {/* Detailed Specs */}
+        <section className="py-16 bg-secondary/20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 className="text-2xl font-bold mb-8">Detailed Specifications</h2>
             
             <div 
               ref={specRef}
               className="grid grid-cols-2 md:grid-cols-4 gap-6"
             >
-              <div className="bg-secondary p-6 rounded-lg">
-                <h3 className="text-sm text-gray-400 mb-1">Top Speed</h3>
+              <div className="glass-card p-6 rounded-lg hover-scale">
+                <div className="flex items-center mb-3">
+                  <Gauge className="w-5 h-5 text-pollux-red mr-2" />
+                  <h3 className="text-sm text-gray-400">Top Speed</h3>
+                </div>
                 <p className="text-xl font-medium">{displayCar.specs.speed}</p>
               </div>
-              <div className="bg-secondary p-6 rounded-lg">
-                <h3 className="text-sm text-gray-400 mb-1">0-100 km/h</h3>
+              <div className="glass-card p-6 rounded-lg hover-scale">
+                <div className="flex items-center mb-3">
+                  <Clock3 className="w-5 h-5 text-pollux-red mr-2" />
+                  <h3 className="text-sm text-gray-400">0-100 km/h</h3>
+                </div>
                 <p className="text-xl font-medium">{displayCar.specs.acceleration}</p>
               </div>
-              <div className="bg-secondary p-6 rounded-lg">
-                <h3 className="text-sm text-gray-400 mb-1">Power</h3>
+              <div className="glass-card p-6 rounded-lg hover-scale">
+                <div className="flex items-center mb-3">
+                  <Zap className="w-5 h-5 text-pollux-red mr-2" />
+                  <h3 className="text-sm text-gray-400">Power</h3>
+                </div>
                 <p className="text-xl font-medium">{displayCar.specs.power}</p>
               </div>
-              <div className="bg-secondary p-6 rounded-lg">
-                <h3 className="text-sm text-gray-400 mb-1">Range</h3>
+              <div className="glass-card p-6 rounded-lg hover-scale">
+                <div className="flex items-center mb-3">
+                  <Route className="w-5 h-5 text-pollux-red mr-2" />
+                  <h3 className="text-sm text-gray-400">Range</h3>
+                </div>
                 <p className="text-xl font-medium">{displayCar.specs.range}</p>
               </div>
             </div>
@@ -275,27 +329,42 @@ const CarDetail = () => {
         </section>
 
         {/* Similar Cars */}
-        <section className="py-16 bg-secondary/50">
+        <section className="py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-2xl font-bold mb-8">You Might Also Like</h2>
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold mb-1">You Might Also Like</h2>
+              <Separator className="separator-glow w-24" />
+            </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {[1, 2, 3].map((i) => (
                 <Link 
                   key={i}
                   to={`/cars/${i + 1}`} 
-                  className="block bg-background rounded-lg overflow-hidden hover:shadow-lg transition-all hover:scale-[1.02]"
+                  className="block bg-secondary/30 rounded-lg overflow-hidden hover-scale shine glass-card"
                 >
-                  <div className="h-48 bg-secondary relative">
+                  <div className="h-48 bg-secondary/50 relative">
                     <img 
                       src={`https://images.unsplash.com/photo-${i === 1 ? '1580414057403-c5f451f30e1c' : i === 2 ? '1618843479313-40f8afb4b4d8' : '1552519507-da3b142c6e3d'}?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.0.3`} 
                       alt="Similar Car" 
                       className="w-full h-full object-cover"
+                      loading="lazy"
                     />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                    <div className="absolute bottom-3 right-3 px-2 py-1 bg-pollux-red/90 text-white text-xs rounded-full">
+                      New Model
+                    </div>
                   </div>
                   <div className="p-4">
                     <h3 className="font-bold">{i === 1 ? 'Celestial S-500' : i === 2 ? 'Solari Quantum E' : 'Phoenix GT'}</h3>
-                    <p className="text-sm text-gray-400">{i === 1 ? '$180,000' : i === 2 ? '$145,000' : '$210,000'}</p>
+                    <p className="text-sm text-gray-400 mb-2">{i === 1 ? '$180,000' : i === 2 ? '$145,000' : '$210,000'}</p>
+                    <div className="flex justify-between items-center">
+                      <div className="flex space-x-2">
+                        <span className="w-2 h-2 rounded-full bg-green-500"></span>
+                        <span className="text-xs text-gray-400">Available</span>
+                      </div>
+                      <span className="text-xs text-pollux-red">View Details →</span>
+                    </div>
                   </div>
                 </Link>
               ))}
@@ -306,12 +375,13 @@ const CarDetail = () => {
         {/* Call to Action */}
         <section className="py-16 relative">
           <div className="absolute inset-0 bg-pollux-red/10 backdrop-blur-sm"></div>
+          <div className="absolute inset-0 smoke opacity-30"></div>
           <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative">
-            <h2 className="text-3xl font-bold mb-4">Ready for the Ultimate Driving Experience?</h2>
+            <h2 className="text-3xl font-bold mb-4 animate-reveal">Ready for the Ultimate Driving Experience?</h2>
             <p className="text-lg mb-8 text-gray-300">Schedule your personalized test drive today and feel the power of {displayCar.name} firsthand.</p>
             <Button 
               size="lg" 
-              className="bg-pollux-red hover:bg-red-700"
+              className="bg-pollux-red hover:bg-red-700 animate-pulse-slow"
               onClick={handleBookTestDrive}
             >
               Book a Test Drive

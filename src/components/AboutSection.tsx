@@ -1,55 +1,39 @@
 
 import { useEffect, useRef } from 'react';
+import StatsCounter from './StatsCounter';
+import { Separator } from '@/components/ui/separator';
 
 const AboutSection = () => {
-  const countersRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
   
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          startCounting();
-          observer.unobserve(entries[0].target);
-        }
-      },
-      { threshold: 0.5 }
-    );
-    
-    if (countersRef.current) {
-      observer.observe(countersRef.current);
+  const stats = [
+    {
+      label: "Years of Excellence",
+      value: 15
+    },
+    {
+      label: "Global Markets",
+      value: 25
+    },
+    {
+      label: "Car Models",
+      value: 12
+    },
+    {
+      label: "Happy Customers",
+      value: 150000,
+      suffix: "+"
     }
-    
-    return () => {
-      if (countersRef.current) observer.unobserve(countersRef.current);
-    };
-  }, []);
-  
-  const startCounting = () => {
-    const counters = document.querySelectorAll('.counter');
-    
-    counters.forEach(counter => {
-      const target = parseInt(counter.getAttribute('data-target') || '0');
-      const duration = 2000; // 2 seconds
-      const step = target / (duration / 16); // 16ms per frame (approx 60fps)
-      
-      let current = 0;
-      const updateCounter = () => {
-        current += step;
-        if (current < target) {
-          counter.textContent = Math.ceil(current).toString();
-          requestAnimationFrame(updateCounter);
-        } else {
-          counter.textContent = target.toString();
-        }
-      };
-      
-      updateCounter();
-    });
-  };
+  ];
   
   return (
-    <section id="about" className="py-24 relative bg-pollux-dark-gray">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="about" className="py-24 relative bg-pollux-dark-gray overflow-hidden">
+      {/* Background design elements */}
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-pollux-red/30 to-transparent"></div>
+      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-pollux-red/30 to-transparent"></div>
+      <div className="absolute inset-0 smoke opacity-10"></div>
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center mb-16">
           <h2 className="text-sm font-medium tracking-wider text-pollux-red uppercase">
             About Pollux Motors
@@ -57,6 +41,7 @@ const AboutSection = () => {
           <h3 className="mt-2 text-3xl md:text-4xl lg:text-5xl font-bold">
             Driving Innovation Forward
           </h3>
+          <Separator className="separator-glow w-24 mx-auto mt-4" />
         </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -65,17 +50,17 @@ const AboutSection = () => {
               <img 
                 src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=2566&auto=format&fit=crop&ixlib=rb-4.0.3" 
                 alt="Pollux Motors Facility" 
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover hover-scale"
               />
               <div className="absolute inset-0 bg-gradient-to-tr from-black/70 to-transparent"></div>
-              <div className="absolute bottom-6 left-6 glass-card p-4 rounded-lg">
+              <div className="absolute bottom-6 left-6 glass-card p-4 rounded-lg animate-float">
                 <span className="text-pollux-red font-medium">Since 2010</span>
                 <h4 className="text-xl font-bold mt-1">Excellence in Engineering</h4>
               </div>
             </div>
           </div>
           
-          <div>
+          <div ref={contentRef}>
             <h3 className="text-3xl font-bold mb-6">Redefining the Future of Mobility</h3>
             <p className="text-gray-300 mb-6">
               Founded in 2010, Pollux Motors has established itself as a pioneer in the luxury automotive 
@@ -89,24 +74,7 @@ const AboutSection = () => {
               ensuring our carbon footprint is minimized without compromising on performance or style.
             </p>
             
-            <div ref={countersRef} className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-12">
-              <div className="text-center">
-                <div className="counter text-4xl font-bold mb-2" data-target="15">0</div>
-                <p className="text-sm text-gray-400">Years of Excellence</p>
-              </div>
-              <div className="text-center">
-                <div className="counter text-4xl font-bold mb-2" data-target="25">0</div>
-                <p className="text-sm text-gray-400">Global Markets</p>
-              </div>
-              <div className="text-center">
-                <div className="counter text-4xl font-bold mb-2" data-target="12">0</div>
-                <p className="text-sm text-gray-400">Car Models</p>
-              </div>
-              <div className="text-center">
-                <div className="counter text-4xl font-bold mb-2" data-target="150000">0</div>
-                <p className="text-sm text-gray-400">Happy Customers</p>
-              </div>
-            </div>
+            <StatsCounter stats={stats} />
           </div>
         </div>
       </div>
