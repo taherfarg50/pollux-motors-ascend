@@ -9,6 +9,47 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      car_3d_models: {
+        Row: {
+          id: number
+          car_id: number
+          model_path: string
+          thumbnail_path: string | null
+          format: string
+          is_default: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: number
+          car_id: number
+          model_path: string
+          thumbnail_path?: string | null
+          format?: string
+          is_default?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: number
+          car_id?: number
+          model_path?: string
+          thumbnail_path?: string | null
+          format?: string
+          is_default?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "car_3d_models_car_id_fkey"
+            columns: ["car_id"]
+            isOneToOne: false
+            referencedRelation: "cars"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       car_specs: {
         Row: {
           acceleration: string

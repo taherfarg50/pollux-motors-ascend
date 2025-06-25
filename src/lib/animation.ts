@@ -9,39 +9,180 @@ gsap.registerPlugin(ScrollTrigger);
 
 // Initialize smooth scroll with optimized performance settings
 export const initSmoothScroll = () => {
-  const lenis = new Lenis({
-    duration: 0.8, // Reduced from 1.2 for faster scrolling
-    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-    orientation: 'vertical',
-    smoothWheel: true,
-    touchMultiplier: 1.5, // Reduced for better responsiveness
-    wheelMultiplier: 1.2, // Added for faster wheel scrolling
-    lerp: 0.08, // Lower lerp for snappier response
-    syncTouch: true, // Better touch synchronization
-  });
+  try {
+    // Check if window is available (browser environment)
+    if (typeof window === 'undefined') return null;
+    
+    // Only create Lenis if it doesn't already exist globally
+    if (window.__LENIS) {
+      return window.__LENIS;
+    }
+    
+    // Completely disable Lenis for mobile devices to prevent issues
+    const isMobile = window.innerWidth < 768 || 
+                    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    if (isMobile) {
+      // Return mock Lenis with all methods but no actual functionality
+      // Using type assertion to unknown then to Lenis to avoid type errors
+      return {
+        on: () => {},
+        off: () => {},
+        destroy: () => {},
+        stop: () => {},
+        start: () => {},
+        raf: () => {},
+        scrollTo: () => {},
+        __isSmooth: false,
+        __isScrolling: false,
+        __isStopped: true,
+        __isLocked: false,
+      } as unknown as Lenis;
+    }
+    
+    // Optimized settings for faster, more responsive scrolling
+    const lenis = new Lenis({
+      duration: 0.8, // Faster but still smooth
+      easing: (t) => 1 - Math.pow(1 - t, 3), // Cubic easing out - feels more responsive
+      orientation: 'vertical',
+      smoothWheel: true,
+      wheelMultiplier: 1.2, // Slightly faster wheel scrolling
+      touchMultiplier: 1.5, // Faster touch scrolling for better response
+      infinite: false,
+      gestureOrientation: 'vertical',
+    });
 
-  function raf(time: number) {
-    lenis.raf(time);
-    requestAnimationFrame(raf);
+    // More efficient RAF implementation
+    let rafId: number;
+    const raf = (time: number) => {
+      lenis.raf(time);
+      rafId = requestAnimationFrame(raf);
+    };
+
+    // Start animation frame
+    rafId = requestAnimationFrame(raf);
+    
+    // Optimized ScrollTrigger integration with batch updates
+    let scheduledUpdate = false;
+    const batchScrollUpdates = () => {
+      if (!scheduledUpdate) {
+        scheduledUpdate = true;
+        requestAnimationFrame(() => {
+          ScrollTrigger.update();
+          scheduledUpdate = false;
+        });
+      }
+    };
+    
+    lenis.on('scroll', batchScrollUpdates);
+
+    // Detect and fix scroll stuck issues
+    let lastKnownScrollPosition = 0;
+    let scrollStuckTimeout: number | null = null;
+    
+    // Function to monitor scroll progress
+    const monitorScrollProgress = () => {
+      const currentScrollPosition = window.scrollY;
+      
+      // Clear previous timeout if it exists
+      if (scrollStuckTimeout !== null) {
+        clearTimeout(scrollStuckTimeout);
+      }
+      
+      // If scrolling seems stuck (no change for 800ms despite user attempts to scroll)
+      scrollStuckTimeout = window.setTimeout(() => {
+        const newPosition = window.scrollY;
+        if (
+          Math.abs(newPosition - lastKnownScrollPosition) < 1 && 
+          document.querySelector('.scrolling-active') // Element class added during active scroll
+        ) {
+          console.log('Scroll appears stuck, resetting Lenis');
+          
+          // Force reset Lenis
+          lenis.stop();
+          
+          // Short timeout before restarting
+          setTimeout(() => {
+            lenis.start();
+            
+            // Force a small scroll to get things moving again
+            window.scrollBy({
+              top: 1,
+              behavior: 'auto'
+            });
+            
+            window.setTimeout(() => {
+              window.scrollBy({
+                top: -1,
+                behavior: 'auto'
+              });
+            }, 10);
+            
+          }, 50);
+        }
+        
+        lastKnownScrollPosition = newPosition;
+      }, 800);
+    };
+    
+    // Add wheel event listener to detect active scrolling
+    const handleWheelStart = () => {
+      document.documentElement.classList.add('scrolling-active');
+      monitorScrollProgress();
+      
+      // Remove the class after scrolling stops
+      clearTimeout(window.scrollActiveTimeout);
+      window.scrollActiveTimeout = window.setTimeout(() => {
+        document.documentElement.classList.remove('scrolling-active');
+      }, 500);
+    };
+    
+    // Add event listeners
+    window.addEventListener('wheel', handleWheelStart, { passive: true });
+    window.addEventListener('touchmove', handleWheelStart, { passive: true });
+    
+    // Add cleanup method to the lenis instance
+    const originalDestroy = lenis.destroy;
+    lenis.destroy = () => {
+      cancelAnimationFrame(rafId);
+      
+      // Clean up event listeners
+      window.removeEventListener('wheel', handleWheelStart);
+      window.removeEventListener('touchmove', handleWheelStart);
+      
+      if (scrollStuckTimeout !== null) {
+        clearTimeout(scrollStuckTimeout);
+      }
+      
+      originalDestroy.call(lenis);
+    };
+    
+    // Store Lenis instance globally to avoid duplicates
+    window.__LENIS = lenis;
+
+    return lenis;
+  } catch (error) {
+    console.error("Failed to initialize Lenis:", error);
+    return null;
   }
-
-  requestAnimationFrame(raf);
-
-  // Connect GSAP ScrollTrigger to Lenis with optimized performance
-  lenis.on('scroll', ScrollTrigger.update);
-  gsap.ticker.lagSmoothing(0); // Disable lagSmoothing for better performance
-  gsap.ticker.add((time) => {
-    lenis.raf(time * 1000);
-  });
-
-  return lenis;
 };
+
+// Extend Window interface to include our custom property
+declare global {
+  interface Window {
+    __LENIS?: Lenis;
+    scrollActiveTimeout?: number;
+  }
+}
 
 // Create a hook for tracking if an element should reduce motion based on user preference
 export const useReducedMotion = () => {
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   
   useEffect(() => {
+    // Make sure we're in a browser environment
+    if (typeof window === 'undefined') return;
+    
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     setPrefersReducedMotion(mediaQuery.matches);
     
@@ -49,10 +190,19 @@ export const useReducedMotion = () => {
       setPrefersReducedMotion(mediaQuery.matches);
     };
     
-    mediaQuery.addEventListener('change', handleChange);
-    return () => {
-      mediaQuery.removeEventListener('change', handleChange);
-    };
+    // Use modern event listener pattern with fallback for older browsers
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', handleChange);
+      return () => {
+        mediaQuery.removeEventListener('change', handleChange);
+      };
+    } else {
+      // Fallback for older browsers
+      mediaQuery.addListener(handleChange);
+      return () => {
+        mediaQuery.removeListener(handleChange);
+      };
+    }
   }, []);
   
   return prefersReducedMotion;
@@ -78,7 +228,7 @@ export const useRevealAnimation = (
     if (!elementRef.current || prefersReducedMotion) return;
     
     const element = elementRef.current;
-    let childElements = options.stagger 
+    const childElements = options.stagger 
       ? Array.from(element.children) 
       : [element];
       

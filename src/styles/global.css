@@ -1,0 +1,490 @@
+/* Optimize page transitions */
+.page-content {
+  isolation: isolate;
+}
+
+/* Luxury text gradient effect */
+.text-gradient {
+  background: linear-gradient(135deg, #1937E3, #4361EE, #1937E3);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: text-gradient-animate 8s ease infinite;
+}
+
+/* Subtle text gradient effect */
+.text-gradient-subtle {
+  background: linear-gradient(135deg, #1937E3, #4361EE);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Gold text gradient effect */
+.text-gradient-gold {
+  background: linear-gradient(135deg, #D4AF37, #F2D675, #D4AF37);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: text-gradient-animate 5s ease infinite;
+}
+
+/* Smooth scrolling styles */
+html {
+  scroll-behavior: smooth; /* Fallback for browsers without JS support */
+}
+
+html.lenis-scrolling {
+  scroll-behavior: auto !important; /* Prevent conflict with Lenis */
+}
+
+/* Fix for scroll getting stuck */
+html.scrolling-active {
+  pointer-events: auto !important;
+  touch-action: auto !important;
+}
+
+/* Ensure the body extends to full height */
+body {
+  min-height: 100vh;
+  overflow-x: hidden;
+  /* Create momentum-based scrolling on iOS */
+  -webkit-overflow-scrolling: touch;
+  /* Prevent overscroll bounce */
+  overscroll-behavior-y: none;
+  background-color: #0A0A0A;
+  color: #E5E4E2;
+}
+
+/* Enhanced animations for smoother page interactions */
+@keyframes fade-up {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes text-gradient-animate {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes shine {
+  0% {
+    background-position: -100% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Prevent scrolling conflicts with GSAP animations */
+.gsap-animated {
+  will-change: transform;
+  pointer-events: none !important;
+}
+
+.gsap-animated.interactive {
+  pointer-events: auto !important;
+}
+
+/* Page transition wrapper styles */
+.transition-wrapper {
+  opacity: 1;
+  transition: opacity 300ms ease-in-out;
+  width: 100%;
+}
+
+.transition-wrapper.fadeIn {
+  opacity: 1;
+}
+
+.transition-wrapper.fadeOut {
+  opacity: 0;
+}
+
+/* GPU acceleration for animations */
+.transition-gpu {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* 3D transform helpers */
+.perspective-1000 {
+  perspective: 1000px;
+  transform-style: preserve-3d;
+}
+
+.transform-gpu {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* Fade animation helper classes */
+.fade-in {
+  animation: fadeIn 0.5s ease forwards;
+}
+
+.fade-out {
+  animation: fadeOut 0.5s ease forwards;
+}
+
+.fade-up {
+  animation: fade-up 0.8s ease forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* Loader animation for page transitions */
+@keyframes loaderProgress {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+/* Background patterns */
+.bg-grid {
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.bg-dots {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* Prevent FOUC (Flash of Unstyled Content) */
+.no-fouc {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.fouc-ready {
+  opacity: 1;
+}
+
+/* Optimize rendering */
+* {
+  text-rendering: optimizeSpeed;
+}
+
+/* Make sure images don't cause layout shifts */
+img {
+  height: auto;
+  max-width: 100%;
+}
+
+/* Glass morphism effects - enhanced */
+.glass-card {
+  background: rgba(10, 10, 10, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.glass-card:hover {
+  box-shadow: 0 12px 48px rgba(25, 55, 227, 0.2);
+  border: 1px solid rgba(25, 55, 227, 0.2);
+  transform: translateY(-5px);
+}
+
+.glass-card-gold:hover {
+  box-shadow: 0 12px 48px rgba(212, 175, 55, 0.2);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  transform: translateY(-5px);
+}
+
+/* Modern glass effect for luxury UI */
+.modern-glass {
+  background: rgba(10, 10, 10, 0.5);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+/* Luxury button styles */
+.btn-luxury {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #1937E3, #4361EE);
+  border: none;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 4px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+}
+
+.btn-luxury::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: all 0.6s ease;
+}
+
+.btn-luxury:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(25, 55, 227, 0.3);
+}
+
+.btn-luxury:hover::before {
+  left: 100%;
+}
+
+.btn-gold {
+  background: linear-gradient(135deg, #D4AF37, #F2D675);
+  color: #0A0A0A;
+}
+
+.btn-gold:hover {
+  box-shadow: 0 6px 20px rgba(212, 175, 55, 0.3);
+}
+
+/* Super-fixed navbar that will always stay at the top regardless of scroll */
+header.fixed {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  z-index: 9999 !important;
+  background-color: rgba(10, 10, 10, 0.9) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  transform: translateY(0) !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  -webkit-transform: translateY(0) !important;
+}
+
+/* Sticky navbar styles for all devices */
+.sticky-nav {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  z-index: 9999 !important;
+  transform: translateZ(0) !important;
+  -webkit-transform: translateZ(0) !important;
+  will-change: transform !important;
+  backface-visibility: hidden !important;
+  -webkit-backface-visibility: hidden !important;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease !important;
+  background-color: rgba(10, 10, 10, 0.85) !important;
+}
+
+/* Fix for iOS devices */
+@supports (-webkit-touch-callout: none) {
+  .sticky-nav {
+    position: fixed !important;
+    /* Prevents iOS Safari from ignoring fixed positioning during momentum scroll */
+    transform: translateZ(0) !important;
+    -webkit-transform: translateZ(0) !important;
+  }
+}
+
+/* Luxury section dividers */
+.divider-luxury {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.5), transparent);
+  margin: 40px 0;
+}
+
+.divider-luxury-blue {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(25, 55, 227, 0.5), transparent);
+  margin: 40px 0;
+}
+
+/* Enhanced card hover effects */
+.luxury-card {
+  transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.luxury-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(25, 55, 227, 0.2);
+}
+
+/* Luxury image effects */
+.img-luxury {
+  transition: all 0.5s ease;
+  filter: brightness(0.95) contrast(1.05);
+}
+
+.img-luxury:hover {
+  filter: brightness(1.05) contrast(1.1);
+}
+
+/* 3D card effect */
+.card-3d {
+  transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.card-3d:hover {
+  transform: perspective(1000px) rotateX(5deg) rotateY(5deg) scale(1.05);
+}
+
+/* Animated border effect */
+.border-animated {
+  position: relative;
+  overflow: hidden;
+}
+
+.border-animated::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid transparent;
+  background: linear-gradient(135deg, #1937E3, #4361EE, #1937E3) border-box;
+  -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.border-animated:hover::before {
+  opacity: 1;
+}
+
+/* Shimmer effect */
+.shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer::after {
+  content: '';
+  position: absolute;
+  top: -100%;
+  left: -100%;
+  width: 300%;
+  height: 300%;
+  background: linear-gradient(
+    to bottom right,
+    rgba(255,255,255,0) 0%,
+    rgba(255,255,255,0.05) 50%,
+    rgba(255,255,255,0) 100%
+  );
+  transform: rotate(45deg);
+  animation: shimmer 3s linear infinite;
+}
+
+@keyframes shimmer {
+  to {
+    transform: rotate(45deg) translate(100%, 100%);
+  }
+}
+
+/* Glow effects */
+.blue-glow {
+  box-shadow: 0 0 15px rgba(25, 55, 227, 0.5);
+}
+
+.gold-glow {
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+}
+
+.shadow-glow {
+  box-shadow: 0 0 15px rgba(25, 55, 227, 0.7);
+}
+
+/* Parallax effect helper */
+.parallax {
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+/* Utility classes for common effects */
+.animate-gradient-x {
+  background-size: 200% 200%;
+  animation: gradient-x 15s ease infinite;
+}
+
+@keyframes gradient-x {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Hover line effect for links */
+.hover-line {
+  position: relative;
+}
+
+.hover-line::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -2px;
+  left: 0;
+  background: linear-gradient(90deg, #1937E3, #4361EE);
+  transition: width 0.3s ease;
+}
+
+.hover-line:hover::after {
+  width: 100%;
+}
+
+/* Modern floating card effect */
+.float-card {
+  transition: all 0.3s ease;
+}
+
+.float-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}

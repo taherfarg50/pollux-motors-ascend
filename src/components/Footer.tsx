@@ -1,105 +1,352 @@
-
 import { Link } from 'react-router-dom';
-import { ChevronRight } from 'lucide-react';
+import { MapPin, Phone, Mail, Globe, Instagram, Linkedin, Youtube, Facebook, Twitter, ArrowRight } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Button } from '@/components/ui/button';
 
 const Footer = () => {
+  const currentYear = new Date().getFullYear();
+  
+  const socialLinks = [
+    {
+      name: 'Instagram',
+      href: 'https://www.instagram.com/pollux_motors',
+      icon: Instagram,
+    },
+    {
+      name: 'LinkedIn',
+      href: 'https://www.linkedin.com/in/pollux-motors-95aa1a322/',
+      icon: Linkedin,
+    },
+    {
+      name: 'YouTube',
+      href: 'https://www.youtube.com/channel/UC7iZZ3r9vN76DMUtQjD3MZQ',
+      icon: Youtube,
+    },
+    {
+      name: 'TikTok',
+      href: 'https://www.tiktok.com/@pollux_motors',
+      icon: ({ className }: { className?: string }) => (
+        <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
+        </svg>
+      ),
+    },
+  ];
+
+  // Animation variants
+  const fadeInUpVariant = {
+    hidden: { opacity: 0, y: 20 },
+    visible: (custom: number) => ({
+      opacity: 1,
+      y: 0,
+      transition: {
+        delay: 0.1 * custom,
+        duration: 0.8,
+        ease: [0.22, 1, 0.36, 1]
+      }
+    })
+  };
+
+  const socialIconVariant = {
+    hidden: { scale: 0.8, opacity: 0 },
+    visible: (custom: number) => ({
+      scale: 1,
+      opacity: 1,
+      transition: {
+        delay: 0.2 + (custom * 0.1),
+        duration: 0.5,
+        type: "spring",
+        stiffness: 300,
+        damping: 15
+      }
+    }),
+    hover: {
+      scale: 1.2,
+      color: "#1937E3",
+      transition: {
+        duration: 0.3,
+        type: "spring",
+        stiffness: 400,
+        damping: 10
+      }
+    }
+  };
+
   return (
-    <footer className="bg-black text-gray-300">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
-          <div className="space-y-6">
-            <h2 className="text-xl font-bold text-white">
-              <span className="text-pollux-red">POLLUX</span> MOTORS
-            </h2>
-            <p className="text-sm text-gray-400 max-w-xs">
-              Delivering unparalleled automotive experiences through innovation, 
-              performance, and design excellence since 2010.
-            </p>
-            <div className="flex items-center space-x-4">
-              <a href="#" className="w-10 h-10 rounded-full bg-white/10 hover:bg-pollux-red flex items-center justify-center transition-colors">
-                <span className="sr-only">Facebook</span>
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path fillRule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" clipRule="evenodd"></path>
-                </svg>
-              </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-white/10 hover:bg-pollux-red flex items-center justify-center transition-colors">
-                <span className="sr-only">Instagram</span>
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path fillRule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z" clipRule="evenodd"></path>
-                </svg>
-              </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-white/10 hover:bg-pollux-red flex items-center justify-center transition-colors">
-                <span className="sr-only">Twitter</span>
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84"></path>
-                </svg>
-              </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-white/10 hover:bg-pollux-red flex items-center justify-center transition-colors">
-                <span className="sr-only">YouTube</span>
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path fillRule="evenodd" d="M19.812 5.418c.861.23 1.538.907 1.768 1.768C21.998 8.746 22 12 22 12s0 3.255-.418 4.814a2.504 2.504 0 0 1-1.768 1.768c-1.56.419-7.814.419-7.814.419s-6.255 0-7.814-.419a2.505 2.505 0 0 1-1.768-1.768C2 15.255 2 12 2 12s0-3.255.417-4.814a2.507 2.507 0 0 1 1.768-1.768C5.744 5 11.998 5 11.998 5s6.255 0 7.814.418ZM15.194 12 10 15V9l5.194 3Z" clipRule="evenodd" />
-                </svg>
-              </a>
+    <footer className="bg-gradient-to-b from-pollux-dark-gray to-black text-gray-400 relative overflow-hidden" role="contentinfo">
+      {/* Decorative elements */}
+      <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-pollux-blue/20 to-transparent"></div>
+      <div className="absolute -top-40 -left-40 w-80 h-80 rounded-full bg-pollux-blue/5 blur-3xl"></div>
+      <div className="absolute -bottom-40 -right-40 w-80 h-80 rounded-full bg-pollux-gold/5 blur-3xl"></div>
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10">
+        {/* Newsletter subscription */}
+        <motion.div 
+          className="w-full mb-16 glass-card rounded-xl p-8 border border-pollux-glass-border"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={fadeInUpVariant}
+          custom={0}
+        >
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="text-center md:text-left">
+              <h3 className="text-2xl font-bold text-white mb-2">Stay Updated</h3>
+              <p className="text-gray-400 max-w-md">Subscribe to our newsletter for exclusive offers and the latest luxury automotive news.</p>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+              <input 
+                type="email" 
+                placeholder="Your email address" 
+                className="bg-white/5 border border-pollux-glass-border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-pollux-blue/50 transition-all"
+              />
+              <Button className="btn-luxury whitespace-nowrap">
+                Subscribe
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
             </div>
           </div>
-          
-          <div>
-            <h3 className="text-lg font-semibold mb-6">Quick Links</h3>
-            <ul className="space-y-4">
-              <li><Link to="/" className="text-gray-400 hover:text-white transition-colors inline-flex items-center"><ChevronRight className="h-3 w-3 mr-2" /> Home</Link></li>
-              <li><Link to="/cars" className="text-gray-400 hover:text-white transition-colors inline-flex items-center"><ChevronRight className="h-3 w-3 mr-2" /> Our Cars</Link></li>
-              <li><Link to="/about" className="text-gray-400 hover:text-white transition-colors inline-flex items-center"><ChevronRight className="h-3 w-3 mr-2" /> About Us</Link></li>
-              <li><Link to="/models" className="text-gray-400 hover:text-white transition-colors inline-flex items-center"><ChevronRight className="h-3 w-3 mr-2" /> 3D Models</Link></li>
-              <li><Link to="/blog" className="text-gray-400 hover:text-white transition-colors inline-flex items-center"><ChevronRight className="h-3 w-3 mr-2" /> Blog</Link></li>
-            </ul>
-          </div>
-          
-          <div>
-            <h3 className="text-lg font-semibold mb-6">Support</h3>
-            <ul className="space-y-4">
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors inline-flex items-center"><ChevronRight className="h-3 w-3 mr-2" /> FAQs</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors inline-flex items-center"><ChevronRight className="h-3 w-3 mr-2" /> Service Centers</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors inline-flex items-center"><ChevronRight className="h-3 w-3 mr-2" /> Warranty</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors inline-flex items-center"><ChevronRight className="h-3 w-3 mr-2" /> Vehicle Recall</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors inline-flex items-center"><ChevronRight className="h-3 w-3 mr-2" /> Contact Us</a></li>
-            </ul>
-          </div>
-          
-          <div>
-            <h3 className="text-lg font-semibold mb-6">Newsletter</h3>
-            <p className="text-sm text-gray-400 mb-4">
-              Subscribe to our newsletter to get updates on new models, exclusive events, and special offers.
+        </motion.div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+          {/* Company Info */}
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={fadeInUpVariant}
+            custom={1}
+          >
+            <Link 
+              to="/" 
+              className="inline-block mb-6"
+              aria-label="Pollux Motors Home"
+            >
+              <motion.img 
+                src="/media/images/whitecolor.png" 
+                alt="Pollux Motors" 
+                className="h-20 w-auto filter drop-shadow-md"
+                width="160"
+                height="80"
+                loading="lazy"
+                whileHover={{ scale: 1.05, filter: "drop-shadow(0 0 8px rgba(25,55,227,0.5))" }}
+                transition={{ type: "spring", stiffness: 300, damping: 10 }}
+              />
+            </Link>
+            <p className="mb-6 text-gray-400/90 leading-relaxed">
+              Luxury car dealership and export company based in UAE, specializing in premium brands like Bentley, Rolls Royce, BMW, Mercedes, and more.
             </p>
-            <form className="space-y-2">
-              <div className="flex">
-                <input 
-                  type="email" 
-                  placeholder="Your email address" 
-                  className="px-4 py-2 bg-white/10 border border-gray-800 rounded-l-md focus:outline-none flex-grow text-sm"
-                />
-                <button 
-                  type="submit" 
-                  className="bg-pollux-red hover:bg-red-700 text-white px-4 py-2 rounded-r-md transition-colors"
+            <div className="w-12 h-1 bg-gradient-to-r from-pollux-blue to-pollux-blue-light rounded-full"></div>
+          </motion.div>
+          
+          {/* Quick Links */}
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={fadeInUpVariant}
+            custom={2}
+          >
+            <h3 className="text-white text-xl font-semibold mb-5 relative inline-block">
+              Quick Links
+              <div className="absolute -bottom-1 left-0 w-1/2 h-0.5 bg-gradient-to-r from-pollux-blue to-transparent"></div>
+            </h3>
+            <ul className="space-y-3">
+              {[
+                { path: '/', label: 'Home' },
+                { path: '/cars', label: 'Cars' },
+                { path: '/models', label: '3D Models' },
+                { path: '/about', label: 'About Us' },
+                { path: '/contact', label: 'Contact' },
+                { path: '/blog', label: 'Blog' }
+              ].map((link, index) => (
+                <motion.li key={link.path}
+                  initial={{ opacity: 0, x: -10 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.3 + (index * 0.1), duration: 0.5 }}
                 >
-                  Subscribe
-                </button>
+                  <Link 
+                    to={link.path} 
+                    className="hover:text-pollux-blue transition-all flex items-center group"
+                    aria-label={link.label}
+                  >
+                    <motion.span 
+                      className="inline-block w-0 h-0.5 bg-pollux-blue mr-0 group-hover:w-2 group-hover:mr-2 transition-all duration-300"
+                    />
+                    {link.label}
+                  </Link>
+                </motion.li>
+              ))}
+            </ul>
+          </motion.div>
+          
+          {/* Contact Info */}
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={fadeInUpVariant}
+            custom={3}
+          >
+            <h3 className="text-white text-xl font-semibold mb-5 relative inline-block">
+              Contact Us
+              <div className="absolute -bottom-1 left-0 w-1/2 h-0.5 bg-gradient-to-r from-pollux-blue to-transparent"></div>
+            </h3>
+            <ul className="space-y-4">
+              <motion.li 
+                className="flex items-start group"
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.4, duration: 0.5 }}
+              >
+                <div className="p-2 rounded-full bg-pollux-blue/10 group-hover:bg-pollux-blue/20 transition-colors mr-3">
+                  <MapPin className="h-5 w-5 text-gradient-subtle" aria-hidden="true" />
+                </div>
+                <div className="flex flex-col">
+                  <h4 className="font-semibold text-white">Dubai UAE</h4>
+                  <span className="mt-1">Silicon oasis HQ FG-07-2, Dubai</span>
+                  <span className="mt-1">+971502667937</span>
+                </div>
+              </motion.li>
+              <motion.li 
+                className="flex items-start group"
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.5, duration: 0.5 }}
+              >
+                <div className="p-2 rounded-full bg-pollux-blue/10 group-hover:bg-pollux-blue/20 transition-colors mr-3">
+                  <Phone className="h-5 w-5 text-gradient-subtle" aria-hidden="true" />
+                </div>
+                <a 
+                  href="tel:+971502667937" 
+                  className="hover:text-pollux-blue transition-colors mt-1"
+                >
+                  Tel: +971502667937
+                </a>
+              </motion.li>
+              <motion.li 
+                className="flex items-start group"
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.6, duration: 0.5 }}
+              >
+                <div className="p-2 rounded-full bg-pollux-blue/10 group-hover:bg-pollux-blue/20 transition-colors mr-3">
+                  <Mail className="h-5 w-5 text-gradient-subtle" aria-hidden="true" />
+                </div>
+                <a 
+                  href="mailto:info@polluxmotors.com" 
+                  className="hover:text-pollux-blue transition-colors mt-1"
+                >
+                  info@polluxmotors.com
+                </a>
+              </motion.li>
+              <motion.li 
+                className="flex items-start group"
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.7, duration: 0.5 }}
+              >
+                <div className="p-2 rounded-full bg-pollux-blue/10 group-hover:bg-pollux-blue/20 transition-colors mr-3">
+                  <Globe className="h-5 w-5 text-gradient-subtle" aria-hidden="true" />
+                </div>
+                <a 
+                  href="https://www.polluxmotors.com" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="hover:text-pollux-blue transition-colors mt-1"
+                >
+                  www.polluxmotors.com
+                </a>
+              </motion.li>
+            </ul>
+          </motion.div>
+          
+          {/* Social Media */}
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={fadeInUpVariant}
+            custom={4}
+          >
+            <h3 className="text-white text-xl font-semibold mb-5 relative inline-block">
+              Follow Us
+              <div className="absolute -bottom-1 left-0 w-1/2 h-0.5 bg-gradient-to-r from-pollux-blue to-transparent"></div>
+            </h3>
+            <div className="flex flex-wrap gap-4">
+              {socialLinks.map((social, index) => (
+                <motion.a 
+                  key={social.name}
+                  href={social.href} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="glass-card p-3 rounded-full hover:border-pollux-blue/30 transition-colors"
+                  aria-label={`Follow us on ${social.name}`}
+                  variants={socialIconVariant}
+                  custom={index}
+                  whileHover="hover"
+                >
+                  <social.icon className="h-5 w-5" aria-hidden="true" />
+                </motion.a>
+              ))}
+            </div>
+            <div className="mt-6 glass-card rounded-lg p-4 border border-pollux-glass-border">
+              <p className="text-sm">Download our mobile app for exclusive offers and real-time inventory updates.</p>
+              <div className="flex gap-3 mt-3">
+                <motion.a 
+                  href="#" 
+                  className="bg-white/10 hover:bg-white/20 transition-colors rounded-md px-3 py-2 flex items-center gap-2"
+                  whileHover={{ scale: 1.05 }}
+                >
+                  <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M17.9 19.9l-5.4-3.1-5.4 3.1 1.4-6.1-4.6-4 6.2-.5 2.4-5.8 2.4 5.8 6.2.5-4.6 4 1.4 6.1z"/>
+                  </svg>
+                  <span className="text-xs">App Store</span>
+                </motion.a>
+                <motion.a 
+                  href="#" 
+                  className="bg-white/10 hover:bg-white/20 transition-colors rounded-md px-3 py-2 flex items-center gap-2"
+                  whileHover={{ scale: 1.05 }}
+                >
+                  <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V5H7c-3.87 0-7 3.13-7 7s3.13 7 7 7h4v-3.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 11h8v2H8v-2zm9-8h-4v3.9h4c1.71 0 3.1 1.39 3.1 3.1 0 1.71-1.39 3.1-3.1 3.1h-4V17h4c3.87 0 7-3.13 7-7s-3.13-7-7-7z"/>
+                  </svg>
+                  <span className="text-xs">Play Store</span>
+                </motion.a>
               </div>
-              <p className="text-xs text-gray-500">
-                By subscribing, you agree to our Privacy Policy and consent to receive updates from Pollux Motors.
-              </p>
-            </form>
-          </div>
+            </div>
+          </motion.div>
         </div>
         
-        <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-sm text-gray-500 mb-4 md:mb-0">
-            © 2025 Pollux Motors. All rights reserved.
-          </p>
-          <div className="flex space-x-6">
-            <a href="#" className="text-sm text-gray-500 hover:text-gray-400 transition-colors">Privacy Policy</a>
-            <a href="#" className="text-sm text-gray-500 hover:text-gray-400 transition-colors">Terms of Service</a>
-            <a href="#" className="text-sm text-gray-500 hover:text-gray-400 transition-colors">Cookie Policy</a>
-          </div>
+        <div className="divider-luxury-blue my-12"></div>
+        
+        <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+          <motion.p 
+            className="text-gray-500"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.5 }}
+          >
+            &copy; {currentYear} Pollux Motors. All rights reserved.
+          </motion.p>
+          
+          <motion.div 
+            className="flex flex-wrap gap-6 text-sm"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.6 }}
+          >
+            <Link to="/privacy" className="text-gray-500 hover:text-pollux-blue transition-colors">Privacy Policy</Link>
+            <Link to="/terms" className="text-gray-500 hover:text-pollux-blue transition-colors">Terms of Service</Link>
+            <Link to="/sitemap" className="text-gray-500 hover:text-pollux-blue transition-colors">Sitemap</Link>
+          </motion.div>
         </div>
       </div>
     </footer>

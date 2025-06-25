@@ -1,57 +1,116 @@
+import React, { Suspense, lazy, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Toaster } from '@/components/ui/toaster';
+import { AuthProvider } from '@/context/AuthContext';
+import { ChatbotProvider } from '@/context/ChatbotContext';
+import { ScrollProvider } from '@/context/ScrollContext';
+import NavbarModern from '@/components/NavbarModern';
+import Footer from '@/components/Footer';
+import ScrollToTop from '@/components/ScrollToTop';
+import ErrorBoundary from '@/components/ErrorBoundary';
+import { log } from '@/utils/logger';
+import { perf } from '@/utils/performance';
 
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { ScrollProvider } from "./context/ScrollContext";
-import { AuthProvider } from "./context/AuthContext";
-import Index from "./pages/Index";
-import Cars from "./pages/Cars";
-import CarDetail from "./pages/CarDetail";
-import CarComparison from "./pages/CarComparison";
-import Models3D from "./pages/Models3D";
-import About from "./pages/About";
-import Contact from "./pages/Contact";
-import Blog from "./pages/Blog";
-import Auth from "./pages/Auth";
-import Profile from "./pages/Profile";
-import NotFound from "./pages/NotFound";
-import { useState } from "react";
+// Lazy load components for better performance
+const Home = lazy(() => import('@/pages/Home'));
+const Cars = lazy(() => import('@/pages/Cars'));
+const CarDetail = lazy(() => import('@/pages/CarDetail'));
+const ExportServices = lazy(() => import('@/pages/ExportServices'));
+const About = lazy(() => import('@/pages/About'));
+const Contact = lazy(() => import('@/pages/Contact'));
+const Auth = lazy(() => import('@/pages/Auth'));
+const Profile = lazy(() => import('@/pages/Profile'));
+const CarComparison = lazy(() => import('@/pages/CarComparison'));
+const ChatPage = lazy(() => import('@/pages/ChatPage'));
+const Blog = lazy(() => import('@/pages/Blog'));
+const SmartFinancingPage = lazy(() => import('@/pages/SmartFinancingPage'));
 
-const App = () => {
-  // Create a new QueryClient instance inside the component function
-  const [queryClient] = useState(() => new QueryClient());
+// Loading component
+const LoadingSpinner = () => (
+  <div className="min-h-screen bg-black flex items-center justify-center">
+    <div className="text-center">
+      <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-blue-500 mx-auto mb-4"></div>
+      <p className="text-white text-lg">Loading...</p>
+    </div>
+  </div>
+);
+
+function App() {
+  // Initialize performance monitoring
+  useEffect(() => {
+    perf.startMeasure('app-init');
+    log.info('Pollux Motors app initializing', undefined, 'App');
+    
+    return () => {
+      perf.endMeasure('app-init');
+      log.info('Pollux Motors app cleanup', undefined, 'App');
+    };
+  }, []);
+
+  const handleError = (error: Error, errorInfo: React.ErrorInfo) => {
+    log.error('Application error caught by boundary', { error: error.message, stack: error.stack }, 'App');
+    perf.trackInteraction('error', 'app-level', { message: error.message });
+  };
 
   return (
-    // Fixed the order of providers - React context providers need to be properly nested
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <ScrollProvider>
-          <AuthProvider>
-            <TooltipProvider>
-              <Toaster />
-              <Sonner />
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/cars" element={<Cars />} />
-                <Route path="/cars/:id" element={<CarDetail />} />
-                <Route path="/compare" element={<CarComparison />} />
-                <Route path="/models" element={<Models3D />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/contact" element={<Contact />} />
-                <Route path="/blog" element={<Blog />} />
-                <Route path="/auth" element={<Auth />} />
-                <Route path="/profile" element={<Profile />} />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </TooltipProvider>
-          </AuthProvider>
-        </ScrollProvider>
-      </BrowserRouter>
-    </QueryClientProvider>
+    <ErrorBoundary
+      onError={handleError}
+      showErrorDetails={process.env.NODE_ENV === 'development'}
+    >
+      <AuthProvider>
+        <ChatbotProvider>
+          <Router>
+            <ScrollProvider>
+              <div className="App min-h-screen bg-black text-white">
+                <NavbarModern />
+                
+                <main className="relative">
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <Routes>
+                      <Route path="/" element={<Home />} />
+                      <Route path="/cars" element={<Cars />} />
+                      <Route path="/cars/:id" element={<CarDetail />} />
+                      <Route path="/export" element={<ExportServices />} />
+                      <Route path="/about" element={<About />} />
+                      <Route path="/contact" element={<Contact />} />
+                      <Route path="/signin" element={<Auth />} />
+                      <Route path="/signup" element={<Auth />} />
+                      <Route path="/profile" element={<Profile />} />
+                      <Route path="/compare" element={<CarComparison />} />
+                      <Route path="/chat" element={<ChatPage />} />
+                      <Route path="/blog" element={<Blog />} />
+                      <Route path="/financing" element={<SmartFinancingPage />} />
+                      
+                      {/* Fallback route for 404 */}
+                      <Route path="*" element={
+                        <div className="min-h-screen bg-black flex items-center justify-center">
+                          <div className="text-center text-white">
+                            <h2 className="text-3xl font-bold mb-4">Page Not Found</h2>
+                            <p className="text-gray-400 mb-6">The page you're looking for doesn't exist.</p>
+                            <a href="/" className="btn-primary btn-lg">
+                              Go Home
+                            </a>
+                          </div>
+                        </div>
+                      } />
+                    </Routes>
+                  </Suspense>
+                </main>
+                
+                {/* Footer */}
+                <Footer />
+                
+                {/* Scroll to top */}
+                <ScrollToTop />
+                
+                <Toaster />
+              </div>
+            </ScrollProvider>
+          </Router>
+        </ChatbotProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   );
-};
+}
 
 export default App;

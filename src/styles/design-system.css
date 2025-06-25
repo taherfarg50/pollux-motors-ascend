@@ -1,0 +1,704 @@
+/* ==========================================================================
+   POLLUX MOTORS - LUXURY DESIGN SYSTEM
+   A comprehensive luxury automotive design system for unparalleled elegance
+   ========================================================================== */
+
+/* Custom Properties - Luxury Design Tokens */
+:root {
+  /* === LUXURY COLOR PALETTE === */
+  /* Primary Luxury Blues */
+  --color-luxury-blue: #0066ff;
+  --color-luxury-blue-light: #3385ff;
+  --color-luxury-blue-dark: #0052cc;
+  --color-luxury-blue-50: rgba(0, 102, 255, 0.05);
+  --color-luxury-blue-100: rgba(0, 102, 255, 0.1);
+  --color-luxury-blue-200: rgba(0, 102, 255, 0.2);
+  --color-luxury-blue-300: rgba(0, 102, 255, 0.3);
+  
+  /* Platinum Accents */
+  --color-platinum: #e5e7eb;
+  --color-platinum-light: #f3f4f6;
+  --color-platinum-dark: #d1d5db;
+  
+  /* Luxury Gold */
+  --color-luxury-gold: #d4af37;
+  --color-luxury-gold-light: #f4e99b;
+  --color-luxury-gold-dark: #b8941f;
+  --color-luxury-gold-50: rgba(212, 175, 55, 0.05);
+  --color-luxury-gold-100: rgba(212, 175, 55, 0.1);
+  --color-luxury-gold-200: rgba(212, 175, 55, 0.2);
+  
+  /* Premium Accent Colors */
+  --color-accent-emerald: #10b981;
+  --color-accent-ruby: #ef4444;
+  --color-accent-sapphire: #3b82f6;
+  --color-accent-amethyst: #8b5cf6;
+  --color-accent-rose: #f43f5e;
+  
+  /* Sophisticated Neutrals */
+  --color-obsidian: #000000;
+  --color-charcoal: #0f0f0f;
+  --color-midnight: #1a1a1a;
+  --color-steel: #2a2a2a;
+  --color-slate: #374151;
+  --color-pewter: #6b7280;
+  --color-silver: #9ca3af;
+  --color-pearl: #d1d5db;
+  --color-crystal: #f9fafb;
+  --color-diamond: #ffffff;
+  
+  /* Glass & Luxury Effects */
+  --glass-luxury: rgba(255, 255, 255, 0.08);
+  --glass-premium: rgba(255, 255, 255, 0.12);
+  --glass-border: rgba(255, 255, 255, 0.15);
+  --glass-border-premium: rgba(212, 175, 55, 0.3);
+  --overlay-velvet: rgba(0, 0, 0, 0.85);
+  --overlay-silk: rgba(0, 0, 0, 0.6);
+  --overlay-crystal: rgba(255, 255, 255, 0.05);
+  
+  /* === LUXURY TYPOGRAPHY === */
+  /* Premium Font Families */
+  --font-display: 'Playfair Display', 'Times New Roman', serif;
+  --font-luxury: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-accent: 'Montserrat', 'Helvetica Neue', sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  
+  /* Fluid Typography Scale */
+  --text-xs: clamp(0.75rem, 0.7rem + 0.2vw, 0.875rem);
+  --text-sm: clamp(0.875rem, 0.8rem + 0.3vw, 1rem);
+  --text-base: clamp(1rem, 0.9rem + 0.4vw, 1.125rem);
+  --text-lg: clamp(1.125rem, 1rem + 0.5vw, 1.375rem);
+  --text-xl: clamp(1.25rem, 1.1rem + 0.6vw, 1.625rem);
+  --text-2xl: clamp(1.5rem, 1.3rem + 0.8vw, 2rem);
+  --text-3xl: clamp(1.875rem, 1.6rem + 1vw, 2.5rem);
+  --text-4xl: clamp(2.25rem, 1.9rem + 1.5vw, 3.5rem);
+  --text-5xl: clamp(3rem, 2.5rem + 2vw, 4.5rem);
+  --text-6xl: clamp(4rem, 3rem + 3vw, 7rem);
+  --text-hero: clamp(5rem, 4rem + 4vw, 9rem);
+  
+  /* Luxury Typography Details */
+  --letter-spacing-tight: -0.05em;
+  --letter-spacing-normal: 0em;
+  --letter-spacing-wide: 0.025em;
+  --letter-spacing-wider: 0.05em;
+  --letter-spacing-widest: 0.1em;
+  
+  /* === PREMIUM SPACING === */
+  --space-px: 1px;
+  --space-0: 0;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-7: 1.75rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-14: 3.5rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+  --space-28: 7rem;
+  --space-32: 8rem;
+  --space-36: 9rem;
+  --space-40: 10rem;
+  --space-44: 11rem;
+  --space-48: 12rem;
+  --space-52: 13rem;
+  --space-56: 14rem;
+  --space-60: 15rem;
+  --space-64: 16rem;
+  --space-72: 18rem;
+  --space-80: 20rem;
+  --space-96: 24rem;
+  
+  /* === LUXURY LAYOUT === */
+  --container-xs: 475px;
+  --container-sm: 640px;
+  --container-md: 768px;
+  --container-lg: 1024px;
+  --container-xl: 1280px;
+  --container-2xl: 1536px;
+  --container-max: 1920px;
+  
+  /* === PREMIUM BORDERS === */
+  --border-luxury: 1px solid var(--glass-border);
+  --border-premium: 2px solid var(--glass-border-premium);
+  --border-ultra: 3px solid var(--color-luxury-gold-200);
+  
+  /* Premium Border Radius */
+  --radius-none: 0;
+  --radius-xs: 0.125rem;
+  --radius-sm: 0.25rem;
+  --radius: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-2xl: 2rem;
+  --radius-3xl: 2.5rem;
+  --radius-4xl: 3rem;
+  --radius-full: 9999px;
+  
+  /* === LUXURY SHADOWS === */
+  --shadow-luxury-sm: 0 2px 8px rgba(0, 0, 0, 0.15);
+  --shadow-luxury: 0 4px 20px rgba(0, 0, 0, 0.25);
+  --shadow-luxury-md: 0 8px 30px rgba(0, 0, 0, 0.3);
+  --shadow-luxury-lg: 0 15px 40px rgba(0, 0, 0, 0.35);
+  --shadow-luxury-xl: 0 25px 60px rgba(0, 0, 0, 0.4);
+  --shadow-luxury-2xl: 0 35px 80px rgba(0, 0, 0, 0.5);
+  --shadow-luxury-gold: 0 20px 40px rgba(212, 175, 55, 0.15);
+  --shadow-luxury-blue: 0 20px 40px rgba(0, 102, 255, 0.15);
+  --shadow-luxury-inner: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-luxury-glow: 0 0 20px rgba(212, 175, 55, 0.3);
+  
+  /* === PREMIUM ANIMATIONS === */
+  /* Luxury Durations */
+  --duration-instant: 100ms;
+  --duration-fast: 200ms;
+  --duration-normal: 300ms;
+  --duration-slow: 500ms;
+  --duration-slower: 700ms;
+  --duration-luxury: 800ms;
+  
+  /* Luxury Easing Functions */
+  --ease-luxury: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-premium: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease-elegant: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-bounce-luxury: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --ease-in-luxury: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out-luxury: cubic-bezier(0, 0, 0.2, 1);
+  
+  /* === Z-INDEX LUXURY SCALE === */
+  --z-behind: -1;
+  --z-base: 0;
+  --z-raised: 10;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-banner: 300;
+  --z-overlay: 400;
+  --z-modal: 500;
+  --z-popover: 600;
+  --z-tooltip: 700;
+  --z-toast: 800;
+  --z-supreme: 999;
+}
+
+/* ==========================================================================
+   LUXURY BASE STYLES
+   ========================================================================== */
+
+/* Enhanced Luxury Reset */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  scroll-padding-top: var(--space-20);
+}
+
+body {
+  font-family: var(--font-luxury);
+  font-size: var(--text-base);
+  line-height: 1.6;
+  color: var(--color-crystal);
+  background: linear-gradient(135deg, var(--color-obsidian) 0%, var(--color-charcoal) 35%, var(--color-midnight) 100%);
+  min-height: 100vh;
+  overflow-x: hidden;
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+}
+
+/* ==========================================================================
+   LUXURY TYPOGRAPHY SYSTEM
+   ========================================================================== */
+
+/* Display Headlines */
+.heading-hero {
+  font-family: var(--font-display);
+  font-size: var(--text-hero);
+  font-weight: 800;
+  line-height: 0.9;
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--color-diamond);
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.heading-1 {
+  font-family: var(--font-display);
+  font-size: var(--text-6xl);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--color-diamond);
+}
+
+.heading-2 {
+  font-family: var(--font-display);
+  font-size: var(--text-5xl);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--color-diamond);
+}
+
+.heading-3 {
+  font-family: var(--font-accent);
+  font-size: var(--text-4xl);
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--color-diamond);
+}
+
+.heading-4 {
+  font-family: var(--font-accent);
+  font-size: var(--text-3xl);
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--color-diamond);
+}
+
+.heading-5 {
+  font-family: var(--font-luxury);
+  font-size: var(--text-2xl);
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--color-diamond);
+}
+
+.heading-6 {
+  font-family: var(--font-luxury);
+  font-size: var(--text-xl);
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--color-diamond);
+}
+
+/* Body Text */
+.text-body-hero {
+  font-size: var(--text-2xl);
+  line-height: 1.6;
+  color: var(--color-pearl);
+  font-weight: 300;
+}
+
+.text-body-lg {
+  font-size: var(--text-lg);
+  line-height: 1.65;
+  color: var(--color-silver);
+  font-weight: 400;
+}
+
+.text-body {
+  font-size: var(--text-base);
+  line-height: 1.7;
+  color: var(--color-pewter);
+  font-weight: 400;
+}
+
+.text-body-sm {
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  color: var(--color-slate);
+  font-weight: 400;
+}
+
+.text-caption {
+  font-size: var(--text-xs);
+  line-height: 1.5;
+  color: var(--color-slate);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wider);
+  font-weight: 500;
+}
+
+/* Luxury Text Utilities */
+.text-gradient-luxury {
+  background: linear-gradient(135deg, var(--color-luxury-blue), var(--color-luxury-gold));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-gold {
+  background: linear-gradient(135deg, var(--color-luxury-gold), var(--color-luxury-gold-light));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-blue {
+  background: linear-gradient(135deg, var(--color-luxury-blue), var(--color-luxury-blue-light));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-platinum {
+  background: linear-gradient(135deg, var(--color-platinum), var(--color-diamond));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ==========================================================================
+   LUXURY BUTTON SYSTEM
+   ========================================================================== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-8);
+  font-family: var(--font-luxury);
+  font-size: var(--text-base);
+  font-weight: 500;
+  line-height: 1;
+  border-radius: var(--radius-lg);
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all var(--duration-luxury) var(--ease-luxury);
+  text-decoration: none;
+  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Luxury Button Variants */
+.btn-luxury {
+  background: linear-gradient(135deg, var(--color-luxury-gold), var(--color-luxury-gold-dark));
+  color: var(--color-obsidian);
+  box-shadow: var(--shadow-luxury-gold);
+  font-weight: 600;
+}
+
+.btn-luxury:hover {
+  background: linear-gradient(135deg, var(--color-luxury-gold-light), var(--color-luxury-gold));
+  box-shadow: var(--shadow-luxury-lg), var(--shadow-luxury-glow);
+  transform: translateY(-3px);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--color-luxury-blue), var(--color-luxury-blue-light));
+  color: var(--color-diamond);
+  box-shadow: var(--shadow-luxury-blue);
+  font-weight: 500;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, var(--color-luxury-blue-dark), var(--color-luxury-blue));
+  box-shadow: var(--shadow-luxury-lg);
+  transform: translateY(-3px);
+}
+
+.btn-premium {
+  background: var(--glass-premium);
+  color: var(--color-diamond);
+  border: var(--border-luxury);
+  box-shadow: var(--shadow-luxury);
+}
+
+.btn-premium:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: var(--color-luxury-gold-200);
+  box-shadow: var(--shadow-luxury-md);
+  transform: translateY(-2px);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--color-diamond);
+  border: 2px solid var(--color-pewter);
+}
+
+.btn-outline:hover {
+  background: var(--color-diamond);
+  color: var(--color-obsidian);
+  border-color: var(--color-diamond);
+  transform: translateY(-2px);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--color-silver);
+}
+
+.btn-ghost:hover {
+  background: var(--glass-luxury);
+  color: var(--color-diamond);
+}
+
+/* Button Sizes */
+.btn-sm {
+  padding: var(--space-2) var(--space-6);
+  font-size: var(--text-sm);
+  border-radius: var(--radius);
+}
+
+.btn-lg {
+  padding: var(--space-5) var(--space-10);
+  font-size: var(--text-lg);
+  border-radius: var(--radius-xl);
+}
+
+.btn-xl {
+  padding: var(--space-6) var(--space-12);
+  font-size: var(--text-xl);
+  border-radius: var(--radius-2xl);
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   LUXURY CARD SYSTEM
+   ========================================================================== */
+
+.card {
+  background: var(--glass-luxury);
+  border: var(--border-luxury);
+  border-radius: var(--radius-xl);
+  backdrop-filter: blur(20px);
+  box-shadow: var(--shadow-luxury);
+  transition: all var(--duration-luxury) var(--ease-luxury);
+  overflow: hidden;
+  position: relative;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-luxury-gold-200), transparent);
+  opacity: 0;
+  transition: opacity var(--duration-luxury) var(--ease-luxury);
+}
+
+.card:hover {
+  border-color: var(--color-luxury-gold-200);
+  box-shadow: var(--shadow-luxury-xl), var(--shadow-luxury-glow);
+  transform: translateY(-8px);
+}
+
+.card:hover::before {
+  opacity: 1;
+}
+
+.card-premium {
+  background: var(--glass-premium);
+  border: var(--border-premium);
+  box-shadow: var(--shadow-luxury-lg);
+}
+
+.card-ultra {
+  background: linear-gradient(135deg, var(--glass-premium), var(--color-luxury-gold-50));
+  border: var(--border-ultra);
+  box-shadow: var(--shadow-luxury-xl), var(--shadow-luxury-gold);
+}
+
+/* ==========================================================================
+   LUXURY LAYOUT UTILITIES
+   ========================================================================== */
+
+.container {
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 var(--space-4);
+}
+
+@media (min-width: 475px) {
+  .container {
+    max-width: var(--container-xs);
+    padding: 0 var(--space-6);
+  }
+}
+
+@media (min-width: 640px) {
+  .container {
+    max-width: var(--container-sm);
+  }
+}
+
+@media (min-width: 768px) {
+  .container {
+    max-width: var(--container-md);
+    padding: 0 var(--space-8);
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    max-width: var(--container-lg);
+  }
+}
+
+@media (min-width: 1280px) {
+  .container {
+    max-width: var(--container-xl);
+    padding: 0 var(--space-10);
+  }
+}
+
+@media (min-width: 1536px) {
+  .container {
+    max-width: var(--container-2xl);
+  }
+}
+
+/* ==========================================================================
+   LUXURY ANIMATION SYSTEM
+   ========================================================================== */
+
+/* Luxury Keyframes */
+@keyframes fadeInLuxury {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLuxury {
+  from {
+    opacity: 0;
+    transform: translateX(-60px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleInLuxury {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes glowPulse {
+  0%, 100% {
+    box-shadow: var(--shadow-luxury);
+  }
+  50% {
+    box-shadow: var(--shadow-luxury-glow);
+  }
+}
+
+@keyframes floatLuxury {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Animation Classes */
+.animate-fade-luxury {
+  animation: fadeInLuxury var(--duration-luxury) var(--ease-luxury);
+}
+
+.animate-slide-luxury {
+  animation: slideInLuxury var(--duration-luxury) var(--ease-luxury);
+}
+
+.animate-scale-luxury {
+  animation: scaleInLuxury var(--duration-luxury) var(--ease-luxury);
+}
+
+.animate-glow {
+  animation: glowPulse 3s var(--ease-luxury) infinite;
+}
+
+.animate-float {
+  animation: floatLuxury 6s var(--ease-luxury) infinite;
+}
+
+/* ==========================================================================
+   LUXURY UTILITIES
+   ========================================================================== */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.focus-ring {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+.focus-ring:focus {
+  outline: 2px solid var(--color-luxury-gold);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 3px var(--color-luxury-gold-100);
+}
+
+/* Luxury Backgrounds */
+.bg-gradient-luxury {
+  background: linear-gradient(135deg, var(--color-obsidian) 0%, var(--color-charcoal) 50%, var(--color-midnight) 100%);
+}
+
+.bg-gradient-premium {
+  background: linear-gradient(135deg, var(--color-luxury-blue) 0%, var(--color-luxury-gold) 100%);
+}
+
+/* ==========================================================================
+   ACCESSIBILITY & PREFERENCES
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .card {
+    border-color: var(--color-diamond);
+    background: var(--color-charcoal);
+  }
+  
+  .btn {
+    border-width: 2px;
+  }
+} 

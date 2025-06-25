@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="Pollux Motors - Luxury car dealership and export company based in UAE, specializing in premium brands like Bentley, Rolls Royce, BMW, and Mercedes" />
+    
+    <!-- Performance optimizations -->
+    <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="//fonts.gstatic.com" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <!-- Preload critical assets -->
+    <link rel="preload" href="%PUBLIC_URL%/media/videos/background.mp4" as="video" type="video/mp4" fetchpriority="high" />
+    <link rel="preload" href="%PUBLIC_URL%/media/images/whitecolor.png" as="image" fetchpriority="high" />
+    <link rel="preload" href="%PUBLIC_URL%/media/images/hero-luxury.jpg" as="image" />
+    
+    <!-- Favicon -->
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    
+    <!-- Page rendering optimization -->
+    <meta http-equiv="Cache-Control" content="max-age=86400" />
+    <meta name="google" content="notranslate" />
+    <meta http-equiv="x-ua-compatible" content="IE=edge" />
+    
+    <title>Pollux Motors | Luxury Cars Export</title>
+    
+    <style>
+      /* Critical CSS for initial render */
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        scroll-behavior: smooth;
+      }
+      
+      /* Add smooth scrolling */
+      html {
+        scroll-behavior: smooth;
+      }
+      
+      /* Optimize animations */
+      * {
+        transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      
+      /* Loading indicator */
+      .initial-loader {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #090909;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+      }
+      
+      .loader-logo {
+        width: 320px;
+        height: 160px;
+        animation: pulse 1.5s infinite ease-in-out;
+      }
+      
+      @keyframes pulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.8; transform: scale(0.95); }
+      }
+    </style>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    
+    <!-- Initial loading indicator -->
+    <div class="initial-loader" id="initialLoader">
+      <img src="%PUBLIC_URL%/media/images/whitecolor.png" alt="Pollux Motors" class="loader-logo" />
+    </div>
+    
+    <div id="root"></div>
+
+    <script>
+      // Remove loading screen once app is loaded
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          var loader = document.getElementById('initialLoader');
+          if (loader) {
+            loader.style.opacity = '0';
+            loader.style.transition = 'opacity 0.5s ease';
+            setTimeout(function() {
+              loader.style.display = 'none';
+            }, 500);
+          }
+        }, 500);
+      });
+      
+      // Add support for IntersectionObserver polyfill if needed
+      if (!('IntersectionObserver' in window)) {
+        const script = document.createElement('script');
+        script.src = 'https://polyfill.io/v3/polyfill.min.js?features=IntersectionObserver';
+        document.head.appendChild(script);
+      }
+    </script>
+  </body>
+</html> 

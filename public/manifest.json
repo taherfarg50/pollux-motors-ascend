@@ -1,0 +1,106 @@
+{
+  "name": "Pollux Motors - Luxury Automotive Excellence",
+  "short_name": "Pollux Motors",
+  "description": "Discover luxury vehicles and automotive excellence with Pollux Motors. Explore our premium collection, virtual showrooms, and personalized experiences.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#0066ff",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en-US",
+  "dir": "ltr",
+  "categories": ["automotive", "shopping", "lifestyle"],
+  "screenshots": [
+    {
+      "src": "/screenshot.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "platform": "wide",
+      "label": "Pollux Motors Homepage"
+    }
+  ],
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "16x16 32x32 48x48",
+      "type": "image/x-icon",
+      "purpose": "any"
+    },
+    {
+      "src": "/media/images/whitecolor.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/media/images/whitecolor.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Browse Vehicles",
+      "short_name": "Vehicles",
+      "description": "Explore our luxury vehicle collection",
+      "url": "/cars",
+      "icons": [
+        {
+          "src": "/media/images/whitecolor.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "AI Assistant",
+      "short_name": "Chat",
+      "description": "Get personalized recommendations",
+      "url": "/chat",
+      "icons": [
+        {
+          "src": "/media/images/whitecolor.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Compare Vehicles",
+      "short_name": "Compare",
+      "description": "Compare vehicles side-by-side",
+      "url": "/compare",
+      "icons": [
+        {
+          "src": "/media/images/whitecolor.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  "share_target": {
+    "action": "/",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "prefer_related_applications": false,
+  "related_applications": [],
+  "protocol_handlers": [
+    {
+      "protocol": "web+polluxmotors",
+      "url": "/?handler=%s"
+    }
+  ],
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui", "browser"],
+  "handle_links": "preferred"
+} 

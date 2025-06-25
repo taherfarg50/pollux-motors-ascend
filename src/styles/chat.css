@@ -1,0 +1,167 @@
+/* Chat component styles */
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.chat-messages {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.message {
+  max-width: 80%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.user-message {
+  align-self: flex-end;
+  background-color: #1937E3;
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+
+.bot-message {
+  align-self: flex-start;
+  background-color: #f0f0f0;
+  color: #333;
+  border-bottom-left-radius: 4px;
+}
+
+.chat-input-container {
+  display: flex;
+  padding: 10px 16px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  background-color: white;
+}
+
+.chat-input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 20px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.chat-input:focus {
+  border-color: #1937E3;
+}
+
+.send-button {
+  background-color: #1937E3;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 10px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.send-button:hover {
+  background-color: #132da6;
+}
+
+/* Whatsapp-specific styles */
+.whatsapp-button {
+  background-color: #25D366;
+}
+
+.whatsapp-button:hover {
+  background-color: #1da851;
+}
+
+.whatsapp-link {
+  color: #128C7E;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.whatsapp-link:hover {
+  color: #25D366;
+  text-decoration: underline;
+}
+
+/* Fixed chat components styles - ensure high z-index and proper positioning */
+.fixed-chat-button {
+  position: fixed !important;
+  z-index: 10000 !important;
+  transform: translateZ(0) !important;
+  -webkit-transform: translateZ(0) !important;
+  will-change: transform !important;
+  backface-visibility: hidden !important;
+  perspective: 1000px !important;
+  pointer-events: auto !important;
+}
+
+.fixed-chat-container {
+  position: fixed !important;
+  width: 0 !important;
+  height: 0 !important;
+  bottom: 0 !important;
+  right: 0 !important;
+  z-index: 10000 !important;
+  pointer-events: none !important;
+}
+
+.fixed-chat-container > * {
+  pointer-events: auto !important;
+}
+
+.fixed-chat-popup {
+  position: fixed !important;
+  bottom: 0 !important;
+  right: 0 !important;
+  z-index: 10000 !important;
+}
+
+/* Ensure animations work */
+.pulse-attention {
+  animation: pulse-attention 1s cubic-bezier(0.4, 0, 0.6, 1) !important;
+}
+
+.bounce-attention {
+  animation: bounce-attention 1s cubic-bezier(0.4, 0, 0.6, 1) !important;
+}
+
+/* Add body class for iOS scrolling prevention when chat is open */
+body.chat-open {
+  position: fixed;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Responsive chat */
+@media (max-width: 480px) {
+  .message {
+    max-width: 90%;
+    font-size: 13px;
+  }
+}
+
+/* Hide scrollbar but allow scrolling */
+.hide-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, and Opera */
+} 

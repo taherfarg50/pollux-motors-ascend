@@ -1,0 +1,1192 @@
+[
+  {
+    "id": 7,
+    "car_id": 4,
+    "speed": "200 km/h",
+    "acceleration": "7.0 sec",
+    "power": "3.5L Twin-Turbo V6 - 409 hp",
+    "range": "700 km",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 8,
+    "car_id": 5,
+    "speed": "170 km/h",
+    "acceleration": "10.2 sec",
+    "power": "2.4L Diesel - 150 hp",
+    "range": "800 km",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 9,
+    "car_id": 6,
+    "speed": "165 km/h",
+    "acceleration": "12.0 sec",
+    "power": "2.4L Diesel - 150 hp",
+    "range": "780 km",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 10,
+    "car_id": 7,
+    "speed": "170 km/h",
+    "acceleration": "10.0 sec",
+    "power": "2.4L Diesel - 150 hp",
+    "range": "820 km",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 11,
+    "car_id": 8,
+    "speed": "170 km/h",
+    "acceleration": "11.2 sec",
+    "power": "2.4L Diesel - 150 hp",
+    "range": "780 km",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 13,
+    "car_id": 10,
+    "speed": "180 km/h",
+    "acceleration": "10.0 sec",
+    "power": "2.8L Diesel - 204 hp",
+    "range": "750 km",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 16,
+    "car_id": 13,
+    "speed": "190 km/h",
+    "acceleration": "9.5 sec",
+    "power": "1.6L Turbo Petrol - 180 hp",
+    "range": "650 km",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 17,
+    "car_id": 14,
+    "speed": "120 km/h",
+    "acceleration": "N/A",
+    "power": "Diesel - 190 hp",
+    "range": "700 km",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 18,
+    "car_id": 15,
+    "speed": "180 km/h",
+    "acceleration": "9.8 sec",
+    "power": "3.0L Diesel - 190 hp",
+    "range": "800 km",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 19,
+    "car_id": 16,
+    "speed": "165 km/h",
+    "acceleration": "12.0 sec",
+    "power": "2.5L Diesel - 165 hp",
+    "range": "750 km",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 20,
+    "car_id": 17,
+    "speed": "170 km/h",
+    "acceleration": "10.5 sec",
+    "power": "Petrol - 156 hp",
+    "range": "600 km",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 21,
+    "car_id": 18,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "Various",
+    "range": "N/A",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 22,
+    "car_id": 19,
+    "speed": "180 km/h",
+    "acceleration": "11.0 sec",
+    "power": "Petrol - 125 hp",
+    "range": "650 km",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 23,
+    "car_id": 20,
+    "speed": "175 km/h",
+    "acceleration": "11.5 sec",
+    "power": "1.5L Petrol - 115 hp",
+    "range": "650 km",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 24,
+    "car_id": 21,
+    "speed": "180 km/h",
+    "acceleration": "9.5 sec",
+    "power": "1.5L Diesel - 136 hp",
+    "range": "850 km",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 25,
+    "car_id": 22,
+    "speed": "175 km/h",
+    "acceleration": "10.5 sec",
+    "power": "Diesel - 178 hp",
+    "range": "800 km",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 26,
+    "car_id": 23,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "Various",
+    "range": "N/A",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 27,
+    "car_id": 24,
+    "speed": "210 km/h",
+    "acceleration": "5.4 sec",
+    "power": "4.0L V8 Petrol - 518 hp",
+    "range": "550 km",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 28,
+    "car_id": 25,
+    "speed": "175 km/h",
+    "acceleration": "9.5 sec",
+    "power": "4.0L V6 Petrol - 228 hp",
+    "range": "700 km",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 29,
+    "car_id": 26,
+    "speed": "160 km/h",
+    "acceleration": "12.0 sec",
+    "power": "4.5L V8 Diesel - 202 hp",
+    "range": "800 km",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 30,
+    "car_id": 27,
+    "speed": "160 km/h",
+    "acceleration": "12.0 sec",
+    "power": "4.5L V8 Diesel - 202 hp",
+    "range": "800 km",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 31,
+    "car_id": 28,
+    "speed": "200 km/h",
+    "acceleration": "8.5 sec",
+    "power": "Diesel - 304 hp",
+    "range": "900 km",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 32,
+    "car_id": 29,
+    "speed": "200 km/h",
+    "acceleration": "8.5 sec",
+    "power": "Diesel - 304 hp",
+    "range": "900 km",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 33,
+    "car_id": 30,
+    "speed": "200 km/h",
+    "acceleration": "8.5 sec",
+    "power": "Diesel - 304 hp",
+    "range": "900 km",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 34,
+    "car_id": 31,
+    "speed": "200 km/h",
+    "acceleration": "8.5 sec",
+    "power": "Diesel - 304 hp",
+    "range": "900 km",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 35,
+    "car_id": 32,
+    "speed": "210 km/h",
+    "acceleration": "6.9 sec",
+    "power": "Petrol - 409 hp",
+    "range": "650 km",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 36,
+    "car_id": 33,
+    "speed": "210 km/h",
+    "acceleration": "6.9 sec",
+    "power": "Petrol - 409 hp",
+    "range": "650 km",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 37,
+    "car_id": 34,
+    "speed": "210 km/h",
+    "acceleration": "6.9 sec",
+    "power": "3.5L Twin-Turbo V6 - 409 hp",
+    "range": "650 km",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 40,
+    "car_id": 37,
+    "speed": "230 km/h",
+    "acceleration": "7.5 sec",
+    "power": "Petrol - 163 hp",
+    "range": "750 km",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 41,
+    "car_id": 38,
+    "speed": "230 km/h",
+    "acceleration": "7.5 sec",
+    "power": "Petrol - 163 hp",
+    "range": "750 km",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 42,
+    "car_id": 39,
+    "speed": "230 km/h",
+    "acceleration": "7.5 sec",
+    "power": "Petrol - 163 hp",
+    "range": "750 km",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 43,
+    "car_id": 40,
+    "speed": "220 km/h",
+    "acceleration": "4.5 sec",
+    "power": "Petrol - 585 hp",
+    "range": "650 km",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 44,
+    "car_id": 41,
+    "speed": "250 km/h",
+    "acceleration": "4.4 sec",
+    "power": "4.0L V8 Biturbo - 496 hp",
+    "range": "700 km",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 45,
+    "car_id": 42,
+    "speed": "175 km/h",
+    "acceleration": "10.9 sec",
+    "power": "Petrol - 160 hp",
+    "range": "550 km",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 46,
+    "car_id": 43,
+    "speed": "170 km/h",
+    "acceleration": "11.5 sec",
+    "power": "Petrol - 122 hp",
+    "range": "650 km",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 47,
+    "car_id": 44,
+    "speed": "195 km/h",
+    "acceleration": "9.9 sec",
+    "power": "1.2L Turbo Petrol - 130 hp",
+    "range": "650 km",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 48,
+    "car_id": 45,
+    "speed": "201 km/h",
+    "acceleration": "8.9 sec",
+    "power": "1.6L Turbo Petrol - 165 hp",
+    "range": "700 km",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 49,
+    "car_id": 46,
+    "speed": "201 km/h",
+    "acceleration": "8.9 sec",
+    "power": "1.6L Turbo Petrol - 165 hp",
+    "range": "700 km",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 50,
+    "car_id": 47,
+    "speed": "210 km/h",
+    "acceleration": "8.5 sec",
+    "power": "1.6L Turbo Petrol - 180 hp",
+    "range": "700 km",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 51,
+    "car_id": 48,
+    "speed": "190 km/h",
+    "acceleration": "6.5 sec",
+    "power": "Petrol - 395 hp",
+    "range": "600 km",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 52,
+    "car_id": 49,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "Petrol",
+    "range": "N/A",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 53,
+    "car_id": 50,
+    "speed": "250 km/h",
+    "acceleration": "5.0 sec",
+    "power": "Petrol - 563 hp",
+    "range": "450 km",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 54,
+    "car_id": 51,
+    "speed": "198 km/h",
+    "acceleration": "9.8 sec",
+    "power": "1.5L Turbo Petrol - 150 hp",
+    "range": "700 km",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 55,
+    "car_id": 52,
+    "speed": "185 km/h",
+    "acceleration": "9.2 sec",
+    "power": "1.6L Turbo Petrol - 180 hp",
+    "range": "650 km",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 56,
+    "car_id": 53,
+    "speed": "190 km/h",
+    "acceleration": "9.1 sec",
+    "power": "Petrol - 125 hp",
+    "range": "600 km",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 57,
+    "car_id": 54,
+    "speed": "110 km/h",
+    "acceleration": "N/A",
+    "power": "4.2L Diesel - 130 hp",
+    "range": "700 km",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 58,
+    "car_id": 55,
+    "speed": "195 km/h",
+    "acceleration": "9.2 sec",
+    "power": "1.5L Petrol - 120 hp",
+    "range": "700 km",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 59,
+    "car_id": 56,
+    "speed": "195 km/h",
+    "acceleration": "9.5 sec",
+    "power": "1.6L Petrol - 130 hp",
+    "range": "680 km",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 60,
+    "car_id": 57,
+    "speed": "165 km/h",
+    "acceleration": "13.0 sec",
+    "power": "4.5L Diesel - 202 hp",
+    "range": "800 km",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 61,
+    "car_id": 58,
+    "speed": "160 km/h",
+    "acceleration": "13.5 sec",
+    "power": "2.8L Diesel - 163 hp",
+    "range": "750 km",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 62,
+    "car_id": 59,
+    "speed": "170 km/h",
+    "acceleration": "10.2 sec",
+    "power": "2.4L Diesel - 150 hp",
+    "range": "780 km",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 63,
+    "car_id": 60,
+    "speed": "180 km/h",
+    "acceleration": "9.8 sec",
+    "power": "2.7L Petrol - 165 hp",
+    "range": "700 km",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 64,
+    "car_id": 61,
+    "speed": "175 km/h",
+    "acceleration": "10.0 sec",
+    "power": "2.8L Diesel - 204 hp",
+    "range": "750 km",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 66,
+    "car_id": 63,
+    "speed": "170 km/h",
+    "acceleration": "10.2 sec",
+    "power": "2.4L Diesel - 150 hp",
+    "range": "780 km",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 67,
+    "car_id": 64,
+    "speed": "180 km/h",
+    "acceleration": "10.0 sec",
+    "power": "2.8L Diesel - 204 hp",
+    "range": "750 km",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 68,
+    "car_id": 65,
+    "speed": "160 km/h",
+    "acceleration": "12.0 sec",
+    "power": "4.2L Diesel - 195 hp",
+    "range": "850 km ",
+    "created_at": "2025-05-12T09:49:35.175013+00:00",
+    "updated_at": "2025-05-12T09:49:35.175013+00:00"
+  },
+  {
+    "id": 72,
+    "car_id": 72,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T10:31:16.176615+00:00",
+    "updated_at": "2025-05-13T10:31:16.176615+00:00"
+  },
+  {
+    "id": 73,
+    "car_id": 73,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T10:31:38.371237+00:00",
+    "updated_at": "2025-05-13T10:31:38.371237+00:00"
+  },
+  {
+    "id": 74,
+    "car_id": 74,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T10:31:59.856655+00:00",
+    "updated_at": "2025-05-13T10:31:59.856655+00:00"
+  },
+  {
+    "id": 75,
+    "car_id": 75,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T10:35:22.860735+00:00",
+    "updated_at": "2025-05-13T10:35:22.860735+00:00"
+  },
+  {
+    "id": 76,
+    "car_id": 76,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T10:36:32.075468+00:00",
+    "updated_at": "2025-05-13T10:36:32.075468+00:00"
+  },
+  {
+    "id": 78,
+    "car_id": 78,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T10:37:38.419952+00:00",
+    "updated_at": "2025-05-13T10:37:38.419952+00:00"
+  },
+  {
+    "id": 79,
+    "car_id": 79,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T10:38:47.010619+00:00",
+    "updated_at": "2025-05-13T10:38:47.010619+00:00"
+  },
+  {
+    "id": 80,
+    "car_id": 80,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T10:39:47.037483+00:00",
+    "updated_at": "2025-05-13T10:39:47.037483+00:00"
+  },
+  {
+    "id": 81,
+    "car_id": 81,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T10:41:04.738067+00:00",
+    "updated_at": "2025-05-13T10:41:04.738067+00:00"
+  },
+  {
+    "id": 82,
+    "car_id": 82,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T10:41:51.2549+00:00",
+    "updated_at": "2025-05-13T10:41:51.2549+00:00"
+  },
+  {
+    "id": 83,
+    "car_id": 83,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T10:42:57.505713+00:00",
+    "updated_at": "2025-05-13T10:42:57.505713+00:00"
+  },
+  {
+    "id": 84,
+    "car_id": 84,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T10:43:41.136788+00:00",
+    "updated_at": "2025-05-13T10:43:41.136788+00:00"
+  },
+  {
+    "id": 85,
+    "car_id": 85,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T10:44:27.309322+00:00",
+    "updated_at": "2025-05-13T10:44:27.309322+00:00"
+  },
+  {
+    "id": 86,
+    "car_id": 86,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T10:45:14.660742+00:00",
+    "updated_at": "2025-05-13T10:45:14.660742+00:00"
+  },
+  {
+    "id": 87,
+    "car_id": 87,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T10:45:53.906732+00:00",
+    "updated_at": "2025-05-13T10:45:53.906732+00:00"
+  },
+  {
+    "id": 88,
+    "car_id": 88,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T10:46:32.317222+00:00",
+    "updated_at": "2025-05-13T10:46:32.317222+00:00"
+  },
+  {
+    "id": 89,
+    "car_id": 89,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T10:47:20.798146+00:00",
+    "updated_at": "2025-05-13T10:47:20.798146+00:00"
+  },
+  {
+    "id": 90,
+    "car_id": 90,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T10:48:35.937109+00:00",
+    "updated_at": "2025-05-13T10:48:35.937109+00:00"
+  },
+  {
+    "id": 92,
+    "car_id": 92,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T10:51:55.61257+00:00",
+    "updated_at": "2025-05-13T10:51:55.61257+00:00"
+  },
+  {
+    "id": 93,
+    "car_id": 93,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T10:53:48.052403+00:00",
+    "updated_at": "2025-05-13T10:53:48.052403+00:00"
+  },
+  {
+    "id": 94,
+    "car_id": 94,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T10:54:52.397146+00:00",
+    "updated_at": "2025-05-13T10:54:52.397146+00:00"
+  },
+  {
+    "id": 95,
+    "car_id": 95,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T10:55:37.983525+00:00",
+    "updated_at": "2025-05-13T10:55:37.983525+00:00"
+  },
+  {
+    "id": 96,
+    "car_id": 96,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T10:56:27.097773+00:00",
+    "updated_at": "2025-05-13T10:56:27.097773+00:00"
+  },
+  {
+    "id": 97,
+    "car_id": 97,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T10:57:09.327811+00:00",
+    "updated_at": "2025-05-13T10:57:09.327811+00:00"
+  },
+  {
+    "id": 98,
+    "car_id": 98,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T10:57:46.247147+00:00",
+    "updated_at": "2025-05-13T10:57:46.247147+00:00"
+  },
+  {
+    "id": 99,
+    "car_id": 99,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T10:58:36.64423+00:00",
+    "updated_at": "2025-05-13T10:58:36.64423+00:00"
+  },
+  {
+    "id": 100,
+    "car_id": 100,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T10:59:28.415059+00:00",
+    "updated_at": "2025-05-13T10:59:28.415059+00:00"
+  },
+  {
+    "id": 101,
+    "car_id": 101,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T11:00:35.608342+00:00",
+    "updated_at": "2025-05-13T11:00:35.608342+00:00"
+  },
+  {
+    "id": 102,
+    "car_id": 102,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T11:01:44.455837+00:00",
+    "updated_at": "2025-05-13T11:01:44.455837+00:00"
+  },
+  {
+    "id": 103,
+    "car_id": 103,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T11:02:44.41417+00:00",
+    "updated_at": "2025-05-13T11:02:44.41417+00:00"
+  },
+  {
+    "id": 104,
+    "car_id": 104,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T11:03:01.6403+00:00",
+    "updated_at": "2025-05-13T11:03:01.6403+00:00"
+  },
+  {
+    "id": 105,
+    "car_id": 105,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T11:03:58.762794+00:00",
+    "updated_at": "2025-05-13T11:03:58.762794+00:00"
+  },
+  {
+    "id": 106,
+    "car_id": 106,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T11:05:01.167742+00:00",
+    "updated_at": "2025-05-13T11:05:01.167742+00:00"
+  },
+  {
+    "id": 107,
+    "car_id": 107,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T11:05:48.470111+00:00",
+    "updated_at": "2025-05-13T11:05:48.470111+00:00"
+  },
+  {
+    "id": 108,
+    "car_id": 108,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T11:07:06.684925+00:00",
+    "updated_at": "2025-05-13T11:07:06.684925+00:00"
+  },
+  {
+    "id": 109,
+    "car_id": 109,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T11:08:08.333979+00:00",
+    "updated_at": "2025-05-13T11:08:08.333979+00:00"
+  },
+  {
+    "id": 110,
+    "car_id": 110,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T11:10:22.562534+00:00",
+    "updated_at": "2025-05-13T11:10:22.562534+00:00"
+  },
+  {
+    "id": 111,
+    "car_id": 111,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T11:11:27.786944+00:00",
+    "updated_at": "2025-05-13T11:11:27.786944+00:00"
+  },
+  {
+    "id": 112,
+    "car_id": 112,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T11:12:42.953896+00:00",
+    "updated_at": "2025-05-13T11:12:42.953896+00:00"
+  },
+  {
+    "id": 113,
+    "car_id": 113,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T11:13:10.513251+00:00",
+    "updated_at": "2025-05-13T11:13:10.513251+00:00"
+  },
+  {
+    "id": 114,
+    "car_id": 114,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T11:13:53.686356+00:00",
+    "updated_at": "2025-05-13T11:13:53.686356+00:00"
+  },
+  {
+    "id": 115,
+    "car_id": 115,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T11:14:52.898887+00:00",
+    "updated_at": "2025-05-13T11:14:52.898887+00:00"
+  },
+  {
+    "id": 116,
+    "car_id": 116,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T11:15:44.825778+00:00",
+    "updated_at": "2025-05-13T11:15:44.825778+00:00"
+  },
+  {
+    "id": 117,
+    "car_id": 117,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T11:17:26.114073+00:00",
+    "updated_at": "2025-05-13T11:17:26.114073+00:00"
+  },
+  {
+    "id": 118,
+    "car_id": 118,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T11:19:02.440723+00:00",
+    "updated_at": "2025-05-13T11:19:02.440723+00:00"
+  },
+  {
+    "id": 119,
+    "car_id": 119,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T11:19:42.414675+00:00",
+    "updated_at": "2025-05-13T11:19:42.414675+00:00"
+  },
+  {
+    "id": 120,
+    "car_id": 120,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T11:20:41.296714+00:00",
+    "updated_at": "2025-05-13T11:20:41.296714+00:00"
+  },
+  {
+    "id": 121,
+    "car_id": 121,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T11:21:25.920297+00:00",
+    "updated_at": "2025-05-13T11:21:25.920297+00:00"
+  },
+  {
+    "id": 122,
+    "car_id": 122,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T11:22:10.689331+00:00",
+    "updated_at": "2025-05-13T11:22:10.689331+00:00"
+  },
+  {
+    "id": 123,
+    "car_id": 123,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T11:23:01.748456+00:00",
+    "updated_at": "2025-05-13T11:23:01.748456+00:00"
+  },
+  {
+    "id": 124,
+    "car_id": 124,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T11:23:46.014384+00:00",
+    "updated_at": "2025-05-13T11:23:46.014384+00:00"
+  },
+  {
+    "id": 125,
+    "car_id": 125,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T11:24:16.940376+00:00",
+    "updated_at": "2025-05-13T11:24:16.940376+00:00"
+  },
+  {
+    "id": 126,
+    "car_id": 126,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T11:24:58.917029+00:00",
+    "updated_at": "2025-05-13T11:24:58.917029+00:00"
+  },
+  {
+    "id": 127,
+    "car_id": 127,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T11:26:08.875135+00:00",
+    "updated_at": "2025-05-13T11:26:08.875135+00:00"
+  },
+  {
+    "id": 128,
+    "car_id": 128,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T11:26:51.57589+00:00",
+    "updated_at": "2025-05-13T11:26:51.57589+00:00"
+  },
+  {
+    "id": 129,
+    "car_id": 129,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T11:27:35.508927+00:00",
+    "updated_at": "2025-05-13T11:27:35.508927+00:00"
+  },
+  {
+    "id": 130,
+    "car_id": 130,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T11:28:15.898053+00:00",
+    "updated_at": "2025-05-13T11:28:15.898053+00:00"
+  },
+  {
+    "id": 131,
+    "car_id": 131,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T11:28:58.343111+00:00",
+    "updated_at": "2025-05-13T11:28:58.343111+00:00"
+  },
+  {
+    "id": 132,
+    "car_id": 132,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T11:29:51.270757+00:00",
+    "updated_at": "2025-05-13T11:29:51.270757+00:00"
+  },
+  {
+    "id": 133,
+    "car_id": 133,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T11:30:37.281699+00:00",
+    "updated_at": "2025-05-13T11:30:37.281699+00:00"
+  },
+  {
+    "id": 134,
+    "car_id": 134,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T11:31:13.111106+00:00",
+    "updated_at": "2025-05-13T11:31:13.111106+00:00"
+  },
+  {
+    "id": 135,
+    "car_id": 135,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T11:31:52.406167+00:00",
+    "updated_at": "2025-05-13T11:31:52.406167+00:00"
+  },
+  {
+    "id": 136,
+    "car_id": 136,
+    "speed": "N/A",
+    "acceleration": "N/A",
+    "power": "N/A",
+    "range": "N/A",
+    "created_at": "2025-05-13T11:32:23.91899+00:00",
+    "updated_at": "2025-05-13T11:32:23.91899+00:00"
+  }
+]

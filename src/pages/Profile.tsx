@@ -1,10 +1,7 @@
-
 import { useState, useEffect } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { useUserFavorites, useCars, Car } from '@/lib/supabase';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
 import CarCard from '@/components/CarCard';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -34,9 +31,7 @@ const Profile = () => {
   
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <Navbar />
-      
-      <main className="pt-24 pb-16">
+      <main className="pt-24 pb-16 px-4">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-4">
             <div>
@@ -100,8 +95,6 @@ const Profile = () => {
           </Tabs>
         </div>
       </main>
-      
-      <Footer />
     </div>
   );
 };

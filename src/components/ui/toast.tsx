@@ -23,13 +23,17 @@ const ToastViewport = React.forwardRef<
 ToastViewport.displayName = ToastPrimitives.Viewport.displayName
 
 const toastVariants = cva(
-  "group pointer-events-auto relative flex w-full items-center justify-between space-x-4 overflow-hidden rounded-md border p-6 pr-8 shadow-lg transition-all data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out data-[state=closed]:fade-out-80 data-[state=closed]:slide-out-to-right-full data-[state=open]:slide-in-from-top-full data-[state=open]:sm:slide-in-from-bottom-full",
+  "group pointer-events-auto relative flex w-full items-center justify-between space-x-4 overflow-hidden rounded-md border p-4 pr-6 shadow-lg transition-all data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out data-[state=closed]:fade-out-80 data-[state=closed]:slide-out-to-right-full data-[state=open]:slide-in-from-top-full data-[state=open]:sm:slide-in-from-bottom-full",
   {
     variants: {
       variant: {
         default: "border bg-background text-foreground",
         destructive:
           "destructive group border-destructive bg-destructive text-destructive-foreground",
+        success: "border-green-500 bg-green-500/10 text-green-500 dark:border-green-500/30",
+        warning: "border-amber-500 bg-amber-500/10 text-amber-500 dark:border-amber-500/30",
+        info: "border-blue-500 bg-blue-500/10 text-blue-500 dark:border-blue-500/30",
+        luxury: "glass-card border-pollux-glass-border bg-pollux-blue/10 text-white",
       },
     },
     defaultVariants: {
@@ -124,4 +128,95 @@ export {
   ToastDescription,
   ToastClose,
   ToastAction,
+}
+
+// Enhanced Toast with icons
+import { AlertCircle, CheckCircle2, Info, AlertTriangle } from "lucide-react"
+
+interface EnhancedToastProps extends ToastProps {
+  title?: string
+  description?: string
+  action?: ToastActionElement
+}
+
+export function SuccessToast({ title, description, action, ...props }: EnhancedToastProps) {
+  return (
+    <Toast variant="success" {...props}>
+      <div className="flex gap-3">
+        <CheckCircle2 className="h-5 w-5" />
+        <div className="grid gap-1">
+          {title && <ToastTitle>{title}</ToastTitle>}
+          {description && <ToastDescription>{description}</ToastDescription>}
+        </div>
+      </div>
+      {action}
+      <ToastClose />
+    </Toast>
+  )
+}
+
+export function ErrorToast({ title, description, action, ...props }: EnhancedToastProps) {
+  return (
+    <Toast variant="destructive" {...props}>
+      <div className="flex gap-3">
+        <AlertCircle className="h-5 w-5" />
+        <div className="grid gap-1">
+          {title && <ToastTitle>{title}</ToastTitle>}
+          {description && <ToastDescription>{description}</ToastDescription>}
+        </div>
+      </div>
+      {action}
+      <ToastClose />
+    </Toast>
+  )
+}
+
+export function InfoToast({ title, description, action, ...props }: EnhancedToastProps) {
+  return (
+    <Toast variant="info" {...props}>
+      <div className="flex gap-3">
+        <Info className="h-5 w-5" />
+        <div className="grid gap-1">
+          {title && <ToastTitle>{title}</ToastTitle>}
+          {description && <ToastDescription>{description}</ToastDescription>}
+        </div>
+      </div>
+      {action}
+      <ToastClose />
+    </Toast>
+  )
+}
+
+export function WarningToast({ title, description, action, ...props }: EnhancedToastProps) {
+  return (
+    <Toast variant="warning" {...props}>
+      <div className="flex gap-3">
+        <AlertTriangle className="h-5 w-5" />
+        <div className="grid gap-1">
+          {title && <ToastTitle>{title}</ToastTitle>}
+          {description && <ToastDescription>{description}</ToastDescription>}
+        </div>
+      </div>
+      {action}
+      <ToastClose />
+    </Toast>
+  )
+}
+
+export function LuxuryToast({ title, description, action, ...props }: EnhancedToastProps) {
+  return (
+    <Toast variant="luxury" {...props}>
+      <div className="flex gap-3">
+        <div className="bg-pollux-blue/20 p-1 rounded-full">
+          <Info className="h-4 w-4 text-pollux-blue" />
+        </div>
+        <div className="grid gap-1">
+          {title && <ToastTitle className="text-white">{title}</ToastTitle>}
+          {description && <ToastDescription className="text-gray-300">{description}</ToastDescription>}
+        </div>
+      </div>
+      {action}
+      <ToastClose />
+    </Toast>
+  )
 }
