@@ -96,6 +96,33 @@ document.body.style.color = '#ffffff';
 // Create root with error handling
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
+// Register service worker for PWA functionality
+if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
+  window.addEventListener('load', async () => {
+    try {
+      const registration = await navigator.serviceWorker.register('/sw.js', {
+        scope: '/',
+      });
+      
+      registration.addEventListener('updatefound', () => {
+        const newWorker = registration.installing;
+        if (newWorker) {
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              // New content is available, reload the page
+              window.location.reload();
+            }
+          });
+        }
+      });
+      
+      log.info('Service Worker registered successfully', { scope: registration.scope }, 'ServiceWorker');
+    } catch (error) {
+      log.error('Service Worker registration failed', { error: error.message }, 'ServiceWorker');
+    }
+  });
+}
+
 // Render with error boundary and QueryClient provider
 root.render(
   <React.StrictMode>

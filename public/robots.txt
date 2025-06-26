@@ -12,3 +12,17 @@ Allow: /
 
 User-agent: *
 Allow: /
+
+# Allow important pages
+Allow: /cars
+Allow: /about
+Allow: /contact
+Allow: /compare
+
+# Disallow service worker and config files
+Disallow: /sw.js
+Disallow: /_redirects
+Disallow: /netlify.toml
+Disallow: /.env
+
+Sitemap: https://polluxmotors.netlify.app/sitemap.xml
