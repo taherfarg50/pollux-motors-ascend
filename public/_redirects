@@ -1,2 +1,21 @@
-# SPA fallback - serve existing files first, redirect missing routes to index.html
-/*    /index.html   200 
+# Static assets - serve with 200 status (don't redirect to SPA)
+/assets/*    /assets/:splat    200
+/media/*     /media/:splat     200
+/sw.js       /sw.js            200
+/manifest.json  /manifest.json  200
+/robots.txt  /robots.txt       200
+/favicon.ico /favicon.ico      200
+/*.js        /:splat           200
+/*.css       /:splat           200
+/*.png       /:splat           200
+/*.jpg       /:splat           200
+/*.svg       /:splat           200
+/*.ico       /:splat           200
+/*.json      /:splat           200
+/*.woff      /:splat           200
+/*.woff2     /:splat           200
+/*.mp4       /:splat           200
+/*.webm      /:splat           200
+
+# SPA fallback - only for non-asset routes that don't exist
+/*           /index.html       200 
