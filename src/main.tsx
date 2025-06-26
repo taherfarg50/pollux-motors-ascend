@@ -10,6 +10,11 @@ import './styles/global.css'
 import './styles/chat.css'
 import './styles/responsive.css'
 
+// Simple error logging function as fallback
+const simpleLog = (message: string, error?: any) => {
+  console.log(`[Pollux Motors] ${message}`, error || '');
+};
+
 // Create a QueryClient instance
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -44,7 +49,11 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
   }
 
   componentDidCatch(error: Error, info: React.ErrorInfo) {
-    log.error("Application failed to render", { error: error.message, stack: error.stack, componentStack: info.componentStack }, 'ErrorBoundary');
+    try {
+      log.error("Application failed to render", { error: error.message, stack: error.stack, componentStack: info.componentStack }, 'ErrorBoundary');
+    } catch {
+      simpleLog("Application failed to render", error);
+    }
   }
 
   render() {
@@ -93,8 +102,68 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
 document.body.style.backgroundColor = '#0A0A0A';
 document.body.style.color = '#ffffff';
 
-// Create root with error handling
-const root = ReactDOM.createRoot(document.getElementById('root'));
+// Hide loading screen function
+const hideLoadingScreen = () => {
+  try {
+    const loadingScreen = document.getElementById('loading-screen');
+    if (loadingScreen) {
+      loadingScreen.style.display = 'none';
+    }
+    // Call global function if it exists
+    const globalHideFunction = (window as any).hideLoadingScreen;
+    if (globalHideFunction && typeof globalHideFunction === 'function') {
+      globalHideFunction();
+    }
+  } catch (error) {
+    simpleLog('Error hiding loading screen', error);
+  }
+};
+
+// Main app initialization with error handling
+const initializeApp = async () => {
+  try {
+    simpleLog('Starting Pollux Motors app initialization...');
+    
+    // Get root element
+    const rootElement = document.getElementById('root');
+    if (!rootElement) {
+      throw new Error('Root element not found');
+    }
+
+    // Create root with error handling
+    const root = ReactDOM.createRoot(rootElement);
+
+    // Render with error boundary and QueryClient provider
+    root.render(
+      <React.StrictMode>
+        <ErrorBoundary>
+          <QueryClientProvider client={queryClient}>
+            <App />
+          </QueryClientProvider>
+        </ErrorBoundary>
+      </React.StrictMode>
+    );
+
+    // Hide loading screen after successful mount
+    setTimeout(hideLoadingScreen, 100);
+    
+    simpleLog('Pollux Motors app initialized successfully');
+    
+  } catch (error) {
+    simpleLog('Failed to initialize Pollux Motors app', error);
+    
+    // Show error fallback in the loading screen
+    try {
+      const spinner = document.getElementById('spinner');
+      const errorFallback = document.getElementById('error-fallback');
+      
+      if (spinner) spinner.style.display = 'none';
+      if (errorFallback) errorFallback.classList.remove('hidden');
+    } catch (fallbackError) {
+      simpleLog('Failed to show error fallback', fallbackError);
+    }
+  }
+};
 
 // Register service worker for PWA functionality
 if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
@@ -116,20 +185,12 @@ if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
         }
       });
       
-      log.info('Service Worker registered successfully', { scope: registration.scope }, 'ServiceWorker');
+      simpleLog('Service Worker registered successfully');
     } catch (error) {
-      log.error('Service Worker registration failed', { error: error.message }, 'ServiceWorker');
+      simpleLog('Service Worker registration failed', error);
     }
   });
 }
 
-// Render with error boundary and QueryClient provider
-root.render(
-  <React.StrictMode>
-    <ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
-        <App />
-      </QueryClientProvider>
-    </ErrorBoundary>
-  </React.StrictMode>
-);
+// Initialize the app
+initializeApp();

@@ -117,6 +117,36 @@
         transform: scale(1.05);
       }
       
+      .spinner {
+        width: 50px;
+        height: 50px;
+        border: 3px solid rgba(25, 55, 227, 0.3);
+        border-radius: 50%;
+        border-top-color: #1937E3;
+        animation: spin 1s linear infinite;
+        margin-bottom: 2rem;
+        position: relative;
+        z-index: 1;
+      }
+      
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+      
+      .error-message {
+        color: #ff6b6b;
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+        max-width: 500px;
+        line-height: 1.5;
+        position: relative;
+        z-index: 1;
+      }
+      
+      .hidden {
+        display: none !important;
+      }
+      
       /* Add responsive loading screen */
       @media (max-width: 768px) {
         .logo {
@@ -139,13 +169,44 @@
 
   <body>
     <div id="root">
-      <div class="loading-screen">
+      <div id="loading-screen" class="loading-screen">
         <img src="/media/images/whitecolor.png" alt="Pollux Motors" class="logo-svg" width="180" height="60">
         <div class="logo">POLLUX MOTORS</div>
         <p class="loading-text">Loading the luxury automotive experience...</p>
-        <button class="button" onclick="window.location.reload()">Refresh Page</button>
+        <div id="spinner" class="spinner"></div>
+        
+        <div id="error-fallback" class="hidden">
+          <div class="error-message">
+            The app is taking longer than expected to load. This might be due to a slow connection or temporary server issue.
+          </div>
+          <button class="button" onclick="window.location.reload()">Refresh Page</button>
+          <a href="/cars-to-home.html" class="button">Browse Cars</a>
+        </div>
       </div>
     </div>
+    
+    <script>
+      // Show fallback if React doesn't load within 10 seconds
+      setTimeout(function() {
+        const loadingScreen = document.getElementById('loading-screen');
+        const spinner = document.getElementById('spinner');
+        const errorFallback = document.getElementById('error-fallback');
+        
+        if (loadingScreen && loadingScreen.style.display !== 'none') {
+          if (spinner) spinner.style.display = 'none';
+          if (errorFallback) errorFallback.classList.remove('hidden');
+        }
+      }, 10000);
+      
+      // Hide loading screen when React app mounts
+      window.hideLoadingScreen = function() {
+        const loadingScreen = document.getElementById('loading-screen');
+        if (loadingScreen) {
+          loadingScreen.style.display = 'none';
+        }
+      };
+    </script>
+    
     <script type="module" src="/src/main.tsx"></script>
     
     <!-- Add loading optimization script -->
