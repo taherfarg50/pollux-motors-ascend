@@ -29,6 +29,12 @@
     },
     {
       "src": "/media/images/whitecolor.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/media/images/whitecolor.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
