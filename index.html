@@ -30,13 +30,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
     
-    <!-- Preload critical assets with optimized sizes -->
+    <!-- Preload only critical assets that will be used immediately -->
     <link rel="preload" href="/media/images/whitecolor.png" as="image" fetchpriority="high">
-    <link rel="preload" href="/media/images/hero1.jpg" as="image" fetchpriority="high" media="(min-width: 768px)">
-    <link rel="preload" href="/media/images/hero1-mobile.jpg" as="image" fetchpriority="high" media="(max-width: 767px)">
-    
-    <!-- Defer non-critical videos -->
-    <link rel="preload" href="/media/videos/backgroundvideo.mp4" as="fetch" type="video/mp4" media="(min-width: 768px)">
     
     <!-- Add font display swap for better performance -->
     <style>
