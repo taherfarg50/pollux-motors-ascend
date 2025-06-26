@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pollux Motors - Test Page</title>
+    <style>
+        body { 
+            background: #000; 
+            color: #fff; 
+            font-family: Arial; 
+            text-align: center; 
+            padding: 50px; 
+        }
+        .success { color: #0f0; }
+        .test-js { color: #ff0; }
+    </style>
+</head>
+<body>
+    <h1 class="success">✅ Static HTML is working!</h1>
+    <p>If you can see this page, static file serving is working correctly.</p>
+    <p class="test-js" id="js-test">⏳ Testing JavaScript...</p>
+    
+    <script>
+        document.getElementById('js-test').innerHTML = '✅ JavaScript is working!';
+        document.getElementById('js-test').style.color = '#0f0';
+        console.log('Test page JavaScript loaded successfully');
+    </script>
+</body>
+</html> 

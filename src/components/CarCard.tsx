@@ -204,7 +204,8 @@ const CarCard = ({ id, name, category, year, price, image, specs, index = 0, hid
                 src={image} 
                 alt={name} 
                 className="w-full h-full object-cover"
-                loading="lazy"
+                loading="eager"
+                priority={index < 6}
               />
             </motion.div>
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
@@ -341,7 +342,8 @@ const CarCard = ({ id, name, category, year, price, image, specs, index = 0, hid
             src={image} 
             alt={name} 
             className="w-full h-full object-cover"
-            loading="lazy"
+            loading="eager"
+            priority={index < 6}
           />
         </motion.div>
             

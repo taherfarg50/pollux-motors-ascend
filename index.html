@@ -177,29 +177,33 @@
         
         <div id="error-fallback" class="hidden">
           <div class="error-message">
-            The app is taking longer than expected to load. This might be due to a slow connection or temporary server issue.
+            The React app failed to load. This could be due to a JavaScript error or network issue.
           </div>
           <button class="button" onclick="window.location.reload()">Refresh Page</button>
-          <a href="/cars-to-home.html" class="button">Browse Cars</a>
+          <a href="/test.html" class="button">Test Static Files</a>
         </div>
       </div>
     </div>
     
     <script>
-      // Show fallback if React doesn't load within 10 seconds
+      console.log('Index.html loaded, starting React app...');
+      
+      // Show error fallback after 8 seconds if React doesn't load
       setTimeout(function() {
         const loadingScreen = document.getElementById('loading-screen');
         const spinner = document.getElementById('spinner');
         const errorFallback = document.getElementById('error-fallback');
         
         if (loadingScreen && loadingScreen.style.display !== 'none') {
+          console.error('React app failed to load within 8 seconds');
           if (spinner) spinner.style.display = 'none';
           if (errorFallback) errorFallback.classList.remove('hidden');
         }
-      }, 10000);
+      }, 8000);
       
-      // Hide loading screen when React app mounts
+      // Function for React app to call when it successfully mounts
       window.hideLoadingScreen = function() {
+        console.log('React app loaded successfully, hiding loading screen');
         const loadingScreen = document.getElementById('loading-screen');
         if (loadingScreen) {
           loadingScreen.style.display = 'none';

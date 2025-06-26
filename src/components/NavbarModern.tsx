@@ -23,8 +23,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import GlobalSearch from '@/components/GlobalSearch';
-import { log } from '@/utils/logger';
-import { perf } from '@/utils/performance';
 
 interface NavItem {
   href: string;
@@ -50,6 +48,9 @@ const NavbarModern: React.FC = () => {
     ['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 0.9)']
   );
   const backdropBlur = useTransform(scrollY, [0, 100], ['blur(0px)', 'blur(20px)']);
+
+  // Debug log to see if component is rendering
+  console.log('🔧 NavbarModern rendering...');
 
   // Main navigation items - simplified for car dealership business
   const mainNavItems: NavItem[] = [
@@ -106,8 +107,7 @@ const NavbarModern: React.FC = () => {
       if ((event.metaKey || event.ctrlKey) && event.key === 'k') {
         event.preventDefault();
         setShowSearch(true);
-        perf.trackInteraction('keyboard-shortcut', 'search-open');
-        log.debug('Search opened via keyboard shortcut', undefined, 'NavbarModern');
+        console.log('Search opened via keyboard shortcut');
       }
     };
 
@@ -124,18 +124,6 @@ const NavbarModern: React.FC = () => {
     const message = "Hello! I'm interested in learning more about Pollux Motors vehicles and export services.";
     const url = `https://wa.me/971503866702?text=${encodeURIComponent(message)}`;
     window.open(url, '_blank');
-  };
-
-  const navVariants = {
-    hidden: { y: -100, opacity: 0 },
-    visible: { 
-      y: 0, 
-      opacity: 1,
-      transition: { 
-        duration: 0.3, 
-        ease: [0.22, 1, 0.36, 1] 
-      }
-    }
   };
 
   const mobileMenuVariants = {
@@ -158,20 +146,18 @@ const NavbarModern: React.FC = () => {
   };
 
   return (
-    <motion.nav
+    <nav
       ref={navRef}
-      className="fixed top-0 left-0 right-0 z-50"
-      variants={navVariants}
-      initial="hidden"
-      animate="visible"
+      className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
       style={{
-        backgroundColor,
-        backdropFilter: backdropBlur,
-        WebkitBackdropFilter: backdropBlur,
+        backgroundColor: 'rgba(0, 0, 0, 0.95)', // Make it more visible
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        border: '1px solid rgba(255, 255, 255, 0.1)' // Debug border
       }}
     >
       {/* Top announcement bar */}
-      <div className="bg-gradient-to-r from-pollux-blue to-pollux-blue-light text-white py-1">
+      <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white py-1">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-center text-sm">
             <span className="hidden sm:inline">🚗 Quality Vehicles • Global Export Services • </span>
@@ -182,29 +168,29 @@ const NavbarModern: React.FC = () => {
         </div>
       </div>
 
-      {/* Main navigation */}
-      <div className={cn(
-        "border-b border-white/10 transition-all duration-300",
-        isScrolled && "shadow-lg"
-      )}>
+      {/* Main navigation - Force visible with solid background */}
+      <div className="bg-black/90 border-b border-white/10 transition-all duration-300 shadow-lg">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <Link to="/" className="flex items-center space-x-2 group">
-              <motion.img
+              <img
                 src="/media/images/whitecolor.png"
                 alt="Pollux Motors"
-                className="h-8 w-auto"
-                whileHover={{ scale: 1.05 }}
-                transition={{ duration: 0.2 }}
+                className="h-8 w-auto transition-transform hover:scale-105"
+                onError={(e) => {
+                  console.log('Logo failed to load');
+                  e.currentTarget.style.display = 'none';
+                }}
+                onLoad={() => console.log('Logo loaded successfully')}
               />
-              <span className="hidden sm:block text-xl font-bold text-white">
+              <span className="text-xl font-bold text-white">
                 Pollux Motors
               </span>
             </Link>
 
-            {/* Desktop Navigation */}
-            <div className="hidden lg:flex items-center space-x-1">
+            {/* Desktop Navigation - Always show for debugging */}
+            <div className="flex items-center space-x-1">
               {mainNavItems.map((item) => (
                 <Link
                   key={item.href}
@@ -234,7 +220,7 @@ const NavbarModern: React.FC = () => {
               </button>
 
               {/* Contact buttons */}
-              <div className="hidden sm:flex items-center gap-2">
+              <div className="flex items-center gap-2">
                 {/* Email */}
                 <a
                   href="mailto:info@polluxmotors.com"
@@ -257,52 +243,16 @@ const NavbarModern: React.FC = () => {
               {/* Chat */}
               <Link
                 to="/chat"
-                className="p-2 rounded-full bg-pollux-blue hover:bg-pollux-blue-dark transition-colors text-white"
+                className="p-2 rounded-full bg-blue-600 hover:bg-blue-700 transition-colors text-white"
                 aria-label="Chat with us"
               >
                 <MessageCircle className="w-5 h-5" />
               </Link>
 
               {/* User menu */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button className="p-2 rounded-full hover:bg-white/10 transition-colors text-gray-300 hover:text-white">
-                    <User className="w-5 h-5" />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48 bg-black/90 backdrop-blur-xl border-white/10">
-                  {user ? (
-                    <>
-                      <div className="px-3 py-2 border-b border-white/10">
-                        <p className="text-sm font-medium text-white truncate">
-                          {user.email}
-                        </p>
-                      </div>
-                      <DropdownMenuItem asChild>
-                        <Link to="/profile" className="flex items-center gap-2">
-                          <User className="w-4 h-4" />
-                          Profile
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem 
-                        onClick={signOut}
-                        className="text-red-400 hover:text-red-300"
-                      >
-                        Sign Out
-                      </DropdownMenuItem>
-                    </>
-                  ) : (
-                    <>
-                      <DropdownMenuItem asChild>
-                        <Link to="/signin">Sign In</Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link to="/signup">Sign Up</Link>
-                      </DropdownMenuItem>
-                    </>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <button className="p-2 rounded-full hover:bg-white/10 transition-colors text-gray-300 hover:text-white">
+                <User className="w-5 h-5" />
+              </button>
 
               {/* Mobile menu button */}
               <button
@@ -388,7 +338,7 @@ const NavbarModern: React.FC = () => {
       />
         )}
       </AnimatePresence>
-    </motion.nav>
+    </nav>
   );
 };
 

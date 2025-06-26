@@ -1,65 +1,73 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import App from './App.tsx'
-import { log } from './utils/logger'
-import { performanceMonitor } from './utils/performance'
-import './index.css'
-import './styles/animations.css'
-import './styles/global.css'
-import './styles/chat.css'
-import './styles/responsive.css'
 
-// Simple error logging function as fallback
+// Simple error logging
 const simpleLog = (message: string, error?: any) => {
   console.log(`[Pollux Motors] ${message}`, error || '');
 };
 
-// Create a QueryClient instance
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 1000 * 60 * 5, // 5 minutes
-      gcTime: 1000 * 60 * 30, // 30 minutes (was cacheTime in v4)
-      retry: 1,
-      refetchOnWindowFocus: false,
-    },
-  },
-})
-
-// Error boundary component interface
-interface ErrorBoundaryProps {
-  children: React.ReactNode;
-}
-
-interface ErrorBoundaryState {
-  hasError: boolean;
-  error: Error | null;
-}
-
-// Error boundary component
-class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
-  constructor(props: ErrorBoundaryProps) {
-    super(props);
-    this.state = { hasError: false, error: null };
-  }
-
-  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
-    return { hasError: true, error };
-  }
-
-  componentDidCatch(error: Error, info: React.ErrorInfo) {
-    try {
-      log.error("Application failed to render", { error: error.message, stack: error.stack, componentStack: info.componentStack }, 'ErrorBoundary');
-    } catch {
-      simpleLog("Application failed to render", error);
+// Try to load dependencies gradually with error catching
+const loadAppGradually = async () => {
+  try {
+    simpleLog('Step 1: Loading basic React...');
+    
+    // Test basic React first
+    const rootElement = document.getElementById('root');
+    if (!rootElement) {
+      throw new Error('Root element not found');
     }
-  }
+    const root = ReactDOM.createRoot(rootElement);
+    
+    simpleLog('Step 2: Loading React Query...');
+    const { QueryClient, QueryClientProvider } = await import('@tanstack/react-query');
+    
+    simpleLog('Step 3: Loading CSS...');
+    await import('./index.css');
+    await import('./styles/animations.css');
+    await import('./styles/global.css');
+    await import('./styles/chat.css');
+    await import('./styles/responsive.css');
+    
+    simpleLog('Step 4: Loading App component...');
+    const { default: App } = await import('./App.tsx');
+    
+    simpleLog('Step 5: Creating QueryClient...');
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: {
+          staleTime: 1000 * 60 * 5,
+          gcTime: 1000 * 60 * 30,
+          retry: 1,
+          refetchOnWindowFocus: false,
+        },
+      },
+    });
 
-  render() {
-    if (this.state.hasError) {
-      // Fallback UI when app fails
-      return (
+    simpleLog('Step 6: Rendering app...');
+    root.render(
+      <React.StrictMode>
+        <QueryClientProvider client={queryClient}>
+          <App />
+        </QueryClientProvider>
+      </React.StrictMode>
+    );
+
+    // Hide loading screen
+    const hideFunction = (window as any).hideLoadingScreen;
+    if (hideFunction && typeof hideFunction === 'function') {
+      hideFunction();
+    }
+    
+    simpleLog('✅ App loaded successfully!');
+    
+  } catch (error) {
+    simpleLog('❌ App loading failed at step:', error);
+    
+    // Show a simple fallback app
+    const rootElement = document.getElementById('root');
+    if (rootElement) {
+      const root = ReactDOM.createRoot(rootElement);
+      root.render(
         <div style={{ 
           background: '#0A0A0A', 
           color: 'white', 
@@ -68,129 +76,58 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
           flexDirection: 'column',
           alignItems: 'center', 
           justifyContent: 'center',
+          fontFamily: 'Arial, sans-serif',
           padding: '20px',
-          fontFamily: 'system-ui, -apple-system, sans-serif'
+          textAlign: 'center'
         }}>
           <h1 style={{ color: '#1937E3', marginBottom: '20px' }}>Pollux Motors</h1>
-          <p>We're experiencing a temporary issue. Please try refreshing the page.</p>
+          <p style={{ marginBottom: '20px' }}>Loading failed. Please try refreshing or check the console for details.</p>
+          <p style={{ color: '#ff6b6b', fontSize: '14px', marginBottom: '20px' }}>
+            Error: {error instanceof Error ? error.message : String(error)}
+          </p>
           <button 
-            onClick={() => window.location.reload()} 
+            onClick={() => window.location.reload()}
             style={{
               background: '#1937E3',
               color: 'white',
               border: 'none',
               padding: '10px 20px',
               borderRadius: '4px',
-              marginTop: '20px',
-              cursor: 'pointer'
+              cursor: 'pointer',
+              marginRight: '10px'
             }}
           >
             Refresh Page
           </button>
-          <div style={{ marginTop: '20px', color: '#666', fontSize: '14px' }}>
-            {this.state.error && this.state.error.toString()}
-          </div>
+          <a 
+            href="/test.html"
+            style={{
+              background: '#666',
+              color: 'white',
+              padding: '10px 20px',
+              borderRadius: '4px',
+              textDecoration: 'none',
+              display: 'inline-block'
+            }}
+          >
+            Test Page
+          </a>
         </div>
       );
+      
+      // Hide loading screen even on error
+      const hideFunction = (window as any).hideLoadingScreen;
+      if (hideFunction && typeof hideFunction === 'function') {
+        hideFunction();
+      }
     }
-
-    return this.props.children;
   }
-}
+};
 
-// Force a background color on the body to avoid black screen
+// Force a background color on the body
 document.body.style.backgroundColor = '#0A0A0A';
 document.body.style.color = '#ffffff';
 
-// Hide loading screen function
-const hideLoadingScreen = () => {
-  try {
-    const loadingScreen = document.getElementById('loading-screen');
-    if (loadingScreen) {
-      loadingScreen.style.display = 'none';
-    }
-    // Call global function if it exists
-    const globalHideFunction = (window as any).hideLoadingScreen;
-    if (globalHideFunction && typeof globalHideFunction === 'function') {
-      globalHideFunction();
-    }
-  } catch (error) {
-    simpleLog('Error hiding loading screen', error);
-  }
-};
-
-// Main app initialization with error handling
-const initializeApp = async () => {
-  try {
-    simpleLog('Starting Pollux Motors app initialization...');
-    
-    // Get root element
-    const rootElement = document.getElementById('root');
-    if (!rootElement) {
-      throw new Error('Root element not found');
-    }
-
-    // Create root with error handling
-    const root = ReactDOM.createRoot(rootElement);
-
-    // Render with error boundary and QueryClient provider
-    root.render(
-      <React.StrictMode>
-        <ErrorBoundary>
-          <QueryClientProvider client={queryClient}>
-            <App />
-          </QueryClientProvider>
-        </ErrorBoundary>
-      </React.StrictMode>
-    );
-
-    // Hide loading screen after successful mount
-    setTimeout(hideLoadingScreen, 100);
-    
-    simpleLog('Pollux Motors app initialized successfully');
-    
-  } catch (error) {
-    simpleLog('Failed to initialize Pollux Motors app', error);
-    
-    // Show error fallback in the loading screen
-    try {
-      const spinner = document.getElementById('spinner');
-      const errorFallback = document.getElementById('error-fallback');
-      
-      if (spinner) spinner.style.display = 'none';
-      if (errorFallback) errorFallback.classList.remove('hidden');
-    } catch (fallbackError) {
-      simpleLog('Failed to show error fallback', fallbackError);
-    }
-  }
-};
-
-// Register service worker for PWA functionality
-if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
-  window.addEventListener('load', async () => {
-    try {
-      const registration = await navigator.serviceWorker.register('/sw.js', {
-        scope: '/',
-      });
-      
-      registration.addEventListener('updatefound', () => {
-        const newWorker = registration.installing;
-        if (newWorker) {
-          newWorker.addEventListener('statechange', () => {
-            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              // New content is available, reload the page
-              window.location.reload();
-            }
-          });
-        }
-      });
-      
-      simpleLog('Service Worker registered successfully');
-    } catch (error) {
-      simpleLog('Service Worker registration failed', error);
-    }
-  });
-}
-
-// Initialize the app
-initializeApp();
+// Start loading
+simpleLog('🚀 Starting Pollux Motors app...');
+loadAppGradually();

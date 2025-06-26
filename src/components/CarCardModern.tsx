@@ -122,19 +122,16 @@ const CarCardModern: React.FC<CarCardProps> = ({
           {/* Image Container */}
           <div className="relative aspect-[4/3] overflow-hidden rounded-t-xl bg-gray-900">
             {/* Image */}
-            <motion.img
+            <img
               src={images[currentImageIndex]}
               alt={`${car.brand} ${car.name}`}
               className={cn(
                 "w-full h-full object-cover transition-all duration-700",
                 isImageLoaded ? "opacity-100 scale-100" : "opacity-0 scale-110"
               )}
-              variants={imageVariants}
-              initial="hidden"
-              animate={isImageLoaded ? "visible" : "hidden"}
               onLoad={() => setIsImageLoaded(true)}
               onError={handleImageError}
-              loading="lazy"
+              loading="eager"
             />
 
             {/* Loading Skeleton */}
@@ -216,8 +213,7 @@ const CarCardModern: React.FC<CarCardProps> = ({
 
             {/* Favorite button */}
             <FavoriteButton 
-              carId={id} 
-              initialFavorite={false} 
+              carId={car.id} 
               className="absolute top-2 right-2 z-10" 
             />
           </div>

@@ -51,11 +51,12 @@ const Home = () => {
   const [splineLoaded, setSplineLoaded] = useState(false);
 
   const handleSplineLoad = useCallback(() => {
+    console.log('✅ Spline loaded successfully');
     setSplineLoaded(true);
   }, []);
 
   const handleSplineError = useCallback((error: any) => {
-    console.error('Spline loading error:', error);
+    console.error('❌ Spline loading error:', error);
     setSplineError(true);
   }, []);
 
@@ -70,6 +71,17 @@ const Home = () => {
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20"></div>
       <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-black/30"></div>
+    </div>
+  );
+
+  // Simple loading component
+  const SplineLoading = () => (
+    <div className="w-full h-full bg-gradient-to-b from-gray-900 to-black flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500 mx-auto mb-4"></div>
+        <p className="text-white text-lg mb-2">Loading 3D Experience...</p>
+        <p className="text-gray-400 text-sm">Preparing interactive car viewer</p>
+      </div>
     </div>
   );
 
@@ -111,37 +123,35 @@ const Home = () => {
     <div className="min-h-screen bg-background">
       {/* Hero Section with 3D Car */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
-        {/* Spline 3D Car Background or Fallback */}
-        {splineError ? (
-          <HeroFallback />
-        ) : (
-          <div className="absolute inset-0 z-0">
+        {/* 3D Background - Always try to load */}
+        <div className="absolute inset-0 z-0">
+          {!splineError ? (
             <SplineErrorBoundary fallback={<HeroFallback />}>
-              <Suspense 
-                fallback={
-                  <div className="w-full h-full bg-gradient-to-b from-pollux-blue/20 to-background flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-pollux-blue"></div>
-                  </div>
-                }
-              >
+              <Suspense fallback={<SplineLoading />}>
                 <Spline
                   scene="https://prod.spline.design/S2dwW4Psu4b9wyXE/scene.splinecode"
                   style={{
                     width: '100%',
                     height: '100%',
                     background: 'transparent',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    zIndex: 0,
                   }}
                   onLoad={handleSplineLoad}
                   onError={handleSplineError}
                 />
               </Suspense>
             </SplineErrorBoundary>
-            
-            {/* Gradient overlay to ensure text readability */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20"></div>
-            <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-black/30"></div>
-          </div>
-        )}
+          ) : (
+            <HeroFallback />
+          )}
+          
+          {/* Gradient overlays - always visible for text readability */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/30 pointer-events-none z-10"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-black/50 pointer-events-none z-10"></div>
+        </div>
         
         {/* Hero Content */}
         <div className="relative z-10 text-center max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">

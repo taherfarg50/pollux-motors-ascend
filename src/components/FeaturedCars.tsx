@@ -285,6 +285,8 @@ const FeaturedCars = () => {
                   src={car.image}
                   alt={`${car.name} ${car.model || ''}`}
                   className="w-full h-full object-cover transition-transform"
+                  loading="eager"
+                  priority={index < 3}
                 />
               </motion.div>
               

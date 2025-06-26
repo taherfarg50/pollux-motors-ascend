@@ -1,124 +1,381 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronRight, Car as CarIcon, Filter, SlidersHorizontal, Search, ArrowUpRight, Sparkles, Grid, List, ArrowUpDown } from 'lucide-react';
-import CarCard from '@/components/CarCard';
+import { 
+  ChevronRight, 
+  Car as CarIcon, 
+  Filter, 
+  SlidersHorizontal, 
+  Search, 
+  ArrowUpRight, 
+  Sparkles, 
+  Grid, 
+  List, 
+  ArrowUpDown,
+  Eye,
+  Heart,
+  Share2,
+  Clock,
+  Zap,
+  Users,
+  Gauge,
+  Settings,
+  X,
+  RefreshCw,
+  TrendingUp,
+  Star,
+  Plus,
+  Phone
+} from 'lucide-react';
 import FavoriteButton from '@/components/FavoriteButton';
 import CarFilter from '@/components/CarFilter';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Car, useCars } from '@/lib/supabase';
-import gsap from 'gsap';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
 import { Badge } from '@/components/ui/badge';
 import { DataRefreshIndicator } from '@/components/ui/DataRefreshIndicator';
-import ImageTester from '@/components/ImageTester';
 import { 
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
+  DropdownMenuLabel
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useDebounce } from '@/hooks/useDebounce';
-import { log } from '@/utils/logger';
-import { perf } from '@/utils/performance';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import OptimizedCarImage from '@/components/OptimizedCarImage';
 
-// Card component with intersection observer for lazy loading
-const LazyCarCard = ({ car, index, compareList, handleToggleCompare, viewMode }) => {
+// Enhanced Car Card with Quick Actions
+const EnhancedCarCard = ({ car, index, compareList, handleToggleCompare, viewMode, onQuickView }) => {
   const cardRef = useRef(null);
   const isInView = useInView(cardRef, { once: false, amount: 0.2 });
+  const [isHovered, setIsHovered] = useState(false);
   
-  // Animation variants
   const cardVariants = {
-    hidden: { opacity: 0, y: 30 },
+    hidden: { opacity: 0, y: 30, scale: 0.95 },
     visible: {
       opacity: 1,
       y: 0,
+      scale: 1,
       transition: {
         duration: 0.6,
-        ease: [0.22, 1, 0.36, 1]
+        ease: [0.22, 1, 0.36, 1],
+        delay: index * 0.1
       }
     },
     hover: {
-      y: -10,
+      y: -8,
+      scale: 1.02,
       transition: {
         type: "spring",
-        stiffness: 300,
-        damping: 15
+        stiffness: 400,
+        damping: 25
       }
     }
   };
-  
+
   return (
     <motion.div 
       ref={cardRef}
-      className={`relative group luxury-card rounded-xl overflow-hidden transform-gpu ${viewMode === 'list' ? 'w-full' : ''}`}
+      className="group relative luxury-card rounded-2xl overflow-hidden transform-gpu"
       initial="hidden"
       animate={isInView ? "visible" : "hidden"}
       variants={cardVariants}
       whileHover="hover"
+      onHoverStart={() => setIsHovered(true)}
+      onHoverEnd={() => setIsHovered(false)}
     >
-      <div className="absolute inset-0 bg-gradient-to-t from-pollux-blue/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-0"></div>
+      {/* Enhanced Glass Background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-black/60 to-black/80 backdrop-blur-xl border border-white/10 rounded-2xl"></div>
       
-      <CarCard
-        id={car.id}
-        name={car.name}
-        category={car.category}
-        year={car.year}
-        price={car.price}
-        image={car.image}
-        specs={car.specs}
-        index={index}
-        hideNameAndPrice={compareList.includes(car.id)}
-        viewMode={viewMode}
+      {/* Animated Border Glow */}
+      <motion.div 
+        className="absolute inset-0 rounded-2xl"
+        style={{
+          background: 'linear-gradient(45deg, transparent 30%, rgba(25, 55, 227, 0.3) 50%, transparent 70%)',
+          opacity: isHovered ? 1 : 0,
+        }}
+        animate={{
+          background: isHovered 
+            ? 'linear-gradient(45deg, transparent 30%, rgba(25, 55, 227, 0.6) 50%, transparent 70%)'
+            : 'linear-gradient(45deg, transparent 30%, rgba(25, 55, 227, 0.1) 50%, transparent 70%)'
+        }}
+        transition={{ duration: 0.3 }}
       />
-      
-      <motion.div 
-        className="absolute top-4 left-4 z-10 car-action-buttons"
-        initial={{ opacity: 0, x: -10 }}
-        animate={{ opacity: isInView ? 1 : 0, x: isInView ? 0 : -10 }}
-        transition={{ delay: 0.2, duration: 0.5 }}
-      >
-        <Button
-          variant="outline"
-          size="sm"
-          className={`glass-card border-pollux-glass-border backdrop-blur-md hover:bg-pollux-blue/10 hover:border-pollux-blue/30 transition-all ${compareList.includes(car.id) ? 'border-pollux-blue bg-pollux-blue/10 text-white' : 'text-white'}`}
-          onClick={() => handleToggleCompare(car.id)}
+
+      {/* Car Image with Enhanced Effects */}
+      <div className="relative h-64 overflow-hidden rounded-t-2xl">
+        <motion.div
+          className="w-full h-full"
+          animate={{
+            scale: isHovered ? 1.1 : 1,
+            filter: isHovered ? 'brightness(1.1) saturate(1.2)' : 'brightness(1) saturate(1)'
+          }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         >
-          {compareList.includes(car.id) ? (
-            <>
-              <span className="relative">Remove</span>
-              <span className="absolute top-0 right-0 w-2 h-2 rounded-full bg-pollux-blue animate-ping"></span>
-            </>
-          ) : 'Compare'}
-        </Button>
-      </motion.div>
-      
-      <motion.div 
-        className="absolute top-4 right-4 z-10 car-action-buttons"
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: isInView ? 1 : 0, scale: isInView ? 1 : 0.8 }}
-        transition={{ delay: 0.3, duration: 0.5 }}
-      >
-        <FavoriteButton carId={car.id} />
-      </motion.div>
-      
-      {car.specs && 'featured' in car.specs && car.specs.featured && (
-        <motion.div 
-          className="absolute bottom-4 right-4 z-10"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : 10 }}
-          transition={{ delay: 0.4, duration: 0.5 }}
-        >
-          <Badge className="bg-gradient-to-r from-pollux-gold to-pollux-gold-light text-black font-medium">
-            <Sparkles className="h-3 w-3 mr-1" /> Featured
-          </Badge>
+          <OptimizedCarImage 
+            src={car.image} 
+            alt={car.name} 
+            className="w-full h-full object-cover"
+            loading="eager"
+            priority={index < 6}
+          />
         </motion.div>
-      )}
+
+        {/* Quick Action Overlay */}
+        <AnimatePresence>
+          {isHovered && (
+            <motion.div
+              className="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center gap-3"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <Button
+                size="sm"
+                variant="outline"
+                className="glass-card border-white/30 hover:bg-white/20"
+                onClick={() => onQuickView(car)}
+              >
+                <Eye className="h-4 w-4 mr-1" />
+                Quick View
+              </Button>
+              <Button
+                size="sm"
+                className="bg-pollux-blue hover:bg-pollux-blue-dark"
+                asChild
+              >
+                <Link to={`/cars/${car.id}`}>
+                  <ArrowUpRight className="h-4 w-4 mr-1" />
+                  Details
+                </Link>
+              </Button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Status Badges */}
+        <div className="absolute top-3 left-3 flex flex-col gap-2">
+          {car.specs?.featured && (
+            <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white">
+              <Star className="h-3 w-3 mr-1 fill-current" />
+              Featured
+            </Badge>
+          )}
+          {car.isNew && (
+            <Badge className="bg-gradient-to-r from-green-500 to-emerald-500 text-white">
+              New
+            </Badge>
+          )}
+        </div>
+
+        {/* Action Buttons */}
+        <div className="absolute top-3 right-3 flex flex-col gap-2">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.1 }}
+          >
+            <FavoriteButton carId={car.id} />
+          </motion.div>
+          <Button
+            size="sm"
+            variant="outline"
+            className={`glass-card border-white/30 ${compareList.includes(car.id) ? 'bg-pollux-blue text-white' : ''}`}
+            onClick={() => handleToggleCompare(car.id)}
+          >
+            {compareList.includes(car.id) ? (
+              <X className="h-4 w-4" />
+            ) : (
+              <Plus className="h-4 w-4" />
+            )}
+          </Button>
+        </div>
+      </div>
+
+      {/* Enhanced Car Info */}
+      <div className="relative p-6 z-10">
+        <div className="flex justify-between items-start mb-3">
+          <div>
+            <h3 className="text-xl font-bold text-white group-hover:text-pollux-blue transition-colors line-clamp-1">
+              {car.name}
+            </h3>
+            <p className="text-gray-400 text-sm">{car.category} • {car.year}</p>
+          </div>
+          <div className="text-right">
+            <p className="text-2xl font-bold text-gradient-blue">{car.price}</p>
+            <p className="text-xs text-gray-500">Starting from</p>
+          </div>
+        </div>
+
+        {/* Quick Stats */}
+        <div className="grid grid-cols-2 gap-3 mb-4">
+          <div className="flex items-center gap-2 text-sm">
+            <Gauge className="h-4 w-4 text-pollux-blue" />
+            <span className="text-gray-300">{car.specs?.speed || 'N/A'}</span>
+          </div>
+          <div className="flex items-center gap-2 text-sm">
+            <Zap className="h-4 w-4 text-pollux-blue" />
+            <span className="text-gray-300">{car.specs?.power || 'N/A'}</span>
+          </div>
+        </div>
+
+        {/* Rating and Actions */}
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-1">
+            {[...Array(5)].map((_, i) => (
+              <Star 
+                key={i} 
+                className={`h-4 w-4 ${i < 4 ? 'text-yellow-500 fill-current' : 'text-gray-600'}`} 
+              />
+            ))}
+            <span className="text-sm text-gray-400 ml-1">(4.8)</span>
+          </div>
+          <Button size="sm" variant="ghost" className="text-pollux-blue hover:bg-pollux-blue/10">
+            <Share2 className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
     </motion.div>
+  );
+};
+
+// Quick View Modal Component
+const QuickViewModal = ({ car, isOpen, onClose }) => {
+  if (!car) return null;
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto glass-card border-pollux-glass-border">
+        <div className="grid md:grid-cols-2 gap-6">
+          {/* Image Section */}
+          <div className="space-y-4">
+            <div className="aspect-video rounded-xl overflow-hidden">
+              <OptimizedCarImage 
+                src={car.image} 
+                alt={car.name}
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              {[1,2,3].map(i => (
+                <div key={i} className="aspect-video rounded-lg bg-gray-800 flex items-center justify-center">
+                  <span className="text-gray-500 text-xs">View {i}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Info Section */}
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-3xl font-bold text-white mb-2">{car.name}</h2>
+              <div className="flex items-center gap-4 text-gray-400">
+                <span>{car.category}</span>
+                <span>•</span>
+                <span>{car.year}</span>
+                <span>•</span>
+                <Badge variant="outline" className="border-pollux-blue text-pollux-blue">
+                  Available
+                </Badge>
+              </div>
+            </div>
+
+            <div className="text-3xl font-bold text-gradient-blue">{car.price}</div>
+
+            {/* Key Specs */}
+            <div className="grid grid-cols-2 gap-4">
+              {[
+                { icon: <Gauge className="h-5 w-5" />, label: 'Top Speed', value: car.specs?.speed },
+                { icon: <Zap className="h-5 w-5" />, label: 'Power', value: car.specs?.power },
+                { icon: <Clock className="h-5 w-5" />, label: '0-100 km/h', value: car.specs?.acceleration },
+                { icon: <Users className="h-5 w-5" />, label: 'Seats', value: '5' }
+              ].map((spec, i) => (
+                <div key={i} className="bg-white/5 rounded-lg p-3">
+                  <div className="flex items-center gap-2 text-pollux-blue mb-1">
+                    {spec.icon}
+                    <span className="text-sm text-gray-400">{spec.label}</span>
+                  </div>
+                  <p className="font-semibold text-white">{spec.value || 'N/A'}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex gap-3">
+              <Button className="flex-1 bg-pollux-blue hover:bg-pollux-blue-dark" asChild>
+                <Link to={`/cars/${car.id}`}>
+                  View Full Details
+                  <ArrowUpRight className="h-4 w-4 ml-2" />
+                </Link>
+              </Button>
+              <Button variant="outline" size="icon" className="border-white/20">
+                <Heart className="h-4 w-4" />
+              </Button>
+              <Button variant="outline" size="icon" className="border-white/20">
+                <Share2 className="h-4 w-4" />
+              </Button>
+            </div>
+
+            {/* Contact Info */}
+            <div className="bg-gradient-to-r from-pollux-blue/10 to-pollux-blue-dark/10 rounded-lg p-4 border border-pollux-blue/20">
+              <h3 className="font-semibold text-white mb-2">Interested in this vehicle?</h3>
+              <p className="text-sm text-gray-300 mb-3">Contact our sales team for more information</p>
+              <Button variant="outline" className="w-full border-pollux-blue text-pollux-blue hover:bg-pollux-blue hover:text-white">
+                <Phone className="h-4 w-4 mr-2" />
+                Contact Sales
+              </Button>
+            </div>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+// Statistics Section Component
+const CarsStatistics = ({ cars, filteredCount }) => {
+  const stats = useMemo(() => {
+    if (!cars.length) return [];
+    
+    const categories = cars.reduce((acc, car) => {
+      acc[car.category] = (acc[car.category] || 0) + 1;
+      return acc;
+    }, {});
+    
+    const avgPrice = cars.reduce((sum, car) => {
+      const price = parseInt(car.price.replace(/[^0-9]/g, ''));
+      return sum + (isNaN(price) ? 0 : price);
+    }, 0) / cars.length;
+    
+    return [
+      { label: 'Total Vehicles', value: cars.length, icon: <CarIcon className="h-5 w-5" /> },
+      { label: 'Filtered Results', value: filteredCount, icon: <Filter className="h-5 w-5" /> },
+      { label: 'Categories', value: Object.keys(categories).length, icon: <Settings className="h-5 w-5" /> },
+      { label: 'Avg Price', value: `$${Math.round(avgPrice/1000)}K`, icon: <TrendingUp className="h-5 w-5" /> }
+    ];
+  }, [cars, filteredCount]);
+
+  return (
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      {stats.map((stat, index) => (
+        <motion.div
+          key={stat.label}
+          className="glass-card border-pollux-glass-border rounded-xl p-4 text-center"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: index * 0.1 }}
+        >
+          <div className="flex items-center justify-center mb-2 text-pollux-blue">
+            {stat.icon}
+          </div>
+          <div className="text-2xl font-bold text-white mb-1">{stat.value}</div>
+          <div className="text-sm text-gray-400">{stat.label}</div>
+        </motion.div>
+      ))}
+    </div>
   );
 };
 
@@ -128,9 +385,13 @@ const Cars = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [sortOrder, setSortOrder] = useState<string>('default');
   const [currentPage, setCurrentPage] = useState(0);
+  const [quickViewCar, setQuickViewCar] = useState<Car | null>(null);
+  const [showQuickView, setShowQuickView] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
+  
   const carsPerPage = 12;
   
-  // Use optimized hook with pagination for better performance
   const { data: carsData, isLoading, isRefetching, refetch } = useCars({
     limit: carsPerPage,
     offset: currentPage * carsPerPage
@@ -140,110 +401,22 @@ const Cars = () => {
   const totalCars = carsData?.total || 0;
   
   const titleRef = useRef<HTMLDivElement>(null);
-  const gridRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (allCars.length > 0) {
       setFilteredCars(allCars);
     }
   }, [allCars]);
-  
-  // Animation variants
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.2
-      }
-    }
-  };
 
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        type: "spring",
-        stiffness: 300,
-        damping: 24
-      }
-    }
-  };
-
-  const cardVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: (custom: number) => ({
-      opacity: 1,
-      y: 0,
-      transition: {
-        delay: 0.1 * custom,
-        duration: 0.6,
-        ease: [0.22, 1, 0.36, 1]
-      }
-    }),
-    hover: {
-      y: -10,
-      transition: {
-        type: "spring",
-        stiffness: 300,
-        damping: 15
-      }
-    }
-  };
-
-  // Title animation
-  useEffect(() => {
-    if (!titleRef.current) return;
-    
-    // Check if ScrollTrigger is available and if the DOM element exists and has children
-    if (titleRef.current && titleRef.current.children && titleRef.current.children.length > 0) {
-      try {
-        gsap.fromTo(
-          titleRef.current.children,
-          { y: 30, opacity: 0, filter: "blur(8px)" },
-          {
-            y: 0,
-            opacity: 1,
-            filter: "blur(0px)",
-            stagger: 0.2,
-            duration: 1,
-            ease: "power3.out",
-            scrollTrigger: {
-              trigger: titleRef.current,
-              start: "top bottom-=100",
-              toggleActions: "play none none none"
-            }
-          }
-        );
-        
-        return () => {
-          // Check if titleRef is still valid before cleanup
-          if (titleRef.current) {
-            gsap.killTweensOf(titleRef.current.children);
-          }
-        };
-      } catch (error) {
-        console.error("GSAP animation error:", error);
-      }
-    }
-  }, []);
-
-  // Add pagination controls
-  const handlePageChange = (newPage: number) => {
-    setCurrentPage(newPage);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-  
   const totalPages = Math.ceil(totalCars / carsPerPage);
 
-  // Update filter function to work with current page data
-  const handleFilterChange = (filtered: Car[]) => {
-    setFilteredCars(filtered);
+  // Handle quick view
+  const handleQuickView = (car: Car) => {
+    setQuickViewCar(car);
+    setShowQuickView(true);
   };
-  
+
+  // Handle compare toggle
   const handleToggleCompare = (carId: number) => {
     setCompareList(prev => {
       if (prev.includes(carId)) {
@@ -257,6 +430,13 @@ const Cars = () => {
     });
   };
 
+  // Handle filter changes
+  const handleFilterChange = (filtered: Car[]) => {
+    setFilteredCars(filtered);
+    setCurrentPage(0); // Reset to first page when filtering
+  };
+
+  // Handle sorting
   const handleSortChange = (order: string) => {
     setSortOrder(order);
     const sorted = [...filteredCars];
@@ -282,8 +462,13 @@ const Cars = () => {
       case 'year-old-new':
         sorted.sort((a, b) => parseInt(a.year) - parseInt(b.year));
         break;
+      case 'name-a-z':
+        sorted.sort((a, b) => a.name.localeCompare(b.name));
+        break;
+      case 'name-z-a':
+        sorted.sort((a, b) => b.name.localeCompare(a.name));
+        break;
       default:
-        // Keep original order
         break;
     }
     
@@ -291,119 +476,188 @@ const Cars = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-pollux-dark-gray to-black text-foreground relative overflow-hidden">
-      {/* Decorative elements */}
-      <div className="absolute -top-40 -left-40 w-80 h-80 rounded-full bg-pollux-blue/5 blur-3xl"></div>
-      <div className="absolute -bottom-40 -right-40 w-80 h-80 rounded-full bg-pollux-gold/5 blur-3xl"></div>
-      <div className="absolute top-1/3 right-20 w-60 h-60 rounded-full bg-pollux-blue-dark/5 blur-3xl"></div>
+    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black text-foreground relative overflow-hidden">
+      {/* Enhanced Background Elements */}
+      <div className="absolute -top-40 -left-40 w-96 h-96 rounded-full bg-gradient-to-r from-pollux-blue/10 to-pollux-blue-dark/5 blur-3xl"></div>
+      <div className="absolute -bottom-40 -right-40 w-96 h-96 rounded-full bg-gradient-to-r from-pollux-gold/10 to-orange-500/5 blur-3xl"></div>
+      <div className="absolute top-1/3 right-20 w-80 h-80 rounded-full bg-gradient-to-r from-purple-500/5 to-pink-500/5 blur-3xl"></div>
       
-      <main className="pt-28 pb-20 relative z-10 main-content">
+      <main className="pt-28 pb-20 relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div ref={titleRef} className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 text-center py-10 md:py-16">
-            <span className="block text-pollux-blue text-sm font-medium mb-4 px-3 py-1.5 bg-pollux-blue/10 rounded-full inline-block">Extensive Selection</span>
-            <div className="flex items-center justify-center gap-2">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300">
-                Our Vehicles Collection
-              </h1>
+          {/* Enhanced Header */}
+          <motion.div 
+            ref={titleRef}
+            className="text-center py-16"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.2, duration: 0.6 }}
+            >
+              <Badge className="bg-gradient-to-r from-pollux-blue to-pollux-blue-dark text-white mb-6">
+                <Sparkles className="h-4 w-4 mr-2" />
+                Premium Collection
+              </Badge>
+            </motion.div>
+            
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-gray-200 to-gray-400 mb-6">
+              Discover Your
+              <span className="block bg-clip-text text-transparent bg-gradient-to-r from-pollux-blue to-pollux-blue-light">
+                Perfect Vehicle
+              </span>
+            </h1>
+            
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+              Explore our carefully curated collection of luxury and performance vehicles. 
+              Each car represents excellence in engineering, design, and innovation.
+            </p>
+            
+            <div className="flex items-center justify-center gap-2 mt-6">
               <DataRefreshIndicator
                 isRefetching={isRefetching}
                 refetch={refetch}
                 label="Vehicle collection"
               />
             </div>
-            <p className="mt-4 text-lg text-gray-300 max-w-3xl mx-auto">
-              Explore our handpicked selection of luxury vehicles. Each car represents the pinnacle of performance, innovation, and prestige.
-            </p>
-          </div>
-
-          <motion.div 
-            className="glass-card rounded-xl p-6 border border-pollux-glass-border mb-12"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-          >
-            <div className="flex flex-wrap items-center justify-between gap-6">
-              <div className="w-full md:w-auto flex items-center gap-3">
-                <div className="p-2 rounded-full bg-pollux-blue/10 text-gradient-subtle">
-                  <Search className="h-5 w-5" />
-                </div>
-                <h3 className="text-xl font-medium text-white">Find Your Perfect Match</h3>
-              </div>
-              
-              <div className="w-full md:flex-1">
-                <CarFilter onFilterChange={handleFilterChange} cars={allCars} />
-              </div>
-              
-              <AnimatePresence>
-                {compareList.length > 0 && (
-                  <motion.div 
-                    className="w-full md:w-auto flex items-center gap-4"
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                  >
-                    <div className="flex items-center gap-2 bg-pollux-blue/10 px-3 py-1.5 rounded-full">
-                      <Sparkles className="h-4 w-4 text-pollux-blue" />
-                      <span className="text-sm font-medium text-white">{compareList.length} selected</span>
-                    </div>
-                    <Button
-                      asChild
-                      className="btn-luxury relative overflow-hidden group"
-                    >
-                      <Link to={`/compare?cars=${compareList.join(',')}`}>
-                        <span className="relative z-10">Compare Vehicles</span>
-                        <motion.div
-                          className="absolute right-3 inline-flex z-10"
-                          animate={{ x: [0, 3, 0] }}
-                          transition={{ duration: 1.5, repeat: Infinity, repeatType: "loop" }}
-                        >
-                          <ArrowUpRight className="h-4 w-4" />
-                        </motion.div>
-                        <motion.span 
-                          className="absolute inset-0 bg-gradient-to-r from-pollux-blue-dark to-pollux-blue-light z-0"
-                          initial={{ x: "-100%" }}
-                          whileHover={{ x: 0 }}
-                          transition={{ duration: 0.4, ease: "easeInOut" }}
-                        />
-                      </Link>
-                    </Button>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
           </motion.div>
 
-          {/* View controls and sorting */}
+          {/* Statistics Section */}
+          <CarsStatistics cars={allCars} filteredCount={filteredCars.length} />
+
+          {/* Enhanced Search and Filter Bar */}
+          <motion.div 
+            className="glass-card rounded-2xl p-6 border border-pollux-glass-border mb-8 backdrop-blur-xl"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.6 }}
+          >
+            <div className="flex flex-col lg:flex-row gap-6">
+              {/* Search Section */}
+              <div className="flex-1">
+                <div className="relative">
+                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-pollux-blue h-5 w-5" />
+                  <Input
+                    type="text"
+                    placeholder="Search by name, brand, model, or category..."
+                    className="pl-12 pr-4 py-3 glass-card border-pollux-glass-border focus:border-pollux-blue/50 transition-all text-lg"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                  {searchQuery && (
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                      onClick={() => setSearchQuery('')}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+              </div>
+
+              {/* Filter Toggle */}
+              <Button
+                variant="outline"
+                className="glass-card border-pollux-glass-border hover:bg-pollux-blue/10 px-6"
+                onClick={() => setShowFilters(!showFilters)}
+              >
+                <SlidersHorizontal className="h-5 w-5 mr-2" />
+                Filters
+                {showFilters && <ChevronRight className="h-4 w-4 ml-2 rotate-90 transition-transform" />}
+              </Button>
+            </div>
+
+            {/* Expandable Filters */}
+            <AnimatePresence>
+              {showFilters && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="overflow-hidden"
+                >
+                  <div className="pt-6 border-t border-white/10 mt-6">
+                    <CarFilter onFilterChange={handleFilterChange} cars={allCars} />
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+
+          {/* Compare Bar */}
+          <AnimatePresence>
+            {compareList.length > 0 && (
+              <motion.div 
+                className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50"
+                initial={{ opacity: 0, y: 100 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 100 }}
+                transition={{ type: "spring", stiffness: 300, damping: 25 }}
+              >
+                <div className="glass-card border-pollux-glass-border rounded-2xl p-4 backdrop-blur-xl flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="h-5 w-5 text-pollux-blue" />
+                    <span className="font-medium text-white">{compareList.length} vehicle{compareList.length > 1 ? 's' : ''} selected</span>
+                  </div>
+                  <Button
+                    className="bg-pollux-blue hover:bg-pollux-blue-dark text-white"
+                    asChild
+                  >
+                    <Link to={`/compare?cars=${compareList.join(',')}`}>
+                      Compare Now
+                      <ArrowUpRight className="h-4 w-4 ml-2" />
+                    </Link>
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => setCompareList([])}
+                    className="text-gray-400 hover:text-white"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* View Controls and Sorting */}
           <motion.div 
             className="flex flex-wrap justify-between items-center mb-8 gap-4"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.5 }}
+            transition={{ delay: 0.5, duration: 0.5 }}
           >
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-4">
               <span className="text-gray-400">View:</span>
               <div className="glass-card border border-pollux-glass-border rounded-lg p-1 flex">
                 <Button
                   variant="ghost"
-                  size="icon"
-                  className={`rounded-md ${viewMode === 'grid' ? 'bg-pollux-blue text-white' : 'text-gray-400 hover:text-white'}`}
+                  size="sm"
+                  className={`rounded-md px-3 ${viewMode === 'grid' ? 'bg-pollux-blue text-white' : 'text-gray-400 hover:text-white'}`}
                   onClick={() => setViewMode('grid')}
                 >
-                  <Grid className="h-4 w-4" />
+                  <Grid className="h-4 w-4 mr-1" />
+                  Grid
                 </Button>
                 <Button
                   variant="ghost"
-                  size="icon"
-                  className={`rounded-md ${viewMode === 'list' ? 'bg-pollux-blue text-white' : 'text-gray-400 hover:text-white'}`}
+                  size="sm"
+                  className={`rounded-md px-3 ${viewMode === 'list' ? 'bg-pollux-blue text-white' : 'text-gray-400 hover:text-white'}`}
                   onClick={() => setViewMode('list')}
                 >
-                  <List className="h-4 w-4" />
+                  <List className="h-4 w-4 mr-1" />
+                  List
                 </Button>
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-4">
               <span className="text-gray-400">Sort by:</span>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -411,17 +665,21 @@ const Cars = () => {
                     variant="outline" 
                     className="gap-2 glass-card border-pollux-glass-border hover:bg-pollux-blue/10 hover:border-pollux-blue/30 transition-all"
                   >
-                    {sortOrder === 'default' && 'Default'}
+                    {sortOrder === 'default' && 'Default Order'}
                     {sortOrder === 'price-low-high' && 'Price: Low to High'}
                     {sortOrder === 'price-high-low' && 'Price: High to Low'}
                     {sortOrder === 'year-new-old' && 'Year: Newest First'}
                     {sortOrder === 'year-old-new' && 'Year: Oldest First'}
+                    {sortOrder === 'name-a-z' && 'Name: A to Z'}
+                    {sortOrder === 'name-z-a' && 'Name: Z to A'}
                     <ArrowUpDown className="h-4 w-4 ml-1" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="glass-card border-pollux-glass-border backdrop-blur-md">
+                  <DropdownMenuLabel>Sort Options</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => handleSortChange('default')}>
-                    Default
+                    Default Order
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => handleSortChange('price-low-high')}>
                     Price: Low to High
@@ -435,11 +693,18 @@ const Cars = () => {
                   <DropdownMenuItem onClick={() => handleSortChange('year-old-new')}>
                     Year: Oldest First
                   </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleSortChange('name-a-z')}>
+                    Name: A to Z
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleSortChange('name-z-a')}>
+                    Name: Z to A
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
           </motion.div>
 
+          {/* Cars Grid/List */}
           {isLoading ? (
             <motion.div 
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
@@ -447,43 +712,46 @@ const Cars = () => {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
             >
-              {[1, 2, 3, 4, 5, 6].map((_, idx) => (
-                <div key={idx} className="glass-card rounded-xl overflow-hidden h-[450px] relative border border-pollux-glass-border">
-                  <Skeleton className="h-[250px] w-full bg-white/5" />
+              {[...Array(6)].map((_, idx) => (
+                <div key={idx} className="glass-card rounded-2xl overflow-hidden h-[500px] relative border border-pollux-glass-border">
+                  <Skeleton className="h-64 w-full bg-white/5" />
                   <div className="p-6">
                     <Skeleton className="h-8 w-3/4 mb-3 bg-white/5" />
                     <Skeleton className="h-6 w-1/2 mb-4 bg-white/5" />
-                    <Skeleton className="h-4 w-full mb-3 bg-white/5" />
-                    <Skeleton className="h-4 w-5/6 bg-white/5" />
+                    <div className="grid grid-cols-2 gap-3 mb-4">
+                      <Skeleton className="h-6 w-full bg-white/5" />
+                      <Skeleton className="h-6 w-full bg-white/5" />
+                    </div>
+                    <Skeleton className="h-6 w-full bg-white/5" />
                   </div>
                 </div>
               ))}
             </motion.div>
           ) : filteredCars.length > 0 ? (
             <motion.div 
-              ref={gridRef}
               className={viewMode === 'grid' 
-                ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8" 
+                ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" 
                 : "flex flex-col gap-6"
               }
               initial="hidden"
               animate="visible"
-              variants={containerVariants}
+              transition={{ staggerChildren: 0.1 }}
             >
               {filteredCars.map((car, index) => (
-                <LazyCarCard
+                <EnhancedCarCard
                   key={car.id}
                   car={car}
                   index={index}
                   compareList={compareList}
                   handleToggleCompare={handleToggleCompare}
                   viewMode={viewMode}
+                  onQuickView={handleQuickView}
                 />
               ))}
             </motion.div>
           ) : (
             <motion.div 
-              className="glass-card rounded-xl p-12 text-center border border-pollux-glass-border"
+              className="glass-card rounded-2xl p-16 text-center border border-pollux-glass-border"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
@@ -493,149 +761,85 @@ const Cars = () => {
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.2, duration: 0.5 }}
               >
-                <CarIcon className="mx-auto h-20 w-20 text-pollux-blue/50 mb-6" />
+                <CarIcon className="mx-auto h-24 w-24 text-pollux-blue/50 mb-6" />
               </motion.div>
-              <motion.h2 
-                className="text-2xl font-medium mb-3 text-gradient-subtle"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3, duration: 0.5 }}
+              <h2 className="text-3xl font-bold text-white mb-4">No vehicles found</h2>
+              <p className="text-gray-400 text-lg mb-6">
+                Try adjusting your search criteria or filters to find the perfect vehicle.
+              </p>
+              <Button 
+                onClick={() => {
+                  setSearchQuery('');
+                  setShowFilters(false);
+                  // Reset filters logic would go here
+                }}
+                className="bg-pollux-blue hover:bg-pollux-blue-dark"
               >
-                No vehicles match your criteria
-              </motion.h2>
-              <motion.p 
-                className="text-gray-400 mb-8 max-w-md mx-auto"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4, duration: 0.5 }}
-              >
-                We couldn't find any vehicles matching your current filters. Try adjusting your criteria for different results.
-              </motion.p>
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5, duration: 0.5 }}
-              >
-                <Button
-                  className="btn-luxury"
-                  onClick={() => setFilteredCars(allCars)}
-                >
-                  Reset All Filters
-                </Button>
-              </motion.div>
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Reset Filters
+              </Button>
             </motion.div>
           )}
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <motion.div 
+              className="flex justify-center items-center gap-2 mt-12"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, duration: 0.5 }}
+            >
+              <Button
+                variant="outline"
+                disabled={currentPage === 0}
+                onClick={() => setCurrentPage(prev => Math.max(0, prev - 1))}
+                className="glass-card border-pollux-glass-border"
+              >
+                Previous
+              </Button>
+              
+              <div className="flex gap-1">
+                {[...Array(Math.min(5, totalPages))].map((_, i) => {
+                  const pageNum = currentPage < 3 ? i : currentPage - 2 + i;
+                  if (pageNum >= totalPages) return null;
+                  
+                  return (
+                    <Button
+                      key={pageNum}
+                      variant={pageNum === currentPage ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setCurrentPage(pageNum)}
+                      className={pageNum === currentPage 
+                        ? "bg-pollux-blue hover:bg-pollux-blue-dark" 
+                        : "glass-card border-pollux-glass-border hover:bg-pollux-blue/10"
+                      }
+                    >
+                      {pageNum + 1}
+                    </Button>
+                  );
+                })}
+              </div>
+              
+              <Button
+                variant="outline"
+                disabled={currentPage === totalPages - 1}
+                onClick={() => setCurrentPage(prev => Math.min(totalPages - 1, prev + 1))}
+                className="glass-card border-pollux-glass-border"
+              >
+                Next
+              </Button>
+            </motion.div>
+          )}
+
+          {/* Quick View Modal */}
+          {quickViewCar && (
+            <QuickViewModal
+              car={quickViewCar}
+              isOpen={showQuickView}
+              onClose={() => setShowQuickView(false)}
+            />
+          )}
         </div>
-        
-        {/* Pagination Controls */}
-        {totalPages > 1 && (
-          <motion.div 
-            className="mt-12 flex justify-center items-center gap-4"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <Button
-              variant="outline"
-              disabled={currentPage === 0}
-              onClick={() => handlePageChange(currentPage - 1)}
-              className="glass-card border-pollux-glass-border hover:bg-pollux-blue/10 hover:border-pollux-blue/30"
-            >
-              Previous
-            </Button>
-            
-            <div className="flex items-center gap-2">
-              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                const pageIndex = currentPage <= 2 ? i : 
-                                 currentPage >= totalPages - 3 ? totalPages - 5 + i :
-                                 currentPage - 2 + i;
-                
-                return (
-                  <Button
-                    key={pageIndex}
-                    variant={pageIndex === currentPage ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => handlePageChange(pageIndex)}
-                    className={pageIndex === currentPage ? 
-                      "bg-pollux-blue text-white" : 
-                      "glass-card border-pollux-glass-border hover:bg-pollux-blue/10"
-                    }
-                  >
-                    {pageIndex + 1}
-                  </Button>
-                );
-              })}
-            </div>
-            
-            <Button
-              variant="outline"
-              disabled={currentPage === totalPages - 1}
-              onClick={() => handlePageChange(currentPage + 1)}
-              className="glass-card border-pollux-glass-border hover:bg-pollux-blue/10 hover:border-pollux-blue/30"
-            >
-              Next
-            </Button>
-          </motion.div>
-        )}
-
-        {/* Loading indicator for pagination */}
-        {isLoading && (
-          <motion.div 
-            className="mt-8 text-center"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-          >
-            <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-pollux-blue/10 text-pollux-blue">
-              <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-pollux-blue"></div>
-              <span>Loading vehicles...</span>
-            </div>
-          </motion.div>
-        )}
-
-        {/* Development Tools (Development Only) */}
-        {process.env.NODE_ENV === 'development' && (
-          <div className="mt-24 border-t border-gray-800/50">
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-              <div className="text-center mb-8">
-                <h2 className="text-2xl font-bold mb-2 text-gradient-subtle">Development Tools</h2>
-                <p className="text-gray-400 text-sm">Image diagnostics and data monitoring for vehicle images</p>
-              </div>
-              
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-                <div className="glass-card p-6 border border-pollux-glass-border rounded-xl">
-                  <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-green-500"></span>
-                    Vehicle Stats
-                  </h3>
-                  <div className="space-y-3 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-gray-400">Total Vehicles:</span>
-                      <span className="text-white font-medium">{totalCars}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-400">Filtered Results:</span>
-                      <span className="text-white font-medium">{filteredCars.length}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-400">View Mode:</span>
-                      <span className="text-white font-medium capitalize">{viewMode}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-400">Sort Order:</span>
-                      <span className="text-white font-medium">{sortOrder === 'default' ? 'Default' : sortOrder}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-400">Compare Selection:</span>
-                      <span className="text-white font-medium">{compareList.length}/4</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <ImageTester />
-            </div>
-          </div>
-        )}
       </main>
     </div>
   );

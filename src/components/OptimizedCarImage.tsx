@@ -9,6 +9,7 @@ interface OptimizedCarImageProps {
   loading?: 'lazy' | 'eager';
   onError?: () => void;
   onLoad?: () => void;
+  priority?: boolean; // For above-the-fold images
 }
 
 const OptimizedCarImage: React.FC<OptimizedCarImageProps> = ({
@@ -17,7 +18,8 @@ const OptimizedCarImage: React.FC<OptimizedCarImageProps> = ({
   className = '',
   loading = 'lazy',
   onError,
-  onLoad
+  onLoad,
+  priority = false
 }) => {
   const [imageState, setImageState] = useState<'loading' | 'loaded' | 'error'>('loading');
   const [currentSrc, setCurrentSrc] = useState<string>(src);
@@ -30,6 +32,9 @@ const OptimizedCarImage: React.FC<OptimizedCarImageProps> = ({
   ];
 
   const [fallbackIndex, setFallbackIndex] = useState(-1);
+
+  // Determine loading behavior - prioritize important images
+  const effectiveLoading = priority || loading === 'eager' ? 'eager' : 'lazy';
 
   useEffect(() => {
     setImageState('loading');
@@ -60,53 +65,46 @@ const OptimizedCarImage: React.FC<OptimizedCarImageProps> = ({
     onLoad?.();
   };
 
-  // Loading state
-  if (imageState === 'loading') {
-    return (
-      <div className={`${className} bg-gray-900 flex items-center justify-center`}>
-        <div className="flex flex-col items-center space-y-2 text-gray-500">
-          <Loader2 className="w-8 h-8 animate-spin" />
-          <span className="text-xs">Loading...</span>
-        </div>
-        <img
-          src={currentSrc}
-          alt={alt}
-          className="hidden"
-          loading={loading}
-          onLoad={handleImageLoad}
-          onError={handleImageError}
-        />
-      </div>
-    );
-  }
-
-  // Error state - show a nice placeholder
-  if (imageState === 'error') {
-    return (
-      <div className={`${className} bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center`}>
-        <div className="flex flex-col items-center space-y-3 text-gray-500">
-          <div className="p-4 bg-gray-800 rounded-full">
-            <Car className="w-8 h-8" />
-          </div>
-          <div className="text-center">
-            <p className="text-sm font-medium text-gray-400">{alt}</p>
-            <p className="text-xs text-gray-500 mt-1">Image not available</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Loaded state
+  // Always render the image, but control visibility through opacity
   return (
-    <img
-      src={currentSrc}
-      alt={alt}
-      className={className}
-      loading={loading}
-      onError={handleImageError}
-      onLoad={handleImageLoad}
-    />
+    <div className={`${className} relative overflow-hidden`}>
+      {/* Actual image - always present */}
+      <img
+        src={currentSrc}
+        alt={alt}
+        className={`w-full h-full object-cover transition-opacity duration-500 ${
+          imageState === 'loaded' ? 'opacity-100' : 'opacity-0'
+        }`}
+        loading={effectiveLoading}
+        onLoad={handleImageLoad}
+        onError={handleImageError}
+      />
+      
+      {/* Loading state overlay */}
+      {imageState === 'loading' && (
+        <div className="absolute inset-0 bg-gray-900 flex items-center justify-center">
+          <div className="flex flex-col items-center space-y-2 text-gray-500">
+            <Loader2 className="w-8 h-8 animate-spin" />
+            <span className="text-xs">Loading...</span>
+          </div>
+        </div>
+      )}
+
+      {/* Error state overlay */}
+      {imageState === 'error' && (
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
+          <div className="flex flex-col items-center space-y-3 text-gray-500">
+            <div className="p-4 bg-gray-800 rounded-full">
+              <Car className="w-8 h-8" />
+            </div>
+            <div className="text-center">
+              <p className="text-sm font-medium text-gray-400">{alt}</p>
+              <p className="text-xs text-gray-500 mt-1">Image not available</p>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 
