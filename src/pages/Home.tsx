@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { 
@@ -19,7 +19,60 @@ import CustomerTestimonials from '@/components/CustomerTestimonials';
 import BrandPartners from '@/components/BrandPartners';
 import Spline from '@splinetool/react-spline';
 
+// Error Boundary for Spline component
+class SplineErrorBoundary extends React.Component<
+  { children: React.ReactNode; fallback: React.ReactNode },
+  { hasError: boolean }
+> {
+  constructor(props: any) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(_: Error): { hasError: boolean } {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.log('Spline Error:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return this.props.fallback;
+    }
+
+    return this.props.children;
+  }
+}
+
 const Home = () => {
+  const [splineError, setSplineError] = useState(false);
+  const [splineLoaded, setSplineLoaded] = useState(false);
+
+  const handleSplineLoad = useCallback(() => {
+    setSplineLoaded(true);
+  }, []);
+
+  const handleSplineError = useCallback((error: any) => {
+    console.error('Spline loading error:', error);
+    setSplineError(true);
+  }, []);
+
+  // Fallback Hero Background Component
+  const HeroFallback = () => (
+    <div className="absolute inset-0 z-0">
+      <div 
+        className="w-full h-full bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: `linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1553440569-bcc63803a83d?q=80&w=1920&auto=format&fit=crop&ixlib=rb-4.0.3')`,
+        }}
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20"></div>
+      <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-black/30"></div>
+    </div>
+  );
+
   const services = [
     {
       icon: <Car className="w-12 h-12" />,
@@ -58,29 +111,37 @@ const Home = () => {
     <div className="min-h-screen bg-background">
       {/* Hero Section with 3D Car */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
-        {/* Spline 3D Car Background */}
-        <div className="absolute inset-0 z-0">
-          <Suspense 
-            fallback={
-              <div className="w-full h-full bg-gradient-to-b from-pollux-blue/20 to-background flex items-center justify-center">
-                <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-pollux-blue"></div>
-              </div>
-            }
-          >
-            <Spline
-              scene="https://prod.spline.design/S2dwW4Psu4b9wyXE/scene.splinecode"
-              style={{
-                width: '100%',
-                height: '100%',
-                background: 'transparent',
-              }}
-            />
-          </Suspense>
-          
-          {/* Gradient overlay to ensure text readability */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20"></div>
-          <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-black/30"></div>
-        </div>
+        {/* Spline 3D Car Background or Fallback */}
+        {splineError ? (
+          <HeroFallback />
+        ) : (
+          <div className="absolute inset-0 z-0">
+            <SplineErrorBoundary fallback={<HeroFallback />}>
+              <Suspense 
+                fallback={
+                  <div className="w-full h-full bg-gradient-to-b from-pollux-blue/20 to-background flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-pollux-blue"></div>
+                  </div>
+                }
+              >
+                <Spline
+                  scene="https://prod.spline.design/S2dwW4Psu4b9wyXE/scene.splinecode"
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    background: 'transparent',
+                  }}
+                  onLoad={handleSplineLoad}
+                  onError={handleSplineError}
+                />
+              </Suspense>
+            </SplineErrorBoundary>
+            
+            {/* Gradient overlay to ensure text readability */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-black/30"></div>
+          </div>
+        )}
         
         {/* Hero Content */}
         <div className="relative z-10 text-center max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
