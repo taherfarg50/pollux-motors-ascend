@@ -98,6 +98,7 @@ export type Database = {
           created_at: string
           description: string | null
           featured: boolean | null
+          gallery: string[] | null
           id: number
           image: string
           model: string | null
@@ -112,6 +113,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           featured?: boolean | null
+          gallery?: string[] | null
           id?: number
           image: string
           model?: string | null
@@ -126,6 +128,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           featured?: boolean | null
+          gallery?: string[] | null
           id?: number
           image?: string
           model?: string | null

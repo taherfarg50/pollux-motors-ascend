@@ -1,39 +1,34 @@
-import React, { Suspense, lazy, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from '@/components/ui/toaster';
 import { AuthProvider } from '@/context/AuthContext';
 import { ChatbotProvider } from '@/context/ChatbotContext';
 import { ScrollProvider } from '@/context/ScrollContext';
-import NavbarModern from '@/components/NavbarModern';
+import SimpleNavbar from '@/components/SimpleNavbar';
 import Footer from '@/components/Footer';
 import ScrollToTop from '@/components/ScrollToTop';
 import ErrorBoundary from '@/components/ErrorBoundary';
+import PerformanceMonitor from '@/components/PerformanceMonitor';
 import { log } from '@/utils/logger';
 import { perf } from '@/utils/performance';
 
-// Lazy load components for better performance
-const Home = lazy(() => import('@/pages/Home'));
-const Cars = lazy(() => import('@/pages/Cars'));
-const CarDetail = lazy(() => import('@/pages/CarDetail'));
-const ExportServices = lazy(() => import('@/pages/ExportServices'));
-const About = lazy(() => import('@/pages/About'));
-const Contact = lazy(() => import('@/pages/Contact'));
-const Auth = lazy(() => import('@/pages/Auth'));
-const Profile = lazy(() => import('@/pages/Profile'));
-const CarComparison = lazy(() => import('@/pages/CarComparison'));
-const ChatPage = lazy(() => import('@/pages/ChatPage'));
-const Blog = lazy(() => import('@/pages/Blog'));
-const SmartFinancingPage = lazy(() => import('@/pages/SmartFinancingPage'));
+// Import components directly to fix dynamic import issues
+import Home from '@/pages/Home';
+import Cars from '@/pages/Cars';
+import CarDetail from '@/pages/CarDetail';
+import ExportServices from '@/pages/ExportServices';
+import About from '@/pages/About';
+import Contact from '@/pages/Contact';
+import Auth from '@/pages/Auth';
+import Profile from '@/pages/Profile';
+import CarComparison from '@/pages/CarComparison';
+import ChatPage from '@/pages/ChatPage';
+import Blog from '@/pages/Blog';
+import SmartFinancingPage from '@/pages/SmartFinancingPage';
+import DatabaseAdmin from '@/pages/DatabaseAdmin';
+import NotFound from '@/pages/NotFound';
 
-// Loading component
-const LoadingSpinner = () => (
-  <div className="min-h-screen bg-black flex items-center justify-center">
-    <div className="text-center">
-      <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-blue-500 mx-auto mb-4"></div>
-      <p className="text-white text-lg">Loading...</p>
-    </div>
-  </div>
-);
+
 
 function App() {
   // Initialize performance monitoring
@@ -62,39 +57,28 @@ function App() {
           <Router>
             <ScrollProvider>
               <div className="App min-h-screen bg-black text-white">
-                <NavbarModern />
+                <SimpleNavbar />
                 
                 <main className="relative">
-                  <Suspense fallback={<LoadingSpinner />}>
-                    <Routes>
-                      <Route path="/" element={<Home />} />
-                      <Route path="/cars" element={<Cars />} />
-                      <Route path="/cars/:id" element={<CarDetail />} />
-                      <Route path="/export" element={<ExportServices />} />
-                      <Route path="/about" element={<About />} />
-                      <Route path="/contact" element={<Contact />} />
-                      <Route path="/signin" element={<Auth />} />
-                      <Route path="/signup" element={<Auth />} />
-                      <Route path="/profile" element={<Profile />} />
-                      <Route path="/compare" element={<CarComparison />} />
-                      <Route path="/chat" element={<ChatPage />} />
-                      <Route path="/blog" element={<Blog />} />
-                      <Route path="/financing" element={<SmartFinancingPage />} />
-                      
-                      {/* Fallback route for 404 */}
-                      <Route path="*" element={
-                        <div className="min-h-screen bg-black flex items-center justify-center">
-                          <div className="text-center text-white">
-                            <h2 className="text-3xl font-bold mb-4">Page Not Found</h2>
-                            <p className="text-gray-400 mb-6">The page you're looking for doesn't exist.</p>
-                            <a href="/" className="btn-primary btn-lg">
-                              Go Home
-                            </a>
-                          </div>
-                        </div>
-                      } />
-                    </Routes>
-                  </Suspense>
+                  <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/cars" element={<Cars />} />
+                    <Route path="/cars/:id" element={<CarDetail />} />
+                    <Route path="/export" element={<ExportServices />} />
+                    <Route path="/about" element={<About />} />
+                    <Route path="/contact" element={<Contact />} />
+                    <Route path="/signin" element={<Auth />} />
+                    <Route path="/signup" element={<Auth />} />
+                    <Route path="/profile" element={<Profile />} />
+                    <Route path="/compare" element={<CarComparison />} />
+                    <Route path="/chat" element={<ChatPage />} />
+                    <Route path="/blog" element={<Blog />} />
+                    <Route path="/financing" element={<SmartFinancingPage />} />
+                    <Route path="/admin/database" element={<DatabaseAdmin />} />
+                    
+                    {/* Fallback route for 404 */}
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
                 </main>
                 
                 {/* Footer */}
@@ -102,6 +86,9 @@ function App() {
                 
                 {/* Scroll to top */}
                 <ScrollToTop />
+                
+                {/* Performance Monitor (dev only) */}
+                <PerformanceMonitor />
                 
                 <Toaster />
               </div>

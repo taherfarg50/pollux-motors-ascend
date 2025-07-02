@@ -1,4 +1,4 @@
-import React, { Suspense, useState, useCallback } from 'react';
+import React, { Suspense, useState, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { 
@@ -17,6 +17,10 @@ import { Card, CardContent } from '@/components/ui/card';
 import FeaturedCars from '@/components/FeaturedCars';
 import CustomerTestimonials from '@/components/CustomerTestimonials';
 import BrandPartners from '@/components/BrandPartners';
+import SocialSidebar from '@/components/SocialSidebar';
+
+
+
 import Spline from '@splinetool/react-spline';
 
 // Error Boundary for Spline component
@@ -24,7 +28,7 @@ class SplineErrorBoundary extends React.Component<
   { children: React.ReactNode; fallback: React.ReactNode },
   { hasError: boolean }
 > {
-  constructor(props: any) {
+  constructor(props: { children: React.ReactNode; fallback: React.ReactNode }) {
     super(props);
     this.state = { hasError: false };
   }
@@ -49,16 +53,42 @@ class SplineErrorBoundary extends React.Component<
 const Home = () => {
   const [splineError, setSplineError] = useState(false);
   const [splineLoaded, setSplineLoaded] = useState(false);
+  const [splineTimeout, setSplineTimeout] = useState(false);
 
   const handleSplineLoad = useCallback(() => {
     console.log('✅ Spline loaded successfully');
     setSplineLoaded(true);
   }, []);
 
-  const handleSplineError = useCallback((error: any) => {
+  const handleSplineError = useCallback((error: Error | unknown) => {
     console.error('❌ Spline loading error:', error);
     setSplineError(true);
   }, []);
+
+  // Add timeout for Spline loading (8 seconds)
+  useEffect(() => {
+    console.log('🚀 Starting Spline timeout timer...');
+    const timer = setTimeout(() => {
+      if (!splineLoaded && !splineError) {
+        console.log('⏰ Spline loading timeout - switching to fallback');
+        setSplineTimeout(true);
+      }
+    }, 8000);
+
+    return () => {
+      console.log('🧹 Cleaning up Spline timeout timer');
+      clearTimeout(timer);
+    };
+  }, [splineLoaded, splineError]);
+
+  // Log current state for debugging
+  useEffect(() => {
+    console.log('📊 Spline State:', { 
+      loaded: splineLoaded, 
+      error: splineError, 
+      timeout: splineTimeout 
+    });
+  }, [splineLoaded, splineError, splineTimeout]);
 
   // Fallback Hero Background Component
   const HeroFallback = () => (
@@ -121,31 +151,52 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Social Media Sidebar */}
+      <SocialSidebar />
       {/* Hero Section with 3D Car */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
         {/* 3D Background - Always try to load */}
         <div className="absolute inset-0 z-0">
-          {!splineError ? (
+          {!splineError && !splineTimeout ? (
             <SplineErrorBoundary fallback={<HeroFallback />}>
               <Suspense fallback={<SplineLoading />}>
-                <Spline
-                  scene="https://prod.spline.design/S2dwW4Psu4b9wyXE/scene.splinecode"
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    background: 'transparent',
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    zIndex: 0,
-                  }}
-                  onLoad={handleSplineLoad}
-                  onError={handleSplineError}
-                />
+                <div className="w-full h-full">
+                  <Spline
+                    scene="https://prod.spline.design/S2dwW4Psu4b9wyXE/scene.splinecode"
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      background: 'transparent',
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      zIndex: 0,
+                    }}
+                    onLoad={handleSplineLoad}
+                    onError={handleSplineError}
+                  />
+                  {/* Debug info overlay (only in development) */}
+                  {process.env.NODE_ENV === 'development' && (
+                    <div className="absolute top-4 left-4 bg-black/80 text-white p-2 text-xs rounded z-50">
+                      <div>Loaded: {splineLoaded ? '✅' : '❌'}</div>
+                      <div>Error: {splineError ? '❌' : '✅'}</div>
+                      <div>Timeout: {splineTimeout ? '❌' : '✅'}</div>
+                    </div>
+                  )}
+                </div>
               </Suspense>
             </SplineErrorBoundary>
           ) : (
-            <HeroFallback />
+            <div>
+              <HeroFallback />
+              {/* Debug info for fallback reason */}
+              {process.env.NODE_ENV === 'development' && (
+                <div className="absolute top-4 left-4 bg-red-900/80 text-white p-2 text-xs rounded z-50">
+                  <div>Using Fallback</div>
+                  <div>Reason: {splineError ? 'Error' : splineTimeout ? 'Timeout' : 'Unknown'}</div>
+                </div>
+              )}
+            </div>
           )}
           
           {/* Gradient overlays - always visible for text readability */}
@@ -153,71 +204,173 @@ const Home = () => {
           <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-black/50 pointer-events-none z-10"></div>
         </div>
         
-        {/* Hero Content */}
-        <div className="relative z-10 text-center max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Enhanced Hero Content */}
+        <div className="relative z-10 text-center max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Hero Badge */}
+          <motion.div
+            className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md px-6 py-3 rounded-full border border-white/20 mb-8"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            <Star className="h-5 w-5 text-yellow-400" />
+            <span className="text-white font-medium">Premium Automotive Experience</span>
+            <Star className="h-5 w-5 text-yellow-400" />
+          </motion.div>
+
           <motion.h1 
-            className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 drop-shadow-2xl"
+            className="text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-6 drop-shadow-2xl"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            Pollux Motors
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-blue-100 to-purple-100">
+              Pollux Motors
+            </span>
           </motion.h1>
+          
+          <motion.div 
+            className="text-2xl md:text-3xl lg:text-4xl font-bold text-blue-400 mb-8"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.1 }}
+          >
+            Luxury • Performance • Excellence
+          </motion.div>
+          
           <motion.p 
-            className="text-xl md:text-2xl text-gray-200 mb-8 max-w-2xl mx-auto drop-shadow-lg"
+            className="text-xl md:text-2xl text-gray-200 mb-12 max-w-4xl mx-auto drop-shadow-lg leading-relaxed"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            Your trusted partner for premium vehicles and international export services.
-            Quality cars, global reach, professional service.
+            Your trusted global partner for premium vehicles and international export services.
+            <br className="hidden md:block" />
+            <span className="text-blue-300">Quality guaranteed • Worldwide delivery • Professional service</span>
           </motion.p>
+
+          {/* Enhanced Action Buttons */}
           <motion.div 
-            className="flex flex-col sm:flex-row gap-4 justify-center"
+            className="flex flex-col sm:flex-row gap-6 justify-center mb-12"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            <Link to="/cars">
-              <Button size="lg" className="bg-pollux-blue hover:bg-pollux-blue-dark text-white shadow-2xl backdrop-blur-sm">
-                Browse Vehicles
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
-            <Link to="/export">
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-black shadow-2xl backdrop-blur-sm">
-                Export Services
-                <Ship className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Link to="/cars">
+                <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-2xl backdrop-blur-sm px-8 py-6 text-lg font-semibold relative overflow-hidden group">
+                  <span className="relative z-10 flex items-center">
+                    Browse Premium Vehicles
+                    <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                  </span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-700 to-purple-700 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                </Button>
+              </Link>
+            </motion.div>
+            
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Link to="/export">
+                <Button size="lg" variant="outline" className="border-2 border-white/30 text-white hover:bg-white hover:text-black shadow-2xl backdrop-blur-sm px-8 py-6 text-lg font-semibold relative overflow-hidden group">
+                  <span className="relative z-10 flex items-center">
+                    Global Export Services
+                    <Ship className="ml-2 h-5 w-5 group-hover:scale-110 transition-transform" />
+                  </span>
+                </Button>
+              </Link>
+            </motion.div>
+          </motion.div>
+
+          {/* Hero Stats */}
+          <motion.div
+            className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+          >
+            {[
+              { number: "5000+", label: "Vehicles Sold", icon: Car },
+              { number: "50+", label: "Countries", icon: Globe },
+              { number: "15+", label: "Years Experience", icon: Star },
+              { number: "98%", label: "Satisfaction", icon: Shield }
+            ].map((stat, index) => {
+              const Icon = stat.icon;
+              return (
+                <motion.div
+                  key={index}
+                  className="text-center p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10"
+                  whileHover={{ scale: 1.05, backgroundColor: "rgba(255,255,255,0.1)" }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <Icon className="h-8 w-8 text-blue-400 mx-auto mb-2" />
+                  <div className="text-2xl md:text-3xl font-bold text-white">{stat.number}</div>
+                  <div className="text-gray-300 text-sm">{stat.label}</div>
+                </motion.div>
+              );
+            })}
           </motion.div>
         </div>
 
-        {/* Scroll indicator */}
+        {/* Enhanced Scroll indicator */}
         <motion.div 
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white/80 animate-bounce"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white/80"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.5, duration: 0.5 }}
         >
-          <div className="flex flex-col items-center">
-            <span className="text-sm mb-2">Scroll to explore</span>
-            <ChevronRight className="w-6 h-6 rotate-90" />
-          </div>
+          <motion.div 
+            className="flex flex-col items-center cursor-pointer group"
+            animate={{ y: [0, 10, 0] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}
+          >
+            <span className="text-sm mb-3 group-hover:text-blue-300 transition-colors">Discover Our World</span>
+            <div className="w-6 h-10 border-2 border-white/40 rounded-full flex justify-center group-hover:border-blue-300 transition-colors">
+              <motion.div 
+                className="w-1 h-3 bg-white/60 rounded-full mt-2 group-hover:bg-blue-300"
+                animate={{ y: [0, 12, 0] }}
+                transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+              />
+            </div>
+          </motion.div>
         </motion.div>
       </section>
 
-      {/* Services Section */}
-      <section className="py-20 bg-black">
+      {/* Photo Debug Test - Temporary */}
+      <section className="py-12 bg-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Our Services
+          {/* Photo debugging removed for production */}
+        </div>
+      </section>
+
+      {/* Enhanced Services Section */}
+      <section className="py-24 bg-gradient-to-b from-black via-gray-900 to-black relative overflow-hidden">
+        {/* Background Elements */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-500/5 via-purple-500/5 to-transparent"></div>
+        <div className="absolute top-20 left-20 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 right-20 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl"></div>
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <motion.div 
+            className="text-center mb-20"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500/10 to-purple-500/10 px-6 py-3 rounded-full border border-blue-500/20 mb-6">
+              <Star className="h-5 w-5 text-blue-400" />
+              <span className="text-blue-300 font-medium">Premium Services</span>
+            </div>
+            <h2 className="text-4xl md:text-6xl font-bold text-white mb-6">
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-white to-blue-200">
+                Our Services
+              </span>
             </h2>
-            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-              From local sales to international exports, we provide comprehensive automotive solutions
+            <p className="text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed">
+              From premium vehicle sales to worldwide export services, we deliver excellence 
+              in every aspect of automotive commerce
             </p>
-          </div>
+          </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {services.map((service, index) => (
@@ -227,15 +380,36 @@ const Home = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 viewport={{ once: true }}
+                whileHover={{ y: -10 }}
               >
                 <Link to={service.link}>
-                  <Card className="bg-gray-900 border-gray-700 h-full hover:border-pollux-blue/50 transition-all hover:scale-105 cursor-pointer group">
-                    <CardContent className="p-6 text-center">
-                      <div className="w-20 h-20 bg-pollux-blue/20 rounded-full flex items-center justify-center text-pollux-blue mx-auto mb-4 group-hover:bg-pollux-blue/30 transition-colors">
+                  <Card className="bg-gradient-to-br from-gray-900/80 to-gray-800/60 border-gray-700/50 h-full hover:border-blue-500/50 transition-all duration-300 cursor-pointer group backdrop-blur-sm overflow-hidden">
+                    <CardContent className="p-8 text-center relative">
+                      {/* Hover Glow Effect */}
+                      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      
+                      <motion.div 
+                        className="w-24 h-24 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-2xl flex items-center justify-center text-blue-400 mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 relative z-10"
+                        whileHover={{ rotate: 5 }}
+                      >
                         {service.icon}
-                      </div>
-                      <h3 className="text-xl font-semibold text-white mb-3">{service.title}</h3>
-                      <p className="text-gray-400">{service.description}</p>
+                      </motion.div>
+                      
+                      <h3 className="text-xl font-bold text-white mb-4 group-hover:text-blue-300 transition-colors relative z-10">
+                        {service.title}
+                      </h3>
+                      <p className="text-gray-400 group-hover:text-gray-300 transition-colors leading-relaxed relative z-10">
+                        {service.description}
+                      </p>
+                      
+                      {/* Arrow indicator */}
+                      <motion.div 
+                        className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity"
+                        initial={{ x: -10 }}
+                        whileHover={{ x: 0 }}
+                      >
+                        <ArrowRight className="h-5 w-5 text-blue-400" />
+                      </motion.div>
                     </CardContent>
                   </Card>
                 </Link>
@@ -245,20 +419,55 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-16 bg-gradient-to-r from-pollux-blue to-pollux-blue-light">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Enhanced Stats Section */}
+      <section className="py-20 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 relative overflow-hidden">
+        {/* Animated Background */}
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-blue-700/20 animate-pulse"></div>
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
+        <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <motion.div
+            className="text-center mb-12"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+              Trusted by Thousands Worldwide
+            </h2>
+            <p className="text-blue-100 text-lg">
+              Our numbers speak for our commitment to excellence
+            </p>
+          </motion.div>
+
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {stats.map((stat, index) => (
               <motion.div
                 key={index}
-                initial={{ opacity: 0, scale: 0.5 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
+                initial={{ opacity: 0, scale: 0.5, y: 30 }}
+                whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                transition={{ 
+                  duration: 0.8, 
+                  delay: index * 0.1,
+                  type: "spring",
+                  bounce: 0.4
+                }}
                 viewport={{ once: true }}
+                whileHover={{ scale: 1.05 }}
+                className="group"
               >
-                <div className="text-3xl md:text-4xl font-bold text-white mb-2">{stat.number}</div>
-                <div className="text-gray-200">{stat.label}</div>
+                <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 group-hover:bg-white/20 transition-all duration-300">
+                  <motion.div 
+                    className="text-4xl md:text-5xl font-bold text-white mb-3"
+                    whileHover={{ scale: 1.1 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    {stat.number}
+                  </motion.div>
+                  <div className="text-blue-100 text-lg font-medium">{stat.label}</div>
+                </div>
               </motion.div>
             ))}
           </div>
@@ -268,14 +477,6 @@ const Home = () => {
       {/* Featured Cars */}
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Featured Vehicles
-            </h2>
-            <p className="text-gray-400 text-lg">
-              Discover our handpicked selection of premium vehicles
-            </p>
-          </div>
           <FeaturedCars />
           <div className="text-center mt-12">
             <Link to="/cars">

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Plus, 
@@ -17,7 +17,7 @@ import {
   Share2,
   Download
 } from 'lucide-react';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
@@ -26,6 +26,7 @@ import { Switch } from '@/components/ui/switch';
 import { Car, useCars } from '@/lib/supabase';
 import OptimizedCarImage from '@/components/OptimizedCarImage';
 import { log } from '@/utils/logger';
+import { cn } from '@/lib/utils';
 
 interface ComparisonMetric {
   label: string;
@@ -41,6 +42,15 @@ interface CompareCarGridProps {
   selectedCars?: Car[];
   onSelectionChange?: (cars: Car[]) => void;
   maxComparisons?: number;
+}
+
+// Define proper types for comparison data
+interface ComparisonRow {
+  label: string;
+  values: (string | number)[];
+  type: 'text' | 'number' | 'rating' | 'performance';
+  unit?: string;
+  highlight?: boolean;
 }
 
 const CompareCarGrid: React.FC<CompareCarGridProps> = ({ 
@@ -195,6 +205,55 @@ const CompareCarGrid: React.FC<CompareCarGridProps> = ({
     a.click();
     URL.revokeObjectURL(url);
   };
+
+  // Memoize comparison data for better performance
+  const comparisonData: ComparisonRow[] = useMemo(() => {
+    if (!comparisonCars.length) return [];
+    
+    return [
+      {
+        label: 'Year',
+        values: comparisonCars.map(car => car.year),
+        type: 'text'
+      },
+      {
+        label: 'Price',
+        values: comparisonCars.map(car => car.price),
+        type: 'text',
+        highlight: true
+      },
+      {
+        label: 'Category',
+        values: comparisonCars.map(car => car.category),
+        type: 'text'
+      },
+      // Performance specs
+      {
+        label: 'Max Speed',
+        values: comparisonCars.map(car => car.specs?.speed || 'N/A'),
+        type: 'performance',
+        unit: 'km/h'
+      },
+      {
+        label: 'Acceleration',
+        values: comparisonCars.map(car => car.specs?.acceleration || 'N/A'),
+        type: 'performance',
+        unit: 's'
+      },
+      {
+        label: 'Power',
+        values: comparisonCars.map(car => car.specs?.power || 'N/A'),
+        type: 'performance',
+        unit: 'hp'
+      },
+      {
+        label: 'Range',
+        values: comparisonCars.map(car => car.specs?.range || 'N/A'),
+        type: 'performance',
+        unit: 'km'
+      }
+    ];
+  }, [comparisonCars]);
 
   if (comparisonCars.length === 0) {
     return (

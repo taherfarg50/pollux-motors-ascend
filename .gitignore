@@ -25,3 +25,88 @@ dist-ssr
 
 # Local Netlify folder
 .netlify
+
+# Development temporary files
+*.tmp
+*.temp
+*_temp*
+*_backup*
+*.bak
+*.swp
+*.swo
+
+# Python files (if any development scripts are added)
+__pycache__/
+*.py[cod]
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+.env
+.venv
+env/
+venv/
+requirements.txt
+
+# Development documentation
+*_SUMMARY.md
+*_COMPLETE.md
+*_FIX*.md
+*_REPORT*.md
+*_UPGRADE*.md
+PROJECT_*.md
+DATABASE_*.md
+PHOTO_*.md
+SUPABASE_*.md
+WEBSITE_*.md
+CAR_*.md
+DYNAMIC_*.md
+POLLUX_*.md
+
+# Data migration files
+*.sql
+!sql/*.sql
+*_import*.sql
+*_upload*.sql
+*_update*.sql
+*_insert*.sql
+car_*.py
+*_uploader*.py
+*_enhancer*.py
+fix_*.py
+cleanup_*.py
+extract_*.py
+complete_*.py
+upload_*.py
+supabase_*.py
+
+# Data files
+*_results.json
+*_mapping.json
+*_analysis*.json
+*_processing*.json
+*_summary.json
+car_*.csv
+enhanced_*.csv
+*_specs.csv
+*_names*.csv
+upload_*.json
+photo_*.json
+
+# Large image directories
+"CARS PHOTO"/
+CARS\ PHOTO/
+
+# Zip files and archives
+*.zip
+*.rar
+*.tar.gz
+*.7z
+
+# Screenshots and temporary images
+screenshot*.png
+temp_*.jpg
+temp_*.png
+*_temp.jpg
+*_temp.png

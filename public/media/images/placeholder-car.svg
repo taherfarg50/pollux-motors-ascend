@@ -1,0 +1,66 @@
+<svg width="400" height="300" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Gradient -->
+  <defs>
+    <linearGradient id="bg-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1f2937" />
+      <stop offset="100%" stop-color="#111827" />
+    </linearGradient>
+    <linearGradient id="car-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#374151" />
+      <stop offset="50%" stop-color="#4b5563" />
+      <stop offset="100%" stop-color="#6b7280" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="400" height="300" fill="url(#bg-gradient)" />
+  
+  <!-- Car Shape -->
+  <g transform="translate(50, 100)">
+    <!-- Car Body -->
+    <path d="M20 80 L80 20 L220 20 L280 80 L280 120 L20 120 Z" fill="url(#car-gradient)" stroke="#9ca3af" stroke-width="2"/>
+    
+    <!-- Car Roof -->
+    <path d="M80 20 L100 10 L200 10 L220 20" fill="#6b7280" stroke="#9ca3af" stroke-width="1"/>
+    
+    <!-- Windows -->
+    <rect x="90" y="25" width="40" height="30" fill="#1f2937" stroke="#9ca3af" stroke-width="1" rx="2"/>
+    <rect x="140" y="25" width="40" height="30" fill="#1f2937" stroke="#9ca3af" stroke-width="1" rx="2"/>
+    <rect x="190" y="25" width="20" height="30" fill="#1f2937" stroke="#9ca3af" stroke-width="1" rx="2"/>
+    
+    <!-- Wheels -->
+    <circle cx="60" cy="120" r="20" fill="#374151" stroke="#9ca3af" stroke-width="2"/>
+    <circle cx="60" cy="120" r="12" fill="#1f2937"/>
+    <circle cx="240" cy="120" r="20" fill="#374151" stroke="#9ca3af" stroke-width="2"/>
+    <circle cx="240" cy="120" r="12" fill="#1f2937"/>
+    
+    <!-- Headlights -->
+    <ellipse cx="280" cy="90" rx="5" ry="8" fill="#fbbf24"/>
+    <ellipse cx="280" cy="110" rx="5" ry="8" fill="#fbbf24"/>
+    
+    <!-- Front Grille -->
+    <rect x="275" y="95" width="8" height="10" fill="#374151" stroke="#9ca3af" stroke-width="1"/>
+    
+    <!-- Door Handle -->
+    <rect x="150" y="75" width="8" height="3" fill="#9ca3af" rx="1"/>
+    
+    <!-- Side Mirror -->
+    <ellipse cx="85" cy="45" rx="3" ry="2" fill="#6b7280" stroke="#9ca3af" stroke-width="1"/>
+  </g>
+  
+  <!-- Pollux Motors Logo Text -->
+  <text x="200" y="250" text-anchor="middle" fill="#9ca3af" font-family="Arial, sans-serif" font-size="14" font-weight="600">
+    POLLUX MOTORS
+  </text>
+  
+  <!-- Subtle shine effect -->
+  <rect x="0" y="0" width="400" height="300" fill="url(#shine)" opacity="0.1"/>
+  
+  <defs>
+    <linearGradient id="shine" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.1" />
+      <stop offset="50%" stop-color="#ffffff" stop-opacity="0" />
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.05" />
+    </linearGradient>
+  </defs>
+</svg> 

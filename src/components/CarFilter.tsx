@@ -84,75 +84,28 @@ const CarFilter = ({ onFilterChange, cars }: CarFilterProps) => {
     }
   }, [cars]);
 
-  // Apply filters
+  // Apply filters when any filter value changes
   useEffect(() => {
-    if (!cars || cars.length === 0) return;
-
-    // Make a stable reference to the onFilterChange function
-    const applyFilters = () => {
-      const filtered = cars.filter((car) => {
-        // Search filter
-        const searchMatch =
-          filterValues.search === "" ||
+    const filtered = cars.filter(car => {
+      const matchesCategory = !filterValues.category || filterValues.category === "all" || car.category.toLowerCase().includes(filterValues.category.toLowerCase());
+      const matchesYear = !filterValues.year || filterValues.year === "all" || car.year === filterValues.year;
+      const matchesColor = !filterValues.color || filterValues.color === "all" || (car.color && car.color.toLowerCase() === filterValues.color.toLowerCase());
+      const matchesTransmission = !filterValues.transmission || filterValues.transmission === "all";
+      const matchesFuelType = !filterValues.fuelType || filterValues.fuelType === "all";
+      const matchesSearch = !filterValues.search || 
           car.name.toLowerCase().includes(filterValues.search.toLowerCase()) ||
-          (car.model?.toLowerCase().includes(filterValues.search.toLowerCase()) ?? false) ||
           car.category.toLowerCase().includes(filterValues.search.toLowerCase());
 
-        // Category filter
-        const categoryMatch =
-          filterValues.category === "" || car.category === filterValues.category;
+      const carPrice = parseInt(car.price.replace(/[^0-9]/g, ""));
+      const matchesPrice = carPrice >= filterValues.minPrice && carPrice <= filterValues.maxPrice;
+      
+      const matchesFeatured = !filterValues.onlyFeatured || car.featured;
 
-        // Price filter (convert string price to number)
-        let carPrice = 0;
-        try {
-          carPrice = parseInt(car.price.replace(/[^0-9]/g, ""));
-        } catch (e) {
-          console.warn("Error parsing price for car:", car.id, car.name);
-        }
-        const priceMatch =
-          !isNaN(carPrice) && carPrice >= filterValues.minPrice && carPrice <= filterValues.maxPrice;
-
-        // Year filter
-        const yearMatch = filterValues.year === "" || car.year === filterValues.year;
-        
-        // Featured filter - safely check if specs exists and has featured property
-        const featuredMatch = !filterValues.onlyFeatured || 
-          (car.specs && typeof car.specs === 'object' && 'featured' in car.specs && car.specs.featured);
-          
-        // Power filter - safely extract number from power string (e.g. "500 hp" -> 500)
-        let carPower = 0;
-        try {
-          carPower = car.specs?.power ? 
-            parseInt(car.specs.power.replace(/[^0-9]/g, "")) : 0;
-        } catch (e) {
-          console.warn("Error parsing power for car:", car.id, car.name);
-        }
-        const powerMatch = 
-          !isNaN(carPower) && carPower >= filterValues.powerRange[0] && 
-          carPower <= filterValues.powerRange[1];
-
-        // Color filter - safely check if color exists
-        const colorMatch = filterValues.color === "" || car.color === filterValues.color;
-        
-        // Transmission filter - safely check if specs exists and has transmission property
-        const transmissionMatch = filterValues.transmission === "" || 
-          (car.specs?.transmission?.toLowerCase() === filterValues.transmission.toLowerCase());
-          
-        // Fuel type filter - safely check if specs exists and has fuelType property
-        const fuelTypeMatch = filterValues.fuelType === "" || 
-          (car.specs?.fuelType?.toLowerCase() === filterValues.fuelType.toLowerCase());
-
-        return searchMatch && categoryMatch && priceMatch && yearMatch && 
-               featuredMatch && powerMatch && colorMatch && 
-               transmissionMatch && fuelTypeMatch;
+      return matchesCategory && matchesYear && matchesColor && matchesTransmission && matchesFuelType && matchesSearch && matchesPrice && matchesFeatured;
       });
 
       onFilterChange(filtered);
-    };
-
-    applyFilters();
-    
-  }, [filterValues, cars]);
+  }, [cars, filterValues, onFilterChange]);
 
   const handlePriceRangeChange = (value: [number, number]) => {
     setPriceRange(value);
@@ -258,16 +211,16 @@ const CarFilter = ({ onFilterChange, cars }: CarFilterProps) => {
               <div className="space-y-2">
                 <h4 className="font-medium text-gradient-subtle">Category</h4>
                 <Select
-                  value={filterValues.category}
+                  value={filterValues.category || "all"}
                   onValueChange={(value) =>
-                    setFilterValues({ ...filterValues, category: value })
+                    setFilterValues({ ...filterValues, category: value === "all" ? "" : value })
                   }
                 >
                   <SelectTrigger className="glass-card border-pollux-glass-border hover:border-pollux-blue/30 transition-colors">
                     <SelectValue placeholder="All categories" />
                   </SelectTrigger>
                   <SelectContent className="glass-card border-pollux-glass-border backdrop-blur-md">
-                    <SelectItem value="">All categories</SelectItem>
+                    <SelectItem value="all">All categories</SelectItem>
                     {availableCategories.map((category) => (
                       <SelectItem key={category} value={category}>
                         {category}
@@ -280,16 +233,16 @@ const CarFilter = ({ onFilterChange, cars }: CarFilterProps) => {
               <div className="space-y-2">
                 <h4 className="font-medium text-gradient-subtle">Year</h4>
                 <Select
-                  value={filterValues.year}
+                  value={filterValues.year || "all"}
                   onValueChange={(value) =>
-                    setFilterValues({ ...filterValues, year: value })
+                    setFilterValues({ ...filterValues, year: value === "all" ? "" : value })
                   }
                 >
                   <SelectTrigger className="glass-card border-pollux-glass-border hover:border-pollux-blue/30 transition-colors">
                     <SelectValue placeholder="All years" />
                   </SelectTrigger>
                   <SelectContent className="glass-card border-pollux-glass-border backdrop-blur-md">
-                    <SelectItem value="">All years</SelectItem>
+                    <SelectItem value="all">All years</SelectItem>
                     {availableYears.map((year) => (
                       <SelectItem key={year} value={year}>
                         {year}
@@ -363,16 +316,16 @@ const CarFilter = ({ onFilterChange, cars }: CarFilterProps) => {
                   Color
                 </h4>
                 <Select
-                  value={filterValues.color}
+                  value={filterValues.color || "all"}
                   onValueChange={(value) =>
-                    setFilterValues({ ...filterValues, color: value })
+                    setFilterValues({ ...filterValues, color: value === "all" ? "" : value })
                   }
                 >
                   <SelectTrigger className="glass-card border-pollux-glass-border hover:border-pollux-blue/30 transition-colors">
                     <SelectValue placeholder="All colors" />
                   </SelectTrigger>
                   <SelectContent className="glass-card border-pollux-glass-border backdrop-blur-md">
-                    <SelectItem value="">All colors</SelectItem>
+                    <SelectItem value="all">All colors</SelectItem>
                     {availableColors.map((color) => (
                       <SelectItem key={color} value={color}>
                         <div className="flex items-center gap-2">
@@ -392,16 +345,16 @@ const CarFilter = ({ onFilterChange, cars }: CarFilterProps) => {
                   Transmission
                 </h4>
                 <Select
-                  value={filterValues.transmission}
+                  value={filterValues.transmission || "all"}
                   onValueChange={(value) =>
-                    setFilterValues({ ...filterValues, transmission: value })
+                    setFilterValues({ ...filterValues, transmission: value === "all" ? "" : value })
                   }
                 >
                   <SelectTrigger className="glass-card border-pollux-glass-border hover:border-pollux-blue/30 transition-colors">
                     <SelectValue placeholder="All transmissions" />
                   </SelectTrigger>
                   <SelectContent className="glass-card border-pollux-glass-border backdrop-blur-md">
-                    <SelectItem value="">All transmissions</SelectItem>
+                    <SelectItem value="all">All transmissions</SelectItem>
                     {transmissionTypes.map((type) => (
                       <SelectItem key={type} value={type}>
                         {type}
@@ -418,16 +371,16 @@ const CarFilter = ({ onFilterChange, cars }: CarFilterProps) => {
                   Fuel Type
                 </h4>
                 <Select
-                  value={filterValues.fuelType}
+                  value={filterValues.fuelType || "all"}
                   onValueChange={(value) =>
-                    setFilterValues({ ...filterValues, fuelType: value })
+                    setFilterValues({ ...filterValues, fuelType: value === "all" ? "" : value })
                   }
               >
                   <SelectTrigger className="glass-card border-pollux-glass-border hover:border-pollux-blue/30 transition-colors">
                     <SelectValue placeholder="All fuel types" />
                   </SelectTrigger>
                   <SelectContent className="glass-card border-pollux-glass-border backdrop-blur-md">
-                    <SelectItem value="">All fuel types</SelectItem>
+                    <SelectItem value="all">All fuel types</SelectItem>
                     {fuelTypes.map((type) => (
                       <SelectItem key={type} value={type}>
                         {type}

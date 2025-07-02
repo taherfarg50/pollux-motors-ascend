@@ -92,19 +92,24 @@ const Footer = () => {
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="text-center md:text-left">
               <h3 className="text-2xl font-bold text-white mb-2">Stay Updated</h3>
-              <p className="text-gray-400 max-w-md">Subscribe to our newsletter for exclusive offers and the latest luxury automotive news.</p>
+              <p className="text-gray-400 max-w-md">Get the latest car listings, exclusive offers, and automotive news delivered to your inbox.</p>
             </div>
             <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
               <input 
                 type="email" 
-                placeholder="Your email address" 
-                className="bg-white/5 border border-pollux-glass-border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-pollux-blue/50 transition-all"
+                placeholder="Enter your email address" 
+                className="bg-white/5 border border-pollux-glass-border rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-pollux-blue/50 transition-all min-w-[280px] text-white placeholder-gray-500"
               />
-              <Button className="btn-luxury whitespace-nowrap">
-                Subscribe
+              <Button className="btn-luxury whitespace-nowrap px-6 py-3">
+                Subscribe Now
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </div>
+          </div>
+          <div className="mt-4 text-center md:text-left">
+            <p className="text-sm text-gray-500">
+              ✓ Weekly car listings • ✓ Exclusive export deals • ✓ Industry insights • ✓ No spam, unsubscribe anytime
+            </p>
           </div>
         </motion.div>
         
@@ -296,29 +301,9 @@ const Footer = () => {
               ))}
             </div>
             <div className="mt-6 glass-card rounded-lg p-4 border border-pollux-glass-border">
-              <p className="text-sm">Download our mobile app for exclusive offers and real-time inventory updates.</p>
-              <div className="flex gap-3 mt-3">
-                <motion.a 
-                  href="#" 
-                  className="bg-white/10 hover:bg-white/20 transition-colors rounded-md px-3 py-2 flex items-center gap-2"
-                  whileHover={{ scale: 1.05 }}
-                >
-                  <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M17.9 19.9l-5.4-3.1-5.4 3.1 1.4-6.1-4.6-4 6.2-.5 2.4-5.8 2.4 5.8 6.2.5-4.6 4 1.4 6.1z"/>
-                  </svg>
-                  <span className="text-xs">App Store</span>
-                </motion.a>
-                <motion.a 
-                  href="#" 
-                  className="bg-white/10 hover:bg-white/20 transition-colors rounded-md px-3 py-2 flex items-center gap-2"
-                  whileHover={{ scale: 1.05 }}
-                >
-                  <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V5H7c-3.87 0-7 3.13-7 7s3.13 7 7 7h4v-3.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 11h8v2H8v-2zm9-8h-4v3.9h4c1.71 0 3.1 1.39 3.1 3.1 0 1.71-1.39 3.1-3.1 3.1h-4V17h4c3.87 0 7-3.13 7-7s-3.13-7-7-7z"/>
-                  </svg>
-                  <span className="text-xs">Play Store</span>
-                </motion.a>
-              </div>
+              <p className="text-sm text-gray-400">
+                Follow us on social media for the latest updates, new arrivals, and exclusive behind-the-scenes content.
+              </p>
             </div>
           </motion.div>
         </div>

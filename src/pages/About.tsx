@@ -3,12 +3,8 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { MapPin, Phone, Mail, Globe, Instagram, Linkedin, Youtube, ArrowRight, Play, Pause, Clock, Award, Users, Car, ChevronRight } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import StatsCounter from '@/components/StatsCounter';
+import { MapPin, Phone, Mail, Globe, Instagram, Linkedin, Youtube, ArrowRight, Clock, Award, Users, Car } from 'lucide-react';
 import { useInView } from 'react-intersection-observer';
-import SupabaseConnectionTest from '@/components/SupabaseConnectionTest';
-import ImageTester from '@/components/ImageTester';
 
 const About = () => {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -34,10 +30,7 @@ const About = () => {
     threshold: 0.1
   });
   
-  const [teamRef, teamInView] = useInView({
-    triggerOnce: true,
-    threshold: 0.1
-  });
+
   
   const [contactRef, contactInView] = useInView({
     triggerOnce: true,
@@ -61,32 +54,7 @@ const About = () => {
     }
   };
   
-  const team = [
-    {
-      name: "Alexandra Reynolds",
-      role: "Chief Executive Officer",
-      bio: "With over 20 years in the luxury automotive industry, Alexandra leads Pollux Motors with vision and innovation.",
-      image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=2576&auto=format&fit=crop&ixlib=rb-4.0.3"
-    },
-    {
-      name: "Marcus Chen",
-      role: "Chief Design Officer",
-      bio: "Marcus brings cutting-edge automotive design expertise from his time at prestigious European design houses.",
-      image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=2574&auto=format&fit=crop&ixlib=rb-4.0.3"
-    },
-    {
-      name: "Sophia Patel",
-      role: "Chief Technology Officer",
-      bio: "Sophia leads our innovation team, integrating advanced technology with luxury automotive experiences.",
-      image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=2961&auto=format&fit=crop&ixlib=rb-4.0.3"
-    },
-    {
-      name: "David Johnson",
-      role: "Global Sales Director",
-      bio: "David oversees our international dealership network, ensuring exceptional customer experiences worldwide.",
-      image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3"
-    }
-  ];
+
   
   const companyInfo = {
     founded: "2018",
@@ -141,28 +109,28 @@ const About = () => {
       title: "Service Expansion",
       description: "Expanded services to include comprehensive shipping, clearance, and RTA registration assistance."
     }
-  ];
-  
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
+      ];
+    
+    const containerVariants = {
+      hidden: { opacity: 0 },
+      visible: {
+        opacity: 1,
+        transition: {
+          staggerChildren: 0.1
+        }
       }
-    }
-  };
+    };
+    
+    const itemVariants = {
+      hidden: { y: 20, opacity: 0 },
+      visible: {
+        y: 0,
+        opacity: 1,
+        transition: { duration: 0.5 }
+      }
+    };
   
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: { duration: 0.5 }
-    }
-  };
-
-  return (
+    return (
     <>
       {/* Hero Section */}
       <motion.section 
@@ -218,9 +186,9 @@ const About = () => {
                 <Button 
                   variant="outline" 
                   className="px-6"
-                  onClick={() => document.getElementById('our-team')?.scrollIntoView({ behavior: 'smooth' })}
+                  onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
                 >
-                  Meet Our Team
+                  Contact Us
                 </Button>
               </div>
             </motion.div>
@@ -350,22 +318,79 @@ const About = () => {
           <div className="mb-16">
             <h3 className="text-2xl font-bold mb-8 text-pollux-red">Luxury Brands</h3>
             <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-6">
-              {companyInfo.luxuryBrands.map((brand, index) => (
-                <div key={index} className="glass-card p-4 rounded-lg text-center hover:border-pollux-red transition-colors">
-                  <p className="font-bold">{brand}</p>
-                </div>
-              ))}
+              {companyInfo.luxuryBrands.map((brand, index) => {
+                const brandLogos = {
+                  'Bentley': 'https://logos-world.net/wp-content/uploads/2021/04/Bentley-Logo-2002-present.png',
+                  'Bugatti': 'https://logos-world.net/wp-content/uploads/2021/04/Bugatti-Logo.png',
+                  'Rolls Royce': 'https://logos-world.net/wp-content/uploads/2021/04/Rolls-Royce-Logo.png',
+                  'Lamborghini': 'https://logos-world.net/wp-content/uploads/2021/04/Lamborghini-Logo.png',
+                  'Audi': 'https://logos-world.net/wp-content/uploads/2020/04/Audi-Logo.png',
+                  'Mercedes': 'https://logos-world.net/wp-content/uploads/2020/04/Mercedes-Benz-Logo.png',
+                  'BMW': 'https://logos-world.net/wp-content/uploads/2020/04/BMW-Logo.png',
+                  'Range Rover': 'https://logos-world.net/wp-content/uploads/2021/04/Range-Rover-Logo.png'
+                };
+                
+                return (
+                  <div key={index} className="glass-card p-4 rounded-lg text-center hover:border-pollux-red transition-all duration-300 hover:scale-105 group">
+                    <div className="w-16 h-16 mx-auto mb-3 flex items-center justify-center bg-white rounded-lg p-2 group-hover:shadow-lg transition-shadow">
+                      <img 
+                        src={brandLogos[brand] || 'https://via.placeholder.com/64x64/333/fff?text=' + brand.charAt(0)} 
+                        alt={brand + ' logo'} 
+                        className="w-full h-full object-contain"
+                        onError={(e) => {
+                          (e.currentTarget as HTMLElement).style.display = 'none';
+                          ((e.currentTarget.nextElementSibling as HTMLElement)).style.display = 'flex';
+                        }}
+                      />
+                      <div 
+                        className="w-full h-full bg-pollux-red rounded flex items-center justify-center text-white font-bold text-xl hidden"
+                      >
+                        {brand.charAt(0)}
+                      </div>
+                    </div>
+                    <p className="font-bold text-sm">{brand}</p>
+                  </div>
+                );
+              })}
             </div>
           </div>
           
           <div>
             <h3 className="text-2xl font-bold mb-8 text-pollux-red">Global Auto Brands</h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-7 gap-6">
-              {companyInfo.globalBrands.map((brand, index) => (
-                <div key={index} className="glass-card p-4 rounded-lg text-center hover:border-pollux-red transition-colors">
-                  <p className="font-bold">{brand}</p>
-                </div>
-              ))}
+              {companyInfo.globalBrands.map((brand, index) => {
+                const brandLogos = {
+                  'Toyota': 'https://logos-world.net/wp-content/uploads/2020/04/Toyota-Logo.png',
+                  'Mitsubishi': 'https://logos-world.net/wp-content/uploads/2021/04/Mitsubishi-Logo.png',
+                  'Volkswagen': 'https://logos-world.net/wp-content/uploads/2020/04/Volkswagen-Logo.png',
+                  'Nissan': 'https://logos-world.net/wp-content/uploads/2020/04/Nissan-Logo.png',
+                  'Hyundai': 'https://logos-world.net/wp-content/uploads/2020/04/Hyundai-Logo.png',
+                  'KIA': 'https://logos-world.net/wp-content/uploads/2021/03/Kia-Logo.png',
+                  'Suzuki': 'https://logos-world.net/wp-content/uploads/2021/04/Suzuki-Logo.png'
+                };
+                
+                return (
+                  <div key={index} className="glass-card p-4 rounded-lg text-center hover:border-pollux-red transition-all duration-300 hover:scale-105 group">
+                    <div className="w-16 h-16 mx-auto mb-3 flex items-center justify-center bg-white rounded-lg p-2 group-hover:shadow-lg transition-shadow">
+                      <img 
+                        src={brandLogos[brand] || 'https://via.placeholder.com/64x64/333/fff?text=' + brand.charAt(0)} 
+                        alt={brand + ' logo'} 
+                        className="w-full h-full object-contain"
+                        onError={(e) => {
+                          (e.currentTarget as HTMLElement).style.display = 'none';
+                          ((e.currentTarget.nextElementSibling as HTMLElement)).style.display = 'flex';
+                        }}
+                      />
+                      <div 
+                        className="w-full h-full bg-pollux-red rounded flex items-center justify-center text-white font-bold text-xl hidden"
+                      >
+                        {brand.charAt(0)}
+                      </div>
+                    </div>
+                    <p className="font-bold text-sm">{brand}</p>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -470,69 +495,10 @@ const About = () => {
         </div>
       </section>
       
-      {/* Team Section */}
-      <section id="our-team" className="py-24 bg-secondary" ref={teamRef}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div 
-            className="text-center mb-16"
-            initial={{ opacity: 0, y: 30 }}
-            animate={teamInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.7, ease: "easeOut" }}
-          >
-            <h2 className="text-3xl font-bold mb-4">Leadership Team</h2>
-            <p className="text-gray-400 max-w-2xl mx-auto">
-              Meet the visionaries behind Pollux Motors who drive our commitment to excellence.
-            </p>
-          </motion.div>
-          
-          <motion.div 
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
-            variants={containerVariants}
-            initial="hidden"
-            animate={teamInView ? "visible" : "hidden"}
-          >
-            {team.map((member, index) => (
-              <motion.div
-                key={member.name}
-                className="glass-card rounded-lg overflow-hidden group"
-                variants={itemVariants}
-                whileHover={{ y: -10, transition: { duration: 0.3 } }}
-              >
-                <div className="relative aspect-[3/4] overflow-hidden">
-                  <img 
-                    src={member.image} 
-                    alt={member.name} 
-                    className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                </div>
-                <div className="p-6">
-                  <h3 className="text-xl font-bold mb-1">{member.name}</h3>
-                  <p className="text-pollux-red font-medium mb-3">{member.role}</p>
-                  <p className="text-gray-400 text-sm">{member.bio}</p>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
-          
-          <motion.div 
-            className="mt-16 text-center"
-            initial={{ opacity: 0, y: 20 }}
-            animate={teamInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.5, delay: 0.4 }}
-          >
-            <p className="text-gray-400 mb-6">
-              Join our team of passionate automotive professionals.
-            </p>
-            <Button variant="outline" className="px-6">
-              View Career Opportunities <ChevronRight className="ml-2 h-4 w-4" />
-            </Button>
-          </motion.div>
-        </div>
-      </section>
+
 
       {/* Contact Information */}
-      <section className="py-24" ref={contactRef}>
+      <section id="contact" className="py-24" ref={contactRef}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div 
             className="text-center mb-12"
@@ -605,22 +571,7 @@ const About = () => {
         </div>
       </section>
 
-      {/* Development Tools (Development Only) */}
-      {process.env.NODE_ENV === 'development' && (
-        <section className="py-12 bg-gray-900/50">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-8">
-              <h2 className="text-2xl font-bold mb-2">Development Tools</h2>
-              <p className="text-gray-400 text-sm">Database diagnostics and data monitoring</p>
-            </div>
-            
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <SupabaseConnectionTest />
-              <ImageTester />
-            </div>
-          </div>
-        </section>
-      )}
+
 
       {/* Social Media */}
       <section className="py-24 bg-secondary" ref={socialRef}>

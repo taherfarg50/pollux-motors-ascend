@@ -20,7 +20,6 @@ import {
   Globe,
   Cpu
 } from 'lucide-react';
-import HeroLuxury from '@/components/hero/HeroLuxury';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -29,16 +28,19 @@ import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
 
 // Lazy load enhanced components
-const FeaturedCars = lazy(() => import('@/components/FeaturedCars'));
-const ContactSection = lazy(() => import('@/components/ContactSection'));
-const UserPersonalization = lazy(() => import('@/components/UserPersonalization'));
-const ARVRCarViewer = lazy(() => import('@/components/ARVRCarViewer'));
-const SmartFinancing = lazy(() => import('@/components/SmartFinancing'));
-const MarketIntelligence = lazy(() => import('@/components/MarketIntelligence'));
-const CustomerTestimonials = lazy(() => import('@/components/CustomerTestimonials'));
-const LiveStatistics = lazy(() => import('@/components/LiveStatistics'));
+// TODO: These components need to be created or fixed
+// const HeroLuxury = lazy(() => import('@/components/HeroLuxury'));
 const BrandPartners = lazy(() => import('@/components/BrandPartners'));
-const NewsletterCTA = lazy(() => import('@/components/NewsletterCTA'));
+const CustomerTestimonials = lazy(() => import('@/components/CustomerTestimonials'));
+// const NewsletterCTA = lazy(() => import('@/components/NewsletterCTA'));
+// const ContactSection = lazy(() => import('@/components/ContactSection'));
+// const LiveStatistics = lazy(() => import('@/components/LiveStatistics'));
+// const ARVRCarViewer = lazy(() => import('@/components/ARVRCarViewer'));
+// const SmartFinancing = lazy(() => import('@/components/SmartFinancing'));
+
+// TODO: These components need to be created
+// const UserPersonalization = lazy(() => import('@/components/UserPersonalization'));
+// const MarketIntelligence = lazy(() => import('@/components/MarketIntelligence'));
 
 interface ModernFeature {
   icon: React.ReactNode;
@@ -190,7 +192,13 @@ const EnhancedIndexPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-luxury text-white overflow-x-hidden">
       {/* Enhanced Luxury Hero Section */}
-      <HeroLuxury />
+      <Suspense fallback={
+        <div className="flex items-center justify-center py-20">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-blue-500"></div>
+        </div>
+      }>
+        {/* <HeroLuxury /> */}
+      </Suspense>
 
       {/* User Personalization Section - Only show if user is logged in */}
       {user && (
@@ -218,10 +226,10 @@ const EnhancedIndexPage: React.FC = () => {
 
               <Suspense fallback={
                 <div className="flex items-center justify-center py-20">
-                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-purple-500"></div>
+                  <div className="animate-spin rounded-full h-12 w-12 border-purple-500"></div>
                 </div>
               }>
-                <UserPersonalization />
+                {/* <UserPersonalization /> */}
               </Suspense>
             </motion.div>
           </div>
@@ -438,7 +446,7 @@ const EnhancedIndexPage: React.FC = () => {
           <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-blue-500"></div>
         </div>
       }>
-        <LiveStatistics />
+        {/* <LiveStatistics /> */}
       </Suspense>
 
       {/* AR/VR Car Viewer Demo Section */}
@@ -472,7 +480,7 @@ const EnhancedIndexPage: React.FC = () => {
               <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-blue-500"></div>
             </div>
           }>
-            <ARVRCarViewer 
+            {/* <ARVRCarViewer 
               carModel="luxury-sedan"
               carName="Mercedes-Benz S-Class"
               carSpecs={{
@@ -480,12 +488,12 @@ const EnhancedIndexPage: React.FC = () => {
                 speed: "250 km/h",
                 acceleration: "4.9 sec"
               }}
-            />
+            /> */}
           </Suspense>
         </div>
       </section>
 
-      {/* Featured Vehicles Section */}
+      {/* Featured Vehicles Section - Call to Action instead of duplicate */}
       <section className="py-32 bg-gradient-to-b from-black/50 to-transparent">
         <div className="container mx-auto px-4">
           <motion.div
@@ -493,7 +501,7 @@ const EnhancedIndexPage: React.FC = () => {
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
             variants={containerVariants}
-            className="text-center mb-20"
+            className="text-center"
           >
             <motion.div variants={itemVariants}>
               <Badge className="mb-6 bg-green-500/20 text-green-400 border-green-500/30 px-4 py-2">
@@ -501,27 +509,27 @@ const EnhancedIndexPage: React.FC = () => {
                 Premium Collection
               </Badge>
               <h2 className="heading-2 mb-8">
-                Featured Vehicles
+                Discover Our Featured Vehicles
               </h2>
               <p className="text-body-lg max-w-3xl mx-auto mb-12">
-                Discover our handpicked selection of luxury vehicles, each enhanced with AI-powered insights and virtual experiences.
+                Explore our handpicked selection of luxury vehicles, each enhanced with AI-powered insights and virtual experiences. Visit our main showcase to see the full collection.
               </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button asChild size="lg" className="btn-luxury">
-                <Link to="/cars">
-                  Explore Collection
+                  <Link to="/">
+                    View Featured Vehicles
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Link>
               </Button>
+                <Button asChild size="lg" variant="outline" className="border-white/20 text-white hover:bg-white/10">
+                  <Link to="/cars">
+                    Browse All Vehicles
+                    <Car className="w-5 h-5 ml-2" />
+                  </Link>
+                </Button>
+              </div>
             </motion.div>
           </motion.div>
-
-          <Suspense fallback={
-            <div className="flex items-center justify-center py-20">
-              <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-green-500"></div>
-            </div>
-          }>
-            <FeaturedCars />
-          </Suspense>
         </div>
       </section>
 
@@ -564,7 +572,7 @@ const EnhancedIndexPage: React.FC = () => {
               <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-yellow-500"></div>
             </div>
           }>
-            <SmartFinancing carPrice={285000} carName="Mercedes-Benz GLE 450" />
+            {/* <SmartFinancing carPrice={285000} carName="Mercedes-Benz GLE 450" /> */}
           </Suspense>
         </div>
       </section>
@@ -599,7 +607,7 @@ const EnhancedIndexPage: React.FC = () => {
               <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-orange-500"></div>
             </div>
           }>
-            <MarketIntelligence />
+            {/* <MarketIntelligence /> */}
           </Suspense>
         </div>
       </section>
@@ -619,7 +627,7 @@ const EnhancedIndexPage: React.FC = () => {
           <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-blue-500"></div>
         </div>
       }>
-        <NewsletterCTA />
+        {/* <NewsletterCTA /> */}
       </Suspense>
 
       {/* Contact Section */}
@@ -652,7 +660,7 @@ const EnhancedIndexPage: React.FC = () => {
               <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-purple-500"></div>
             </div>
           }>
-            <ContactSection />
+            {/* <ContactSection /> */}
           </Suspense>
         </div>
       </section>

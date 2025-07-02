@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Star, Quote, ChevronLeft, ChevronRight, Users, Award } from 'lucide-react';
+import { Star, Quote, ChevronLeft, ChevronRight, Users, Award, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
@@ -9,30 +9,30 @@ interface Testimonial {
   id: number;
   name: string;
   location: string;
-  role: string;
-  avatar: string;
+  role?: string;
   rating: number;
   review: string;
-  carPurchased: string;
-  purchaseDate: string;
-  verified: boolean;
+  car_purchased?: string;
+  purchase_date?: string;
+  verified?: boolean;
+  created_at?: string;
 }
 
 const CustomerTestimonials: React.FC = () => {
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
+  // Static testimonials data - ready for database integration
   const testimonials: Testimonial[] = [
     {
       id: 1,
       name: "Sarah Al-Mansouri",
       location: "Dubai, UAE",
       role: "Business Executive",
-      avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?q=80&w=200&h=200&auto=format&fit=crop&crop=face",
       rating: 5,
-      review: "The AI-powered personalization completely transformed my car shopping experience. Pollux Motors found the perfect vehicle that matched my lifestyle and preferences before I even knew what I wanted.",
-      carPurchased: "Mercedes-Benz S-Class",
-      purchaseDate: "December 2023",
+      review: "Exceptional service and quality vehicles. The team at Pollux Motors made the entire car buying process smooth and professional. Highly recommend!",
+      car_purchased: "Mercedes-Benz S-Class",
+      purchase_date: "December 2023",
       verified: true
     },
     {
@@ -40,11 +40,10 @@ const CustomerTestimonials: React.FC = () => {
       name: "Ahmed Hassan",
       location: "Abu Dhabi, UAE",
       role: "Tech Entrepreneur",
-      avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=200&h=200&auto=format&fit=crop&crop=face",
       rating: 5,
-      review: "The AR/VR showroom experience was mind-blowing! I could explore every detail of my future car from home. The virtual reality test drive felt incredibly real and helped me make the right choice.",
-      carPurchased: "BMW i8",
-      purchaseDate: "November 2023",
+      review: "Outstanding experience from start to finish. Professional staff, quality vehicles, and excellent after-sales service. Will definitely buy again.",
+      car_purchased: "BMW X6",
+      purchase_date: "November 2023",
       verified: true
     },
     {
@@ -52,11 +51,10 @@ const CustomerTestimonials: React.FC = () => {
       name: "Dr. Fatima Al-Zahra",
       location: "Sharjah, UAE",
       role: "Medical Professional",
-      avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=200&h=200&auto=format&fit=crop&crop=face",
       rating: 5,
-      review: "The smart financing AI calculated the perfect payment plan for my budget instantly. No waiting, no complicated paperwork - just intelligent solutions that work for my financial situation.",
-      carPurchased: "Audi Q7",
-      purchaseDate: "January 2024",
+      review: "The financing options were very helpful and the staff was extremely knowledgeable. Found exactly what I was looking for at a great price.",
+      car_purchased: "Audi Q7",
+      purchase_date: "January 2024",
       verified: true
     },
     {
@@ -64,11 +62,10 @@ const CustomerTestimonials: React.FC = () => {
       name: "Omar Al-Rashid",
       location: "Ajman, UAE",
       role: "Investment Manager",
-      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&h=200&auto=format&fit=crop&crop=face",
       rating: 5,
-      review: "The market intelligence feature saved me thousands! Real-time pricing data and AI insights helped me negotiate the best deal. Pollux Motors' technology gives customers a real advantage.",
-      carPurchased: "Porsche 911",
-      purchaseDate: "October 2023",
+      review: "Great selection of vehicles and competitive pricing. The export documentation service for my international purchase was handled perfectly.",
+      car_purchased: "Porsche 911",
+      purchase_date: "October 2023",
       verified: true
     },
     {
@@ -76,18 +73,44 @@ const CustomerTestimonials: React.FC = () => {
       name: "Layla Abdullah",
       location: "Ras Al Khaimah, UAE",
       role: "Fashion Designer",
-      avatar: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?q=80&w=200&h=200&auto=format&fit=crop&crop=face",
       rating: 5,
-      review: "The personalized dashboard shows everything about my vehicle's health in real-time. The predictive maintenance alerts have already saved me from potential issues. Truly revolutionary service!",
-      carPurchased: "Range Rover Evoque",
-      purchaseDate: "September 2023",
+      review: "Professional service and beautiful vehicles. The team understood exactly what I needed and delivered beyond expectations. Thank you!",
+      car_purchased: "Range Rover Evoque",
+      purchase_date: "September 2023",
+      verified: true
+    },
+    {
+      id: 6,
+      name: "Mohammed Al-Zaabi",
+      location: "Fujairah, UAE",
+      role: "Engineer",
+      rating: 5,
+      review: "The export process to Egypt was seamless. All documentation was handled professionally and the car arrived in perfect condition. Excellent service!",
+      car_purchased: "Toyota Land Cruiser",
+      purchase_date: "August 2023",
       verified: true
     }
   ];
 
+  // TODO: Replace with actual database fetch when testimonials table is created
+  // const fetchTestimonials = async () => {
+  //   try {
+  //     const { data, error } = await supabase
+  //       .from('testimonials')
+  //       .select('*')
+  //       .eq('is_active', true)
+  //       .order('created_at', { ascending: false })
+  //       .limit(10);
+  //     
+  //     if (data) setTestimonials(data);
+  //   } catch (error) {
+  //     console.error('Error fetching testimonials:', error);
+  //   }
+  // };
+
   // Auto-rotate testimonials
   useEffect(() => {
-    if (!isAutoPlaying) return;
+    if (!isAutoPlaying || testimonials.length === 0) return;
     
     const interval = setInterval(() => {
       setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
@@ -103,6 +126,10 @@ const CustomerTestimonials: React.FC = () => {
   const prevTestimonial = () => {
     setCurrentTestimonial((prev) => (prev - 1 + testimonials.length) % testimonials.length);
   };
+
+  if (testimonials.length === 0) {
+    return null;
+  }
 
   const currentData = testimonials[currentTestimonial];
 
@@ -140,60 +167,54 @@ const CustomerTestimonials: React.FC = () => {
             <span className="block text-gradient-luxury">Thousands of Drivers</span>
           </h2>
           <p className="text-body-lg max-w-3xl mx-auto">
-            Real experiences from our valued customers who've experienced the future of automotive luxury.
+            Real experiences from our valued customers who've chosen Pollux Motors for their automotive needs.
           </p>
         </motion.div>
 
-        {/* Main Testimonial Display */}
-        <div className="max-w-6xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            {/* Customer Photo & Info */}
+        {/* Main Testimonial Display - Simplified without photos */}
+        <div className="max-w-5xl mx-auto">
+          <AnimatePresence mode="wait">
             <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-              className="relative"
+              key={`testimonial-${currentTestimonial}`}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -30 }}
+              transition={{ duration: 0.6 }}
+              className="text-center"
             >
-              <div className="relative">
-                {/* Background Decoration */}
-                <div className="absolute -inset-8 bg-gradient-to-br from-blue-500/20 to-yellow-500/20 rounded-full blur-3xl opacity-30" />
+              <Card className="p-12 bg-gradient-to-br from-white/5 to-white/[0.02] border border-white/10 hover:border-white/20 transition-all duration-500 relative overflow-hidden">
+                {/* Quote Icon */}
+                <Quote className="w-16 h-16 text-yellow-500/30 mx-auto mb-8" />
                 
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={currentTestimonial}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 1.1 }}
-                    transition={{ duration: 0.6 }}
-                    className="relative"
-                  >
-                    <div className="aspect-square w-80 mx-auto rounded-3xl overflow-hidden border-4 border-white/10 shadow-luxury-xl">
-                      <img
-                        src={currentData.avatar}
-                        alt={currentData.name}
-                        className="w-full h-full object-cover"
-                      />
+                {/* Review Text */}
+                <blockquote className="text-xl md:text-2xl leading-relaxed text-gray-200 mb-8 max-w-4xl mx-auto">
+                  "{currentData.review}"
+                </blockquote>
+                
+                {/* Customer Info */}
+                <div className="flex flex-col items-center mb-6">
+                  <h3 className="text-xl font-bold text-white mb-2">{currentData.name}</h3>
+                  <div className="flex items-center space-x-4 text-gray-400 mb-4">
+                    {currentData.role && <span>{currentData.role}</span>}
+                    <span>•</span>
+                    <span>{currentData.location}</span>
                       {currentData.verified && (
-                        <div className="absolute top-4 right-4">
+                      <>
+                        <span>•</span>
                           <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
                             <Award className="w-3 h-3 mr-1" />
                             Verified
                           </Badge>
-                        </div>
+                      </>
                       )}
                     </div>
                     
-                    <div className="text-center mt-8">
-                      <h3 className="heading-4 text-white mb-2">{currentData.name}</h3>
-                      <p className="text-body-sm text-gray-400 mb-1">{currentData.role}</p>
-                      <p className="text-body-sm text-gray-500">{currentData.location}</p>
-                      
-                      <div className="flex items-center justify-center mt-4 space-x-1">
+                  {/* Rating */}
+                  <div className="flex items-center space-x-1 mb-6">
                         {[...Array(5)].map((_, i) => (
                           <Star
                             key={i}
-                            className={`w-5 h-5 ${
+                        className={`w-6 h-6 ${
                               i < currentData.rating 
                                 ? 'text-yellow-500 fill-current' 
                                 : 'text-gray-600'
@@ -202,55 +223,36 @@ const CustomerTestimonials: React.FC = () => {
                         ))}
                       </div>
                     </div>
-                  </motion.div>
-                </AnimatePresence>
-              </div>
-            </motion.div>
-
-            {/* Testimonial Content */}
-            <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-              className="relative"
-            >
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={`content-${currentTestimonial}`}
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -30 }}
-                  transition={{ duration: 0.6 }}
-                  className="space-y-8"
-                >
-                  {/* Quote Icon */}
-                  <Quote className="w-16 h-16 text-yellow-500/30" />
-                  
-                  {/* Review Text */}
-                  <blockquote className="text-body-lg leading-relaxed text-gray-200">
-                    "{currentData.review}"
-                  </blockquote>
                   
                   {/* Purchase Details */}
-                  <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
-                    <h4 className="text-sm font-medium text-gray-400 mb-3">Purchase Details</h4>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
+                {(currentData.car_purchased || currentData.purchase_date) && (
+                  <div className="p-6 rounded-2xl bg-white/5 border border-white/10 max-w-2xl mx-auto">
+                    <h4 className="text-sm font-medium text-gray-400 mb-3 flex items-center justify-center">
+                      <MessageSquare className="w-4 h-4 mr-2" />
+                      Purchase Details
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {currentData.car_purchased && (
+                        <div className="text-center">
                         <p className="text-sm text-gray-500">Vehicle</p>
-                        <p className="text-white font-medium">{currentData.carPurchased}</p>
+                          <p className="text-white font-medium">{currentData.car_purchased}</p>
                       </div>
-                      <div>
+                      )}
+                      {currentData.purchase_date && (
+                        <div className="text-center">
                         <p className="text-sm text-gray-500">Date</p>
-                        <p className="text-white font-medium">{currentData.purchaseDate}</p>
+                          <p className="text-white font-medium">{currentData.purchase_date}</p>
                       </div>
+                      )}
                     </div>
                   </div>
+                )}
+              </Card>
                 </motion.div>
               </AnimatePresence>
 
               {/* Navigation Controls */}
-              <div className="flex items-center justify-between mt-12">
+          <div className="flex items-center justify-between mt-12 max-w-2xl mx-auto">
                 <div className="flex items-center space-x-4">
                   <Button
                     variant="outline"
@@ -292,8 +294,6 @@ const CustomerTestimonials: React.FC = () => {
                 >
                   {isAutoPlaying ? 'Pause' : 'Play'}
                 </Button>
-              </div>
-            </motion.div>
           </div>
         </div>
 

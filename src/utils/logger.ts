@@ -1,126 +1,191 @@
-type LogLevel = 'debug' | 'info' | 'warn' | 'error';
+// Removed circular import: import { perf } from './performance';
+
+// Log levels
+export enum LogLevel {
+  DEBUG = 0,
+  INFO = 1,
+  WARN = 2,
+  ERROR = 3
+}
+
+type LogData = Record<string, unknown> | unknown[] | string | number | boolean | null | undefined;
 
 interface LogEntry {
+  timestamp: string;
   level: LogLevel;
   message: string;
-  data?: any;
-  timestamp: Date;
+  data?: LogData;
   context?: string;
 }
 
 class Logger {
-  private isDevelopment = process.env.NODE_ENV === 'development';
   private logs: LogEntry[] = [];
   private maxLogs = 1000;
-
-  private formatMessage(level: LogLevel, message: string, context?: string): string {
-    const timestamp = new Date().toISOString();
-    const contextStr = context ? ` [${context}]` : '';
-    return `[${timestamp}] ${level.toUpperCase()}${contextStr}: ${message}`;
+  private currentLevel = LogLevel.INFO;
+  
+  setLevel(level: LogLevel) {
+    this.currentLevel = level;
   }
-
-  private addLog(level: LogLevel, message: string, data?: any, context?: string) {
+  
+  private shouldLog(level: LogLevel): boolean {
+    return level >= this.currentLevel;
+  }
+  
+  private addLog(level: LogLevel, message: string, data?: LogData, context?: string) {
+    if (!this.shouldLog(level)) return;
+    
     const logEntry: LogEntry = {
+      timestamp: new Date().toISOString(),
       level,
       message,
       data,
-      timestamp: new Date(),
       context
     };
-
+    
     this.logs.push(logEntry);
     
-    // Keep only the latest logs
+    // Keep only the last maxLogs entries
     if (this.logs.length > this.maxLogs) {
       this.logs = this.logs.slice(-this.maxLogs);
     }
-  }
-
-  debug(message: string, data?: any, context?: string) {
-    this.addLog('debug', message, data, context);
-    if (this.isDevelopment) {
-      console.debug(this.formatMessage('debug', message, context), data || '');
-    }
-  }
-
-  info(message: string, data?: any, context?: string) {
-    this.addLog('info', message, data, context);
-    if (this.isDevelopment) {
-      console.info(this.formatMessage('info', message, context), data || '');
-    }
-  }
-
-  warn(message: string, data?: any, context?: string) {
-    this.addLog('warn', message, data, context);
-    console.warn(this.formatMessage('warn', message, context), data || '');
-  }
-
-  error(message: string, error?: Error | any, context?: string) {
-    this.addLog('error', message, error, context);
-    console.error(this.formatMessage('error', message, context), error || '');
     
-    // In production, you might want to send this to an error tracking service
-    if (!this.isDevelopment && typeof window !== 'undefined') {
-      // Example: Send to error tracking service
-      // trackError(message, error, context);
+    // Also log to console in development
+    if (process.env.NODE_ENV === 'development') {
+      this.logToConsole(logEntry);
     }
   }
-
-  getLogs(level?: LogLevel): LogEntry[] {
-    if (level) {
-      return this.logs.filter(log => log.level === level);
+  
+  debug(message: string, data?: LogData, context?: string) {
+    this.addLog(LogLevel.DEBUG, message, data, context);
+  }
+  
+  info(message: string, data?: LogData, context?: string) {
+    this.addLog(LogLevel.INFO, message, data, context);
+  }
+  
+  warn(message: string, data?: LogData, context?: string) {
+    this.addLog(LogLevel.WARN, message, data, context);
+  }
+  
+  error(message: string, data?: LogData, context?: string) {
+    this.addLog(LogLevel.ERROR, message, data, context);
+    
+    // Track performance for errors using lazy import to avoid circular dependency
+    try {
+      import('./performance').then(({ perf }) => {
+        perf.trackInteraction('error', context || 'unknown', {
+          message,
+          timestamp: Date.now()
+        });
+      }).catch(() => {
+        // Silently ignore if performance module fails to load
+      });
+    } catch {
+      // Silently ignore if dynamic import is not available
     }
+  }
+  
+  private logToConsole(entry: LogEntry) {
+    const prefix = `[${entry.timestamp}] ${LogLevel[entry.level]}${entry.context ? ` [${entry.context}]` : ''}:`;
+    
+    switch (entry.level) {
+      case LogLevel.DEBUG:
+        console.debug(prefix, entry.message, entry.data);
+        break;
+      case LogLevel.INFO:
+        console.info(prefix, entry.message, entry.data);
+        break;
+      case LogLevel.WARN:
+        console.warn(prefix, entry.message, entry.data);
+        break;
+      case LogLevel.ERROR:
+        console.error(prefix, entry.message, entry.data);
+        break;
+    }
+  }
+  
+  getLogs(): LogEntry[] {
     return [...this.logs];
   }
-
+  
+  getLogsByLevel(level: LogLevel): LogEntry[] {
+    return this.logs.filter(log => log.level === level);
+  }
+  
+  getLogsByContext(context: string): LogEntry[] {
+    return this.logs.filter(log => log.context === context);
+  }
+  
   clearLogs() {
     this.logs = [];
   }
-
-  // Performance logging
-  time(label: string, context?: string) {
-    if (this.isDevelopment) {
-      console.time(label);
-    }
-    this.debug(`Timer started: ${label}`, undefined, context);
+  
+  exportLogs(): string {
+    return JSON.stringify(this.logs, null, 2);
   }
-
-  timeEnd(label: string, context?: string) {
-    if (this.isDevelopment) {
-      console.timeEnd(label);
-    }
-    this.debug(`Timer ended: ${label}`, undefined, context);
+  
+  // Performance logging helpers
+  startTimer(name: string, context?: string): () => void {
+    const startTime = performance.now();
+    this.debug(`Timer started: ${name}`, { startTime }, context);
+    
+    return () => {
+      const endTime = performance.now();
+      const duration = endTime - startTime;
+      this.info(`Timer completed: ${name}`, { 
+        startTime, 
+        endTime, 
+        duration: `${duration.toFixed(2)}ms` 
+      }, context);
+      
+      // Track in performance monitor using lazy import
+      try {
+        import('./performance').then(({ perf }) => {
+          perf.trackInteraction('timer', name, { duration });
+        }).catch(() => {
+          // Silently ignore if performance module fails to load
+        });
+      } catch {
+        // Silently ignore if dynamic import is not available
+      }
+    };
   }
-
-  // Group logging for complex operations
-  group(label: string, context?: string) {
-    if (this.isDevelopment) {
-      console.group(label);
-    }
-    this.debug(`Group started: ${label}`, undefined, context);
+  
+  // Error boundary logging
+  logErrorBoundary(error: Error, errorInfo: React.ErrorInfo, context?: string) {
+    this.error('React Error Boundary caught error', {
+      error: {
+        name: error.name,
+        message: error.message,
+        stack: error.stack
+      },
+      errorInfo: {
+        componentStack: errorInfo.componentStack
+      }
+    }, context || 'ErrorBoundary');
   }
-
-  groupEnd(context?: string) {
-    if (this.isDevelopment) {
-      console.groupEnd();
-    }
-    this.debug('Group ended', undefined, context);
+  
+  // API request logging
+  logApiRequest(method: string, url: string, data?: LogData, context?: string) {
+    this.debug(`API Request: ${method} ${url}`, data, context || 'API');
+  }
+  
+  logApiResponse(method: string, url: string, status: number, data?: LogData, duration?: number, context?: string) {
+    const level = status >= 400 ? LogLevel.ERROR : LogLevel.DEBUG;
+    this.addLog(level, `API Response: ${method} ${url} - ${status}`, {
+      status,
+      data,
+      duration: duration ? `${duration.toFixed(2)}ms` : undefined
+    }, context || 'API');
   }
 }
 
 // Create singleton instance
-export const logger = new Logger();
+export const log = new Logger();
 
-// Helper functions for quick access
-export const log = {
-  debug: (message: string, data?: any, context?: string) => logger.debug(message, data, context),
-  info: (message: string, data?: any, context?: string) => logger.info(message, data, context),
-  warn: (message: string, data?: any, context?: string) => logger.warn(message, data, context),
-  error: (message: string, error?: Error | any, context?: string) => logger.error(message, error, context),
-  time: (label: string, context?: string) => logger.time(label, context),
-  timeEnd: (label: string, context?: string) => logger.timeEnd(label, context),
-  group: (label: string, context?: string) => logger.group(label, context),
-  groupEnd: (context?: string) => logger.groupEnd(context)
-};
-
-export default logger; 
+// Set appropriate log level based on environment
+if (process.env.NODE_ENV === 'development') {
+  log.setLevel(LogLevel.DEBUG);
+} else {
+  log.setLevel(LogLevel.WARN);
+} 

@@ -1,4 +1,4 @@
-import { clsx, type ClassValue } from "clsx"
+import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 
 /**
@@ -11,32 +11,250 @@ export function cn(...inputs: ClassValue[]) {
 /**
  * Formats a price with currency symbol and thousands separators
  */
-export function formatPrice(price: number, currency: string = "USD", locale: string = "en-US"): string {
-  return new Intl.NumberFormat(locale, {
-    style: "currency",
-    currency,
+export function formatPrice(price: string | number, currency: string = "AED"): string {
+  const numericPrice = typeof price === 'string' ? parseFloat(price.replace(/[^0-9.-]/g, '')) : price;
+  
+  if (isNaN(numericPrice)) {
+    return "Price on request";
+  }
+  
+  return new Intl.NumberFormat('en-AE', {
+    style: 'currency',
+    currency: currency,
+    minimumFractionDigits: 0,
     maximumFractionDigits: 0,
-  }).format(price);
+  }).format(numericPrice);
+}
+
+/**
+ * Formats a number with commas
+ */
+export function formatNumber(num: number | string): string {
+  const numericValue = typeof num === 'string' ? parseFloat(num) : num;
+  
+  if (isNaN(numericValue)) {
+    return '0';
+  }
+  
+  return new Intl.NumberFormat('en-US').format(numericValue);
+}
+
+/**
+ * Truncates text to a specified length and adds ellipsis
+ */
+export function truncateText(text: string, maxLength: number): string {
+  if (text.length <= maxLength) {
+    return text;
+  }
+  return text.slice(0, maxLength) + '...';
 }
 
 /**
  * Creates a debounced function that delays invoking func until after wait milliseconds
  */
-export function debounce<T extends (...args: unknown[]) => unknown>(
-  func: T,
+export function debounce<T extends unknown[]>(
+  func: (...args: T) => void,
   wait: number
-): (...args: Parameters<T>) => void {
-  let timeout: ReturnType<typeof setTimeout> | null = null;
+): (...args: T) => void {
+  let timeout: NodeJS.Timeout;
   
-  return function(...args: Parameters<T>) {
-    const later = () => {
-      timeout = null;
-      func(...args);
-    };
-    
-    if (timeout) clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
+  return (...args: T) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func(...args), wait);
   };
+}
+
+/**
+ * Throttles a function to ensure it is called at most once in a given time period
+ */
+export function throttle<T extends unknown[]>(
+  func: (...args: T) => void,
+  limit: number
+): (...args: T) => void {
+  let inThrottle: boolean;
+  
+  return (...args: T) => {
+    if (!inThrottle) {
+      func(...args);
+      inThrottle = true;
+      setTimeout(() => inThrottle = false, limit);
+    }
+  };
+}
+
+/**
+ * Deep clones an object
+ */
+export function deepClone<T>(obj: T): T {
+  if (obj === null || typeof obj !== "object") {
+    return obj;
+  }
+  
+  if (obj instanceof Date) {
+    return new Date(obj.getTime()) as T;
+  }
+  
+  if (obj instanceof Array) {
+    return obj.map(item => deepClone(item)) as T;
+  }
+  
+  if (typeof obj === "object") {
+    const clonedObj = {} as { [K in keyof T]: T[K] };
+    for (const key in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        clonedObj[key] = deepClone(obj[key]);
+      }
+    }
+    return clonedObj as T;
+  }
+  
+  return obj;
+}
+
+/**
+ * Generates a unique ID
+ */
+export function generateId(): string {
+  return Math.random().toString(36).substring(2) + Date.now().toString(36);
+}
+
+/**
+ * Checks if a string is a valid email
+ */
+export function isValidEmail(email: string): boolean {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}
+
+/**
+ * Checks if a string is a valid phone number
+ */
+export function isValidPhone(phone: string): boolean {
+  const phoneRegex = /^[+]?[1-9][\d]{0,15}$/;
+  return phoneRegex.test(phone.replace(/\s/g, ''));
+}
+
+/**
+ * Converts a file size to a human-readable format
+ */
+export function formatFileSize(bytes: number): string {
+  if (bytes === 0) return '0 Bytes';
+  
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+/**
+ * Gets a relative time string
+ */
+export function getRelativeTime(date: Date | string): string {
+  const now = new Date();
+  const targetDate = new Date(date);
+  const diffInSeconds = Math.floor((now.getTime() - targetDate.getTime()) / 1000);
+  
+  if (diffInSeconds < 60) {
+    return 'just now';
+  } else if (diffInSeconds < 3600) {
+    const minutes = Math.floor(diffInSeconds / 60);
+    return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+  } else if (diffInSeconds < 86400) {
+    const hours = Math.floor(diffInSeconds / 3600);
+    return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+  } else if (diffInSeconds < 2592000) {
+    const days = Math.floor(diffInSeconds / 86400);
+    return `${days} day${days > 1 ? 's' : ''} ago`;
+  } else {
+    return targetDate.toLocaleDateString();
+  }
+}
+
+/**
+ * Extracts the domain from a URL
+ */
+export function extractDomain(url: string): string {
+  try {
+    const urlObj = new URL(url);
+    return urlObj.hostname;
+  } catch {
+    return '';
+  }
+}
+
+/**
+ * Safely parses a JSON string
+ */
+export function safeJsonParse<T>(jsonString: string, defaultValue: T): T {
+  try {
+    return JSON.parse(jsonString);
+  } catch {
+    return defaultValue;
+  }
+}
+
+/**
+ * Generates a slug from a string
+ */
+export function generateSlug(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, '') // Remove special characters
+    .replace(/[\s_-]+/g, '-') // Replace spaces and underscores with hyphens
+    .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
+}
+
+/**
+ * Converts a hex color to RGB
+ */
+export function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result ? {
+    r: parseInt(result[1], 16),
+    g: parseInt(result[2], 16),
+    b: parseInt(result[3], 16)
+  } : null;
+}
+
+/**
+ * Converts RGB to hex
+ */
+export function rgbToHex(r: number, g: number, b: number): string {
+  return "#" + [r, g, b].map(x => {
+    const hex = x.toString(16);
+    return hex.length === 1 ? "0" + hex : hex;
+  }).join("");
+}
+
+/**
+ * Local storage utilities with error handling
+ */
+export function setLocalStorage(key: string, value: unknown): boolean {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export function getLocalStorage<T>(key: string, defaultValue: T): T {
+  try {
+    const item = localStorage.getItem(key);
+    return item ? JSON.parse(item) : defaultValue;
+  } catch {
+    return defaultValue;
+  }
+}
+
+export function removeLocalStorage(key: string): boolean {
+  try {
+    localStorage.removeItem(key);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 /**
@@ -95,7 +313,10 @@ export function deepMerge<T extends Record<string, unknown>>(
         if (!(key in target)) {
           Object.assign(output, { [key]: source[key] });
         } else {
-          output[key] = deepMerge(target[key] as Record<string, unknown>, source[key] as Record<string, unknown>) as T[Extract<keyof T, string>];
+          (output as Record<string, unknown>)[key] = deepMerge(
+            target[key] as Record<string, unknown>, 
+            source[key] as Record<string, unknown>
+          );
         }
       } else {
         Object.assign(output, { [key]: source[key] });
@@ -173,14 +394,20 @@ export function isSlowConnection(): boolean {
   
   // Check if the browser supports the Network Information API
   if ('connection' in navigator) {
-    const connection = (navigator as any).connection;
+    interface NetworkInformation {
+      saveData?: boolean;
+      effectiveType?: string;
+    }
+    const connection = (navigator as Navigator & { connection?: NetworkInformation }).connection;
     
-    // Check if user has enabled data saver
-    if (connection.saveData) return true;
-    
-    // Check connection type
-    if (connection.effectiveType && ['slow-2g', '2g', '3g'].includes(connection.effectiveType)) {
-      return true;
+    if (connection) {
+      // Check if user has enabled data saver
+      if (connection.saveData) return true;
+      
+      // Check connection type
+      if (connection.effectiveType && ['slow-2g', '2g', '3g'].includes(connection.effectiveType)) {
+        return true;
+      }
     }
   }
   
@@ -225,7 +452,7 @@ export function supportsWebP(): Promise<boolean> {
   
   // If we've already checked, return the cached result
   if ('_supportsWebP' in window) {
-    return Promise.resolve((window as any)._supportsWebP);
+    return Promise.resolve((window as Window & { _supportsWebP?: boolean })._supportsWebP ?? false);
   }
   
   return new Promise(resolve => {
@@ -233,12 +460,12 @@ export function supportsWebP(): Promise<boolean> {
     
     image.onload = function() {
       const result = image.width > 0 && image.height > 0;
-      (window as any)._supportsWebP = result;
+      (window as Window & { _supportsWebP?: boolean })._supportsWebP = result;
       resolve(result);
     };
     
     image.onerror = function() {
-      (window as any)._supportsWebP = false;
+      (window as Window & { _supportsWebP?: boolean })._supportsWebP = false;
       resolve(false);
     };
     

@@ -6,10 +6,7 @@ export default {
 		"./pages/**/*.{ts,tsx}",
 		"./components/**/*.{ts,tsx}",
 		"./app/**/*.{ts,tsx}",
-		"./src/components/**/*.{ts,tsx}",
-		"./src/pages/**/*.{ts,tsx}",
-		"./src/hooks/**/*.{ts,tsx}",
-		"./src/lib/utils.ts",
+		"./src/**/*.{ts,tsx}",
 		"./src/lib/supabase.ts",
 		"./src/lib/animation.ts",
 		"./src/lib/animations/**/*.{ts,tsx}",
@@ -27,12 +24,16 @@ export default {
 			center: true,
 			padding: '2rem',
 			screens: {
-				'sm': '640px',
-				'md': '768px',
-				'lg': '1024px',
-				'xl': '1280px',
-				'2xl': '1536px',
+				'2xl': '1400px',
 			}
+		},
+		screens: {
+			'xs': '475px',  // Extra small screens
+			'sm': '640px',  // Small screens
+			'md': '768px',  // Medium screens  
+			'lg': '1024px', // Large screens
+			'xl': '1280px', // Extra large screens
+			'2xl': '1536px' // 2X large screens
 		},
 		extend: {
 			colors: {
@@ -69,32 +70,12 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
-				pollux: {
-					red: '#1937E3',                     // Primary blue (renamed from red)
-					blue: '#1937E3',                    // Primary blue
-					'blue-light': '#4361EE',            // Lighter blue for accents
-					'blue-dark': '#0A1A5E',             // Darker blue for depth
-					gold: '#D4AF37',                    // Luxury gold accent
-					'gold-light': '#F2D675',            // Lighter gold for hover states
-					'gold-dark': '#9E7C1E',             // Darker gold for depth
-					platinum: '#E5E4E2',                // Platinum silver
-					'platinum-dark': '#C0C0C0',         // Darker platinum for depth
-					'dark-gray': '#1A1A1A',             // Rich dark gray (near black)
-					'light-gray': '#F8F9FA',            // Subtle light gray
-					'midnight': '#0D1117',              // Deep midnight blue-black
-					'champagne': '#F7E7CE',             // Subtle champagne accent
-					'bronze': '#CD7F32',                // Bronze accent
-					black: '#0A0A0A',                   // True black
-					'gradient-start': '#1937E3',        // Gradient start (blue)
-					'gradient-end': '#4361EE',          // Gradient end (lighter blue)
-					'accent-gold': 'rgba(212,175,55,0.8)', // Semi-transparent gold
-					'accent-blue': 'rgba(25,55,227,0.8)', // Semi-transparent blue
-					'accent-platinum': 'rgba(229,228,226,0.8)', // Semi-transparent platinum
-					'glass-bg': 'rgba(10,10,10,0.7)',   // Glass background
-					'glass-border': 'rgba(255,255,255,0.1)', // Glass border
-					'card-bg': 'rgba(26,26,26,0.8)',    // Card background
-					'hover-overlay': 'rgba(25,55,227,0.1)' // Hover overlay
-				}
+				'pollux-blue': '#1937E3',
+				'pollux-gold': '#D4AF37',
+				'pollux-gold-light': '#E6C757',
+				'pollux-platinum': '#E5E4E2',
+				'pollux-dark': '#0A0A0F',
+				'pollux-light': '#F8F9FA',
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -128,7 +109,7 @@ export default {
 				},
 				"background-shine": {
 					"from": {
-						"backgroundPosition": "200% 0"
+						"backgroundPosition": "0 0"
 					},
 					"to": {
 						"backgroundPosition": "-200% 0"
@@ -144,6 +125,7 @@ export default {
 					"50%": { transform: "translateY(8px)" }
 				},
 				"shimmer": {
+					"0%": { transform: "translateX(-100%)" },
 					"100%": { transform: "translateX(100%)" }
 				},
 				"rotate-slow": {
@@ -264,7 +246,7 @@ export default {
 				"fade-up": "fade-up 0.7s ease-out forwards",
 				"slide-in-right": "slide-in-right 0.5s ease-out",
 				"zoom-in": "zoom-in 0.3s ease-out",
-				"background-shine": "background-shine 8s linear infinite",
+				"background-shine": "background-shine 2s linear infinite",
 				"float": "float 6s ease-in-out infinite",
 				"scroll-bounce": "scroll-bounce 2s ease-in-out infinite",
 				"shimmer": "shimmer 2s infinite",

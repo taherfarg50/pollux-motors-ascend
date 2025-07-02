@@ -1,49 +1,15 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { 
-  Ship, 
-  Globe, 
-  Shield, 
   Clock, 
-  FileText, 
-  Truck, 
-  DollarSign, 
-  CheckCircle,
   Phone,
   Mail,
-  MapPin,
   ArrowRight
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 
 const ExportServices = () => {
-  const exportServices = [
-    {
-      icon: <Ship className="w-8 h-8" />,
-      title: "Vehicle Shipping",
-      description: "Professional vehicle transport via container or RoRo shipping to Egypt, Algeria, and worldwide destinations.",
-      features: ["Container shipping", "RoRo services", "Door-to-port delivery", "Insurance included"]
-    },
-    {
-      icon: <FileText className="w-8 h-8" />,
-      title: "Documentation & Customs",
-      description: "Complete documentation service including export permits, customs clearance, and certificate handling.",
-      features: ["Export documentation", "Customs clearance", "Certificate of origin", "Title transfers"]
-    },
-    {
-      icon: <Shield className="w-8 h-8" />,
-      title: "Pre-Export Inspection",
-      description: "Thorough vehicle inspection and preparation to ensure your car arrives in perfect condition.",
-      features: ["Quality inspection", "Maintenance check", "Preparation service", "Photo documentation"]
-    },
-    {
-      icon: <DollarSign className="w-8 h-8" />,
-      title: "Financing Solutions",
-      description: "Flexible payment options and financing solutions for international buyers.",
-      features: ["Export financing", "Payment plans", "Bank transfers", "Secure transactions"]
-    }
-  ];
 
   const exportDestinations = [
     {
@@ -141,51 +107,7 @@ const ExportServices = () => {
           </div>
         </section>
 
-        {/* Export Services */}
-        <section className="py-20">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                Comprehensive Export Services
-              </h2>
-              <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-                From documentation to delivery, we handle every aspect of your vehicle export journey.
-              </p>
-            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {exportServices.map((service, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
-                  viewport={{ once: true }}
-                >
-                  <Card className="bg-black/40 border-gray-700 h-full hover:border-pollux-blue/50 transition-colors">
-                    <CardHeader>
-                      <div className="w-16 h-16 bg-pollux-blue/20 rounded-lg flex items-center justify-center text-pollux-blue mb-4">
-                        {service.icon}
-                      </div>
-                      <CardTitle className="text-white">{service.title}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-gray-400 mb-4">{service.description}</p>
-                      <ul className="space-y-2">
-                        {service.features.map((feature, idx) => (
-                          <li key={idx} className="flex items-center text-sm text-gray-300">
-                            <CheckCircle className="w-4 h-4 text-green-400 mr-2" />
-                            {feature}
-                          </li>
-                        ))}
-                      </ul>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
 
         {/* Export Destinations */}
         <section className="py-20 bg-black/20">
@@ -214,11 +136,7 @@ const ExportServices = () => {
                       <h3 className="text-xl font-semibold text-white mb-2">{destination.country}</h3>
                       <p className="text-gray-400 text-sm mb-4">{destination.details}</p>
                       <div className="space-y-2 text-sm">
-                        <div className="flex items-center justify-between">
-                          <span className="text-gray-400">Shipping Time:</span>
-                          <span className="text-pollux-gold">{destination.shippingTime}</span>
-                        </div>
-                        <div className="text-gray-500 text-xs pt-2 border-t border-gray-700">
+                        <div className="text-gray-500 text-xs pt-2">
                           {destination.requirements}
                         </div>
                       </div>
@@ -290,7 +208,7 @@ const ExportServices = () => {
               </div>
               <div className="flex items-center justify-center space-x-3">
                 <Mail className="w-5 h-5 text-white" />
-                <span className="text-white">export@polluxmotors.com</span>
+                <span className="text-white">info@polluxmotors.com</span>
               </div>
               <div className="flex items-center justify-center space-x-3">
                 <Clock className="w-5 h-5 text-white" />

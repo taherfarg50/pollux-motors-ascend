@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Star, Award, Globe, Zap, CheckCircle } from 'lucide-react';
+import { Star, Award } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -16,14 +16,6 @@ interface BrandPartner {
   website: string;
   featured: boolean;
   tier: 'platinum' | 'gold' | 'silver';
-}
-
-interface Partnership {
-  title: string;
-  description: string;
-  benefits: string[];
-  icon: React.ReactNode;
-  color: string;
 }
 
 const BrandPartners: React.FC = () => {
@@ -126,37 +118,6 @@ const BrandPartners: React.FC = () => {
       website: 'https://landrover.com',
       featured: false,
       tier: 'silver'
-    }
-  ];
-
-  const partnerships: Partnership[] = [
-    {
-      title: 'AI-Powered Personalization',
-      description: 'Advanced algorithms to match customers with their perfect vehicle',
-      benefits: ['Behavioral Analysis', 'Preference Learning', 'Smart Recommendations'],
-      icon: <Zap className="w-8 h-8" />,
-      color: 'blue'
-    },
-    {
-      title: 'Virtual Reality Showrooms',
-      description: 'Immersive 3D experiences for remote vehicle exploration',
-      benefits: ['360° Vehicle Tours', 'Interactive Features', 'Real-time Customization'],
-      icon: <Globe className="w-8 h-8" />,
-      color: 'purple'
-    },
-    {
-      title: 'Premium Service Network',
-      description: 'Comprehensive support and maintenance across all locations',
-      benefits: ['24/7 Support', 'Mobile Service', 'Certified Technicians'],
-      icon: <Award className="w-8 h-8" />,
-      color: 'yellow'
-    },
-    {
-      title: 'Exclusive Member Benefits',
-      description: 'VIP treatment and special privileges for valued customers',
-      benefits: ['Priority Access', 'Special Events', 'Concierge Service'],
-      icon: <Star className="w-8 h-8" />,
-      color: 'green'
     }
   ];
 
@@ -349,54 +310,6 @@ const BrandPartners: React.FC = () => {
               </motion.div>
             ))}
           </AnimatePresence>
-        </motion.div>
-
-        {/* Partnership Benefits */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.6 }}
-          className="mb-16"
-        >
-          <div className="text-center mb-12">
-            <h3 className="heading-3 text-white mb-4">Partnership Benefits</h3>
-            <p className="text-body-md text-gray-400 max-w-2xl mx-auto">
-              Our strategic partnerships enable us to deliver exceptional value and innovative solutions
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {partnerships.map((partnership, index) => (
-              <motion.div
-                key={partnership.title}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                whileHover={{ scale: 1.05 }}
-                className="group"
-              >
-                <Card className={`p-6 h-full bg-gradient-to-br from-${partnership.color}-500/20 to-${partnership.color}-600/20 border border-${partnership.color}-500/30 hover:shadow-luxury-lg transition-all duration-500`}>
-                  <div className={`text-${partnership.color}-400 mb-4 group-hover:scale-110 transition-transform duration-300`}>
-                    {partnership.icon}
-                  </div>
-                  
-                  <h4 className="heading-6 text-white mb-3">{partnership.title}</h4>
-                  <p className="text-body-sm text-gray-400 mb-4">{partnership.description}</p>
-                  
-                  <div className="space-y-2">
-                    {partnership.benefits.map((benefit, benefitIndex) => (
-                      <div key={benefitIndex} className="flex items-center text-sm">
-                        <CheckCircle className={`w-4 h-4 text-${partnership.color}-400 mr-2 flex-shrink-0`} />
-                        <span className="text-gray-300">{benefit}</span>
-                      </div>
-                    ))}
-                  </div>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
         </motion.div>
 
         {/* Partnership Stats */}

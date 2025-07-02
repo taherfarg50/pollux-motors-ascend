@@ -1,12 +1,13 @@
-import React, { useRef, useState, useEffect, Suspense } from 'react';
+import React, { useRef, useState, useEffect, Suspense, useMemo } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera, Environment, useGLTF, Html, Box, Sphere } from '@react-three/drei';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut, RotateCcw, PaintBucket, Info, Layers } from 'lucide-react';
 import * as THREE from 'three';
 import { Car3DModel } from '@/lib/supabase';
+import { Group, Mesh, Object3D, Material, MeshStandardMaterial } from 'three';
 
 // Define available colors for the vehicle
 const COLORS = [
@@ -18,11 +19,14 @@ const COLORS = [
 ];
 
 // Error boundary for 3D model loading
-const ModelErrorBoundary = ({ children, fallback }) => {
+const ModelErrorBoundary = ({ children, fallback }: {
+  children: React.ReactNode;
+  fallback: React.ReactNode;
+}) => {
   const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
-    const errorHandler = (event) => {
+    const errorHandler = (event: ErrorEvent) => {
       if (event.message && event.message.includes('Could not load')) {
         console.error('3D model loading error:', event);
         setHasError(true);
@@ -38,8 +42,8 @@ const ModelErrorBoundary = ({ children, fallback }) => {
 };
 
 // Fallback model when the actual model fails to load
-const FallbackVehicleModel = ({ color }) => {
-  const group = useRef();
+const FallbackVehicleModel = ({ color }: { color: { hex: string; metalness: number; roughness: number } }) => {
+  const group = useRef<Group>(null);
   const material = new THREE.MeshStandardMaterial({
     color: new THREE.Color(color.hex),
     metalness: color.metalness,
@@ -131,65 +135,68 @@ const FallbackVehicleModel = ({ color }) => {
 };
 
 // Vehicle model component
-const VehicleModel = ({ modelPath, color, showInterior, openDoors }) => {
-  const group = useRef();
+const VehicleModel = ({ modelPath, color, showInterior, openDoors }: {
+  modelPath: string;
+  color: { hex: string; metalness: number; roughness: number };
+  showInterior: boolean;
+  openDoors: boolean;
+}) => {
+  const group = useRef<Group>(null);
   const [modelError, setModelError] = useState(false);
   const [modelLoaded, setModelLoaded] = useState(false);
   
-  // Preemptively set error for known problematic paths
-  useEffect(() => {
-    // Check if the model path is one we know is problematic
-    if (modelPath === '/media/models/luxury_sedan.glb') {
-      console.warn('Using known problematic model path, triggering fallback');
-      setModelError(true);
-    }
-    
-    // Check if the model path is from Supabase storage
-    if (modelPath && modelPath.includes('supabase.co/storage')) {
-      console.log('Loading model from Supabase storage:', modelPath);
-    }
+  // Always call the hook - handle loading conditionally
+  const shouldLoadModel = useMemo(() => {
+    return modelPath && 
+           typeof modelPath === 'string' && 
+           modelPath.trim() !== '' &&
+           modelPath !== '/media/models/luxury_sedan.glb';
   }, [modelPath]);
   
-  // If we already know there's an error, return null immediately
-  if (modelError) {
-    return null;
-  }
+  // Always call useGLTF, but with a valid path (use a placeholder if needed)
+  const effectiveModelPath = shouldLoadModel ? modelPath : '/placeholder.glb';
   
-  // Use a try-catch block with useGLTF
-  let modelData = { scene: null, nodes: null, materials: null };
+  let modelData: { scene: Object3D | null; nodes: Record<string, Object3D> | null; materials: Record<string, Material> | null } = { 
+    scene: null, 
+    nodes: null, 
+    materials: null 
+  };
   
   try {
-    // Check if the path is a valid URL or file path
-    // This will prevent the "Unexpected token '<', "<!DOCTYPE "... is not valid JSON" error
-    if (typeof modelPath === 'string' && modelPath.trim() !== '') {
-      try {
-        modelData = useGLTF(modelPath);
-        // If we get here, the model loaded successfully
-        if (!modelLoaded) setModelLoaded(true);
-      } catch (error) {
-        console.error(`Error loading model from ${modelPath}:`, error);
-        setModelError(true);
-        throw new Error(`Failed to load model: ${error.message}`);
-      }
-    } else {
-      console.error('Invalid model path provided');
-      setModelError(true);
+    if (shouldLoadModel) {
+      const loadedData = useGLTF(effectiveModelPath);
+      modelData = loadedData as typeof modelData;
     }
   } catch (error) {
-    console.error(`Error in VehicleModel component:`, error);
+    console.error('Error loading model:', error);
     setModelError(true);
-    // Return null to trigger the fallback
-    return null;
   }
   
   const { scene, nodes, materials } = modelData;
   
-  // Check if the scene is valid
-  if (!scene || !scene.children || scene.children.length === 0) {
-    console.error('Model loaded but scene is empty or invalid');
-    setModelError(true);
-    return null;
+  // Check for model loading issues
+  useEffect(() => {
+    if (modelPath === '/media/models/luxury_sedan.glb') {
+      console.warn('Using known problematic model path, triggering fallback');
+      setModelError(true);
+      return;
+    }
+    
+    if (modelPath && modelPath.includes('supabase.co/storage')) {
+      console.log('Loading model from Supabase storage:', modelPath);
+    }
+    
+    // Check if the scene is valid after loading attempt
+    if (!scene || !scene.children || scene.children.length === 0) {
+      if (modelPath && shouldLoadModel) {
+        console.error('Model loaded but scene is empty or invalid');
+        setModelError(true);
+      }
+    } else {
+      setModelLoaded(true);
+      setModelError(false);
   }
+  }, [modelPath, scene, shouldLoadModel]);
   
   // Apply color to the vehicle body material
   useEffect(() => {
@@ -200,13 +207,13 @@ const VehicleModel = ({ modelPath, color, showInterior, openDoors }) => {
         materials.car_paint || 
         materials.Body || 
         materials.body ||
-        Object.values(materials).find(m => 
+        Object.values(materials).find((m: Material) => 
           m.name && (m.name.toLowerCase().includes('paint') || 
                     m.name.toLowerCase().includes('body') || 
                     m.name.toLowerCase().includes('car'))
-        );
+        ) as MeshStandardMaterial | undefined;
       
-      if (carPaintMaterial) {
+      if (carPaintMaterial && carPaintMaterial instanceof MeshStandardMaterial) {
         carPaintMaterial.color.set(color.hex);
         carPaintMaterial.metalness = color.metalness;
         carPaintMaterial.roughness = color.roughness;
@@ -220,7 +227,7 @@ const VehicleModel = ({ modelPath, color, showInterior, openDoors }) => {
       // This is a simplified example - actual implementation would depend on the 3D model structure
       const doorNames = ['door_left', 'door_right', 'door_fl', 'door_fr', 'door_rl', 'door_rr', 'hood', 'trunk'];
       const doors = doorNames
-        .map(name => nodes[name])
+        .map(name => nodes[name] as Object3D)
         .filter(Boolean);
       
       doors.forEach(door => {
@@ -266,7 +273,10 @@ const VehicleModel = ({ modelPath, color, showInterior, openDoors }) => {
 };
 
 // Hotspot component for interactive points
-const Hotspot = ({ position, children }) => {
+const Hotspot = ({ position, children }: {
+  position: [number, number, number];
+  children: React.ReactNode;
+}) => {
   const [hovered, setHovered] = useState(false);
   
   return (
@@ -296,7 +306,11 @@ const Hotspot = ({ position, children }) => {
 };
 
 // Model selector component
-const ModelSelector = ({ models, currentModel, onSelectModel }) => {
+const ModelSelector = ({ models, currentModel, onSelectModel }: {
+  models: Car3DModel[];
+  currentModel: Car3DModel | null;
+  onSelectModel: (model: Car3DModel) => void;
+}) => {
   if (!models || models.length <= 1) return null;
   
   return (
@@ -348,7 +362,7 @@ const CarViewer3D = ({
   const [showSpecs, setShowSpecs] = useState(false);
   const [modelLoadError, setModelLoadError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedModel, setSelectedModel] = useState(null);
+  const [selectedModel, setSelectedModel] = useState<Car3DModel | null>(null);
   
   // Select the default model or the first one available
   useEffect(() => {
@@ -357,7 +371,14 @@ const CarViewer3D = ({
       setSelectedModel(defaultModel);
     } else {
       // If no models from database, use the provided modelPath
-      setSelectedModel({ model_path: modelPath, id: 'default' });
+      setSelectedModel({ 
+        model_path: modelPath, 
+        id: 0, 
+        car_id: 0,
+        format: 'glb',
+        is_default: true,
+        thumbnail_path: undefined
+      } as Car3DModel);
     }
   }, [models3D, modelPath]);
   
@@ -489,10 +510,9 @@ const CarViewer3D = ({
           <PerspectiveCamera makeDefault position={[0, 1, 5]} fov={50} />
           
           <ErrorBoundary fallback={
-            <>
+            <React.Fragment>
               <FallbackVehicleModel color={selectedColor} />
-              {!modelLoadError && setModelLoadError(true)}
-            </>
+            </React.Fragment>
           }>
             <VehicleModel 
               modelPath={currentModelPath}
@@ -537,18 +557,28 @@ const CarViewer3D = ({
 };
 
 // Custom ErrorBoundary component for React Three Fiber
-class ErrorBoundary extends React.Component {
-  constructor(props) {
+interface ErrorBoundaryProps {
+  children: React.ReactNode;
+  fallback: React.ReactNode;
+}
+
+interface ErrorBoundaryState {
+  hasError: boolean;
+  errorInfo?: React.ErrorInfo;
+}
+
+class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  constructor(props: ErrorBoundaryProps) {
     super(props);
-    this.state = { hasError: false, errorInfo: null };
+    this.state = { hasError: false, errorInfo: undefined };
   }
 
-  static getDerivedStateFromError(error) {
+  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
     // Update state so the next render will show the fallback UI
     return { hasError: true };
   }
 
-  componentDidCatch(error, errorInfo) {
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     // Log the error to the console
     console.error("3D Model Error:", error);
     console.error("Error Info:", errorInfo);
