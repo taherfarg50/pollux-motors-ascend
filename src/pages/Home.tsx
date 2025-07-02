@@ -150,7 +150,7 @@ const Home = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pt-20">
       {/* Social Media Sidebar */}
       <SocialSidebar />
       {/* Hero Section with 3D Car */}
