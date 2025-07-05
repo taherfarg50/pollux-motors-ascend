@@ -51,8 +51,8 @@ const PerformanceMonitor: React.FC = () => {
       // Get Web Vitals
       let largestContentfulPaint = 0;
       let cumulativeLayoutShift = 0;
-      let firstInputDelay = 0;
-      let timeToInteractive = timing.domInteractive - timing.navigationStart;
+      const firstInputDelay = 0;
+      const timeToInteractive = timing.domInteractive - timing.navigationStart;
 
       // Observe LCP
       if ('PerformanceObserver' in window) {
@@ -67,8 +67,12 @@ const PerformanceMonitor: React.FC = () => {
           // Observe CLS
           const clsObserver = new PerformanceObserver((entryList) => {
             for (const entry of entryList.getEntries()) {
-              if (!(entry as any).hadRecentInput) {
-                cumulativeLayoutShift += (entry as any).value;
+              const layoutShiftEntry = entry as PerformanceEntry & { 
+                hadRecentInput?: boolean; 
+                value?: number; 
+              };
+              if (!layoutShiftEntry.hadRecentInput) {
+                cumulativeLayoutShift += layoutShiftEntry.value || 0;
               }
             }
           });

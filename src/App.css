@@ -1,4 +1,18 @@
 #root {
+  /* Remove constraining styles that interfere with navbar layout */
+  /* max-width: 1280px; */
+  /* margin: 0 auto; */
+  /* padding: 2rem; */
+  /* text-align: center; */
+  
+  /* Allow full viewport width for navbar */
+  width: 100%;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* Move app content styling to main content areas if needed */
+.main-content-wrapper {
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;

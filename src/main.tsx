@@ -131,3 +131,25 @@ document.body.style.color = '#ffffff';
 // Start loading
 simpleLog('🚀 Starting Pollux Motors app...');
 loadAppGradually();
+
+// Global error handling
+window.addEventListener('error', (event: ErrorEvent) => {
+  console.error('Global error:', event.error);
+});
+
+window.addEventListener('unhandledrejection', (event: PromiseRejectionEvent) => {
+  console.error('Unhandled promise rejection:', event.reason);
+});
+
+// Service worker registration with proper error handling
+if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then((registration: ServiceWorkerRegistration) => {
+        console.log('SW registered: ', registration);
+      })
+      .catch((registrationError: Error) => {
+        console.log('SW registration failed: ', registrationError);
+      });
+  });
+}

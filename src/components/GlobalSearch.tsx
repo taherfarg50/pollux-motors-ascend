@@ -5,7 +5,7 @@ import {
   X, 
   Filter, 
   Clock, 
-  Car, 
+  Car as CarIcon, 
   User, 
   FileText, 
   TrendingUp,
@@ -27,6 +27,9 @@ import { useDebounce } from '@/hooks/useDebounce';
 import { useCars } from '@/lib/supabase';
 import { log } from '@/utils/logger';
 import { perf } from '@/utils/performance';
+
+// Import Car interface from the proper location
+import type { Car } from '@/lib/supabase';
 
 interface SearchResult {
   id: string;
@@ -61,7 +64,7 @@ interface AISearchSuggestion {
   text: string;
   type: 'semantic' | 'voice' | 'visual' | 'smart';
   confidence: number;
-  metadata?: any;
+  metadata?: Record<string, unknown>;
 }
 
 const GlobalSearch: React.FC<GlobalSearchProps> = ({ 
@@ -90,7 +93,10 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
   
-  const { data: cars = [] } = useCars();
+  const { data: carsData = [] } = useCars();
+  
+  // Properly extract cars array from the data structure
+  const cars = Array.isArray(carsData) ? carsData : (carsData as { cars: Car[] })?.cars || [];
 
   // Static data for other searchable content
   const staticContent = useMemo(() => [
@@ -467,7 +473,7 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({
   const getCategoryIcon = (category: string) => {
     switch (category) {
       case 'car':
-        return <Car className="w-4 h-4" />;
+        return <CarIcon className="w-4 h-4" />;
       case 'feature':
         return <TrendingUp className="w-4 h-4" />;
       case 'page':

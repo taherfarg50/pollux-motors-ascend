@@ -128,7 +128,7 @@ const formatEnhancedChatHistory = (
   history: Message[], 
   currentMessage: string, 
   personality: string = 'luxury',
-  userContext?: any
+  userContext?: Record<string, unknown>
 ) => {
   const contents = [];
   
@@ -197,7 +197,7 @@ export const sendMessageToGemini = async (
   history: Message[],
   options: {
     personality?: string;
-    userContext?: any;
+    userContext?: Record<string, unknown>;
     enhancedMode?: boolean;
     temperature?: number;
   } = {}
@@ -312,10 +312,10 @@ const generateIntelligentFallback = (
  * AI-powered car recommendation system
  */
 export const generateCarRecommendations = async (
-  userPreferences: any,
-  browsihgHistory: any[] = [],
+  userPreferences: Record<string, unknown>,
+  browsihgHistory: Record<string, unknown>[] = [],
   budget: { min: number; max: number }
-): Promise<any[]> => {
+): Promise<Record<string, unknown>[]> => {
   try {
     const prompt = `As an AI automotive expert for Pollux Motors, analyze these user preferences and generate personalized luxury car recommendations:
 
@@ -358,7 +358,7 @@ Format as JSON array with objects containing: model, price, reasons[], confidenc
  */
 export const generateMarketInsights = async (
   vehicleCategory: string = 'luxury'
-): Promise<any> => {
+): Promise<Record<string, unknown>> => {
   try {
     const prompt = `As a luxury automotive market analyst, provide current insights for the ${vehicleCategory} vehicle market:
 
@@ -392,9 +392,9 @@ Focus on factual analysis with specific data points where possible. Format as st
  */
 export const calculateSmartFinancing = async (
   vehiclePrice: number,
-  userProfile: any,
+  userProfile: Record<string, unknown>,
   loanTerms: { months: number; downPayment: number }
-): Promise<any> => {
+): Promise<Record<string, unknown>> => {
   try {
     const prompt = `As an AI financial advisor for luxury automotive purchases, calculate optimal financing for:
 
