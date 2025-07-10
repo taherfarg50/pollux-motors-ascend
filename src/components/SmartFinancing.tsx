@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Calculator, 
@@ -109,12 +109,38 @@ const SmartFinancing: React.FC<{ carPrice: number; carName: string }> = ({ carPr
     }
   ];
 
-  // Calculate financing options based on credit profile
-  useEffect(() => {
-    calculateFinancingOptions();
-  }, [creditProfile, carPrice]);
+  // Define calculation functions first
+  const calculateAPR = useCallback((type: string): number => {
+    const baseRate = type === 'loan' ? 4.5 : type === 'lease' ? 3.8 : 0;
+    const creditAdjustment = (750 - creditProfile.score) * 0.01;
+    return Math.max(baseRate + creditAdjustment, 2.9);
+  }, [creditProfile.score]);
 
-  const calculateFinancingOptions = async () => {
+  const calculateMonthlyPayment = useCallback((type: string, term: number): number => {
+    const principal = carPrice - creditProfile.downPayment;
+    const apr = calculateAPR(type);
+    const monthlyRate = apr / 100 / 12;
+    
+    if (type === 'lease') {
+      // Simplified lease calculation
+      return Math.round((principal * 0.6) / term);
+    } else if (type === 'subscription') {
+      return Math.round(carPrice * 0.08);
+    } else {
+      // Loan calculation
+      const payment = (principal * monthlyRate * Math.pow(1 + monthlyRate, term)) / 
+                     (Math.pow(1 + monthlyRate, term) - 1);
+      return Math.round(payment);
+    }
+  }, [carPrice, creditProfile.downPayment, calculateAPR]);
+
+  const calculateTotalCost = useCallback((type: string, term: number): number => {
+    const monthly = calculateMonthlyPayment(type, term);
+    return (monthly * term) + creditProfile.downPayment;
+  }, [calculateMonthlyPayment, creditProfile.downPayment]);
+
+  // Calculate financing options based on credit profile
+  const calculateFinancingOptions = useCallback(async () => {
     setIsCalculating(true);
     
     // Simulate AI-powered calculation
@@ -167,36 +193,11 @@ const SmartFinancing: React.FC<{ carPrice: number; carName: string }> = ({ carPr
 
     setFinancingOptions(options);
     setIsCalculating(false);
-  };
+  }, [creditProfile, carPrice, calculateAPR, calculateMonthlyPayment, calculateTotalCost]);
 
-  const calculateAPR = (type: string): number => {
-    const baseRate = type === 'loan' ? 4.5 : type === 'lease' ? 3.8 : 0;
-    const creditAdjustment = (750 - creditProfile.score) * 0.01;
-    return Math.max(baseRate + creditAdjustment, 2.9);
-  };
-
-  const calculateMonthlyPayment = (type: string, term: number): number => {
-    const principal = carPrice - creditProfile.downPayment;
-    const apr = calculateAPR(type);
-    const monthlyRate = apr / 100 / 12;
-    
-    if (type === 'lease') {
-      // Simplified lease calculation
-      return Math.round((principal * 0.6) / term);
-    } else if (type === 'subscription') {
-      return Math.round(carPrice * 0.08);
-    } else {
-      // Loan calculation
-      const payment = (principal * monthlyRate * Math.pow(1 + monthlyRate, term)) / 
-                     (Math.pow(1 + monthlyRate, term) - 1);
-      return Math.round(payment);
-    }
-  };
-
-  const calculateTotalCost = (type: string, term: number): number => {
-    const monthly = calculateMonthlyPayment(type, term);
-    return (monthly * term) + creditProfile.downPayment;
-  };
+  useEffect(() => {
+    calculateFinancingOptions();
+  }, [calculateFinancingOptions]);
 
   const getCreditScoreColor = (score: number) => {
     if (score >= 750) return 'text-green-500';
@@ -376,7 +377,7 @@ const SmartFinancing: React.FC<{ carPrice: number; carName: string }> = ({ carPr
                   {financingOptions.slice(0, 2).map((option) => (
                     <div 
                       key={option.id}
-                      className="border rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                      className="border border-gray-700 rounded-lg p-4 hover:bg-gray-800/30 transition-colors"
                     >
                       <div className="flex justify-between items-start mb-2">
                         <div>
@@ -690,7 +691,7 @@ const SmartFinancing: React.FC<{ carPrice: number; carName: string }> = ({ carPr
                 <p className="text-gray-500 mb-6">
                   Connecting you with your financing advisor...
                 </p>
-                <div className="bg-gray-100 dark:bg-gray-800 rounded-lg h-64 flex items-center justify-center mb-4">
+                <div className="bg-gray-800 rounded-lg h-64 flex items-center justify-center mb-4">
                   <p className="text-gray-500">Video call interface would appear here</p>
                 </div>
                 <Button onClick={() => setVirtualMeeting(false)}>

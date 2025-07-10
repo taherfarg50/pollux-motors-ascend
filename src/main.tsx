@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 
 // Simple error logging
-const simpleLog = (message: string, error?: any) => {
+const simpleLog = (message: string, error?: Error | unknown) => {
   console.log(`[Pollux Motors] ${message}`, error || '');
 };
 
@@ -53,7 +53,7 @@ const loadAppGradually = async () => {
     );
 
     // Hide loading screen
-    const hideFunction = (window as any).hideLoadingScreen;
+    const hideFunction = (window as unknown as { hideLoadingScreen?: () => void }).hideLoadingScreen;
     if (hideFunction && typeof hideFunction === 'function') {
       hideFunction();
     }
@@ -116,7 +116,7 @@ const loadAppGradually = async () => {
       );
       
       // Hide loading screen even on error
-      const hideFunction = (window as any).hideLoadingScreen;
+      const hideFunction = (window as unknown as { hideLoadingScreen?: () => void }).hideLoadingScreen;
       if (hideFunction && typeof hideFunction === 'function') {
         hideFunction();
       }
@@ -124,32 +124,11 @@ const loadAppGradually = async () => {
   }
 };
 
-// Force a background color on the body
+// Force dark theme and background colors
+document.documentElement.classList.add('dark');
 document.body.style.backgroundColor = '#0A0A0A';
 document.body.style.color = '#ffffff';
 
 // Start loading
 simpleLog('🚀 Starting Pollux Motors app...');
 loadAppGradually();
-
-// Global error handling
-window.addEventListener('error', (event: ErrorEvent) => {
-  console.error('Global error:', event.error);
-});
-
-window.addEventListener('unhandledrejection', (event: PromiseRejectionEvent) => {
-  console.error('Unhandled promise rejection:', event.reason);
-});
-
-// Service worker registration with proper error handling
-if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
-      .then((registration: ServiceWorkerRegistration) => {
-        console.log('SW registered: ', registration);
-      })
-      .catch((registrationError: Error) => {
-        console.log('SW registration failed: ', registrationError);
-      });
-  });
-}

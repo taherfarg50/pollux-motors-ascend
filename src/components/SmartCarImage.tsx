@@ -50,7 +50,7 @@ export const SmartCarImage: React.FC<SmartCarImageProps> = ({
     localUrls.push('/media/images/placeholder-car.svg');
     
     return localUrls;
-  }, [carName, context]);
+  }, [carName]);
 
   // Prioritize Supabase images
   const imageUrls = React.useMemo(() => {
@@ -91,7 +91,7 @@ export const SmartCarImage: React.FC<SmartCarImageProps> = ({
     if (imageUrls.length > 0) {
       setCurrentImageUrl(imageUrls[0]);
     }
-  }, [carName, supabaseImageUrl, supabaseGallery, imageIndex]);
+  }, [imageUrls, carName, supabaseImageUrl, supabaseGallery, imageIndex]);
 
   const handleImageError = () => {
     const nextAttempt = fallbackAttempts + 1;
@@ -131,14 +131,14 @@ export const SmartCarImage: React.FC<SmartCarImageProps> = ({
   return (
     <div className={`relative overflow-hidden ${getImageSizeClasses()} ${className}`}>
       {isLoading && (
-        <div className="absolute inset-0 bg-gray-200 animate-pulse flex items-center justify-center">
+        <div className="absolute inset-0 bg-gray-800 animate-pulse flex items-center justify-center">
           <div className="text-gray-400 text-sm">Loading...</div>
         </div>
       )}
       
       {hasError ? (
-        <div className="absolute inset-0 bg-gray-100 flex items-center justify-center">
-          <div className="text-center text-gray-500">
+        <div className="absolute inset-0 bg-gray-900 flex items-center justify-center">
+          <div className="text-center text-gray-400">
             <div className="text-2xl mb-2">🚗</div>
             <div className="text-sm">{carName}</div>
           </div>

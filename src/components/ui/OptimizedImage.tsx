@@ -78,7 +78,7 @@ const OptimizedImage = ({
       {/* Low quality placeholder for blur-up effect */}
       {blur && !loaded && !error && (
         <div 
-          className="absolute inset-0 bg-gray-200 animate-pulse"
+                      className="absolute inset-0 bg-gray-800 animate-pulse"
           aria-hidden="true"
         />
       )}
@@ -106,7 +106,7 @@ const OptimizedImage = ({
       
       {/* Fallback for errors */}
       {error && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-200">
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-900">
           <span className="text-gray-500 text-sm">Image not available</span>
         </div>
       )}

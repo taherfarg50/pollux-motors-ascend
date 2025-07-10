@@ -313,9 +313,9 @@ const generateIntelligentFallback = (
  */
 export const generateCarRecommendations = async (
   userPreferences: Record<string, unknown>,
-  browsihgHistory: Record<string, unknown>[] = [],
+  browsihgHistory: Array<Record<string, unknown>> = [],
   budget: { min: number; max: number }
-): Promise<Record<string, unknown>[]> => {
+): Promise<Array<Record<string, unknown>>> => {
   try {
     const prompt = `As an AI automotive expert for Pollux Motors, analyze these user preferences and generate personalized luxury car recommendations:
 
@@ -431,7 +431,7 @@ Format as JSON with clear financial breakdown.`;
 };
 
 // Helper functions for parsing AI responses
-const parseRecommendationsFromText = (text: string): any[] => {
+const parseRecommendationsFromText = (text: string): Array<Record<string, unknown>> => {
   // Implementation for extracting recommendations from text
   return [
     {
@@ -451,7 +451,7 @@ const parseRecommendationsFromText = (text: string): any[] => {
   ];
 };
 
-const parseMarketInsightsFromText = (text: string): any => {
+const parseMarketInsightsFromText = (text: string): Record<string, unknown> => {
   return {
     trends: ["Electric luxury adoption growing 40% YoY", "Autonomous features becoming standard", "Sustainability focus increasing"],
     priceMovement: "Stable with 2-3% appreciation expected",
@@ -461,14 +461,17 @@ const parseMarketInsightsFromText = (text: string): any => {
   };
 };
 
-const parseFinancingFromText = (text: string, price: number, terms: any): any => {
-  const principal = price - terms.downPayment;
+const parseFinancingFromText = (text: string, price: number, terms: Record<string, unknown>): Record<string, unknown> => {
+  const downPayment = typeof terms.downPayment === 'number' ? terms.downPayment : 0;
+  const months = typeof terms.months === 'number' ? terms.months : 60;
+  
+  const principal = price - downPayment;
   const monthlyRate = 0.045 / 12; // 4.5% APR estimate
-  const monthlyPayment = principal * (monthlyRate * Math.pow(1 + monthlyRate, terms.months)) / (Math.pow(1 + monthlyRate, terms.months) - 1);
+  const monthlyPayment = principal * (monthlyRate * Math.pow(1 + monthlyRate, months)) / (Math.pow(1 + monthlyRate, months) - 1);
   
   return {
     monthlyPayment: Math.round(monthlyPayment),
-    totalInterest: Math.round((monthlyPayment * terms.months) - principal),
+    totalInterest: Math.round((monthlyPayment * months) - principal),
     alternatives: [
       { type: "lease", monthlyPayment: Math.round(monthlyPayment * 0.6) },
       { type: "shorter term", monthlyPayment: Math.round(monthlyPayment * 1.3), months: 36 }
@@ -477,7 +480,7 @@ const parseFinancingFromText = (text: string, price: number, terms: any): any =>
   };
 };
 
-const generateMockRecommendations = (preferences: any, budget: any): any[] => {
+const generateMockRecommendations = (preferences: Record<string, unknown>, budget: Record<string, unknown>): Array<Record<string, unknown>> => {
   return [
     {
       model: "Mercedes-Benz E-Class 2024",
@@ -489,7 +492,7 @@ const generateMockRecommendations = (preferences: any, budget: any): any[] => {
   ];
 };
 
-const generateMockMarketInsights = (): any => {
+const generateMockMarketInsights = (): Record<string, unknown> => {
   return {
     trends: ["Luxury EV adoption accelerating", "Tech integration priority", "Personalization demand growing"],
     priceMovement: "Moderate appreciation expected",
@@ -499,13 +502,16 @@ const generateMockMarketInsights = (): any => {
   };
 };
 
-const generateMockFinancing = (price: number, terms: any): any => {
-  const principal = price - terms.downPayment;
-  const estimatedPayment = principal / terms.months * 1.2; // Rough estimate with interest
+const generateMockFinancing = (price: number, terms: Record<string, unknown>): Record<string, unknown> => {
+  const downPayment = typeof terms.downPayment === 'number' ? terms.downPayment : 0;
+  const months = typeof terms.months === 'number' ? terms.months : 60;
+  
+  const principal = price - downPayment;
+  const estimatedPayment = principal / months * 1.2; // Rough estimate with interest
   
   return {
     monthlyPayment: Math.round(estimatedPayment),
-    totalInterest: Math.round(estimatedPayment * terms.months - principal),
+    totalInterest: Math.round(estimatedPayment * months - principal),
     alternatives: [
       { type: "lease", monthlyPayment: Math.round(estimatedPayment * 0.65) }
     ],

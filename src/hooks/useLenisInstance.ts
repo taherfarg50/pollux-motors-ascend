@@ -112,7 +112,7 @@ export function useLenisInstance() {
         setLenis(null);
       }
     };
-  }, []); // Empty dependency array means this runs once on mount
+  }, [lenis]); // Include lenis dependency
   
   return lenis;
 } 

@@ -5,7 +5,7 @@ import {
   X, 
   Filter, 
   Clock, 
-  Car as CarIcon, 
+  Car, 
   User, 
   FileText, 
   TrendingUp,
@@ -27,9 +27,6 @@ import { useDebounce } from '@/hooks/useDebounce';
 import { useCars } from '@/lib/supabase';
 import { log } from '@/utils/logger';
 import { perf } from '@/utils/performance';
-
-// Import Car interface from the proper location
-import type { Car } from '@/lib/supabase';
 
 interface SearchResult {
   id: string;
@@ -93,10 +90,8 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
   
-  const { data: carsData = [] } = useCars();
-  
-  // Properly extract cars array from the data structure
-  const cars = Array.isArray(carsData) ? carsData : (carsData as { cars: Car[] })?.cars || [];
+  const { data: carsData } = useCars();
+  const cars = useMemo(() => carsData?.cars || [], [carsData]);
 
   // Static data for other searchable content
   const staticContent = useMemo(() => [
@@ -141,6 +136,41 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({
       relevanceScore: 0.9
     }
   ], []);
+
+  // Save recent search
+  const saveRecentSearch = useCallback((searchQuery: string) => {
+    if (!searchQuery.trim()) return;
+    
+    const updated = [
+      searchQuery,
+      ...recentSearches.filter(s => s !== searchQuery)
+    ].slice(0, 5);
+    
+    setRecentSearches(updated);
+    localStorage.setItem('pollux-recent-searches', JSON.stringify(updated));
+  }, [recentSearches]);
+
+  // Handle result click
+  const handleResultClick = useCallback((result: SearchResult) => {
+    perf.trackInteraction('search-result-click', result.category, { 
+      resultId: result.id,
+      query 
+    });
+    
+    saveRecentSearch(query);
+    navigate(result.url);
+    onClose();
+  }, [query, navigate, onClose, saveRecentSearch]);
+
+  // Handle search submission
+  const handleSearch = useCallback((searchQuery: string) => {
+    if (!searchQuery.trim()) return;
+    
+    saveRecentSearch(searchQuery);
+    // Navigate to cars page with search filter
+    navigate(`/cars?search=${encodeURIComponent(searchQuery)}`);
+    onClose();
+  }, [navigate, onClose, saveRecentSearch]);
 
   // Load recent searches from localStorage
   useEffect(() => {
@@ -193,7 +223,7 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, results, selectedIndex, query, onClose]);
+  }, [isOpen, results, selectedIndex, query, onClose, handleResultClick, handleSearch]);
 
   // Scroll selected item into view
   useEffect(() => {
@@ -337,40 +367,7 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({
     return matchedWords.length / words.length * 0.5;
   };
 
-  // Handle result click
-  const handleResultClick = (result: SearchResult) => {
-    perf.trackInteraction('search-result-click', result.category, { 
-      resultId: result.id,
-      query 
-    });
-    
-    saveRecentSearch(query);
-    navigate(result.url);
-    onClose();
-  };
 
-  // Handle search submission
-  const handleSearch = (searchQuery: string) => {
-    if (!searchQuery.trim()) return;
-    
-    saveRecentSearch(searchQuery);
-    // Navigate to cars page with search filter
-    navigate(`/cars?search=${encodeURIComponent(searchQuery)}`);
-    onClose();
-  };
-
-  // Save recent search
-  const saveRecentSearch = (searchQuery: string) => {
-    if (!searchQuery.trim()) return;
-    
-    const updated = [
-      searchQuery,
-      ...recentSearches.filter(s => s !== searchQuery)
-    ].slice(0, 5);
-    
-    setRecentSearches(updated);
-    localStorage.setItem('pollux-recent-searches', JSON.stringify(updated));
-  };
 
   // Clear recent searches
   const clearRecentSearches = () => {
@@ -440,8 +437,33 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({
     }
 
     setIsVoiceActive(true);
-    const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
-    const recognition = new SpeechRecognition();
+    
+    // Define SpeechRecognition interface
+    interface ISpeechRecognition {
+      continuous: boolean;
+      interimResults: boolean;
+      lang: string;
+      onresult: (event: { results: { 0: { 0: { transcript: string } } } }) => void;
+      onerror: () => void;
+      onend: () => void;
+      start: () => void;
+    }
+    
+    const SpeechRecognitionConstructor = (window as unknown as { 
+      webkitSpeechRecognition?: new() => ISpeechRecognition;
+      SpeechRecognition?: new() => ISpeechRecognition;
+    }).webkitSpeechRecognition || (window as unknown as { 
+      webkitSpeechRecognition?: new() => ISpeechRecognition;
+      SpeechRecognition?: new() => ISpeechRecognition;
+    }).SpeechRecognition;
+    
+    if (!SpeechRecognitionConstructor) {
+      alert('Speech recognition not available');
+      setIsVoiceActive(false);
+      return;
+    }
+    
+    const recognition = new SpeechRecognitionConstructor();
     
     recognition.continuous = false;
     recognition.interimResults = false;
@@ -473,7 +495,7 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({
   const getCategoryIcon = (category: string) => {
     switch (category) {
       case 'car':
-        return <CarIcon className="w-4 h-4" />;
+        return <Car className="w-4 h-4" />;
       case 'feature':
         return <TrendingUp className="w-4 h-4" />;
       case 'page':

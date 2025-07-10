@@ -15,11 +15,66 @@ export default defineConfig({
     outDir: "dist",
     emptyOutDir: true,
     sourcemap: false,
-    minify: true,
+    minify: 'terser',
     copyPublicDir: true,
     assetsDir: "assets",
+    chunkSizeWarningLimit: 1000,
     rollupOptions: {
+      external: [],
       output: {
+        // Manual chunk splitting for better caching and smaller bundles
+        manualChunks: {
+          // React ecosystem
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          
+          // UI library
+          'ui-vendor': [
+            '@radix-ui/react-accordion',
+            '@radix-ui/react-alert-dialog',
+            '@radix-ui/react-avatar',
+            '@radix-ui/react-checkbox',
+            '@radix-ui/react-dialog',
+            '@radix-ui/react-dropdown-menu',
+            '@radix-ui/react-hover-card',
+            '@radix-ui/react-label',
+            '@radix-ui/react-navigation-menu',
+            '@radix-ui/react-popover',
+            '@radix-ui/react-progress',
+            '@radix-ui/react-radio-group',
+            '@radix-ui/react-scroll-area',
+            '@radix-ui/react-select',
+            '@radix-ui/react-separator',
+            '@radix-ui/react-slider',
+            '@radix-ui/react-slot',
+            '@radix-ui/react-switch',
+            '@radix-ui/react-tabs',
+            '@radix-ui/react-toast',
+            '@radix-ui/react-toggle',
+            '@radix-ui/react-tooltip'
+          ],
+          
+          // 3D libraries (largest chunk)
+          'three-vendor': ['three', '@react-three/fiber', '@react-three/drei'],
+          
+          // Animation libraries
+          'animation-vendor': ['framer-motion', 'gsap', 'lottie-web'],
+          
+          // Form and data libraries
+          'form-vendor': ['react-hook-form', '@hookform/resolvers', 'zod'],
+          
+          // Data fetching and state
+          'data-vendor': ['@tanstack/react-query', '@supabase/supabase-js'],
+          
+          // Utility libraries
+          'utils-vendor': [
+            'date-fns',
+            'clsx',
+            'class-variance-authority',
+            'tailwind-merge',
+            'lucide-react'
+          ]
+        },
+        
         // Ensure JS files are generated with predictable names
         entryFileNames: 'assets/js/[name]-[hash].js',
         chunkFileNames: 'assets/js/[name]-[hash].js',
@@ -52,6 +107,15 @@ export default defineConfig({
           return 'assets/[name]-[hash].[ext]';
         }
       }
+    },
+    
+    // Terser options for better minification
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+        pure_funcs: ['console.log', 'console.info', 'console.debug', 'console.warn']
+      }
     }
   },
   server: {
@@ -69,9 +133,5 @@ export default defineConfig({
   },
   esbuild: {
     drop: process.env.NODE_ENV === 'production' ? ['console', 'debugger'] : [],
-    legalComments: 'none',
-    minifyIdentifiers: true,
-    minifySyntax: true,
-    minifyWhitespace: true,
   },
 });

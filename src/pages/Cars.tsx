@@ -1,17 +1,20 @@
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useInView } from 'framer-motion';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
 import { Link } from 'react-router-dom';
-import { useInView } from 'framer-motion';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
 import { useCars, Car } from '@/lib/supabase';
 import { OptimizedCarCard } from '@/components/OptimizedCarCard';
 import FavoriteButton from '@/components/FavoriteButton';
 import { DataRefreshIndicator } from '@/components/ui/DataRefreshIndicator';
+import { GlassCard } from '@/components/ui/glass-card';
+import { GradientButton } from '@/components/ui/gradient-button';
+import { ModernLoader } from '@/components/ui/modern-loader';
+import ParticleBackground from '@/components/ui/particle-background';
 import { 
   DropdownMenu,
   DropdownMenuContent,
@@ -79,22 +82,24 @@ const EnhancedCarCard = ({ car, index, compareList, handleToggleCompare, viewMod
     visible: {
       opacity: 1,
       y: 0,
-      scale: 1,
-      transition: {
-        duration: 0.6,
-        ease: [0.22, 1, 0.36, 1],
-        delay: index * 0.1
-      }
+      scale: 1
     },
     hover: {
       y: -8,
-      scale: 1.02,
-      transition: {
-        type: "spring",
-        stiffness: 300,
-        damping: 20
-      }
+      scale: 1.02
     }
+  };
+
+  const cardTransition = {
+    duration: 0.6,
+    ease: [0.22, 1, 0.36, 1] as const,
+    delay: index * 0.1
+  };
+
+  const hoverTransition = {
+    type: "spring" as const,
+    stiffness: 300,
+    damping: 20
   };
 
   const overlayVariants = {
@@ -106,13 +111,17 @@ const EnhancedCarCard = ({ car, index, compareList, handleToggleCompare, viewMod
   };
   
   return (
-    <motion.div 
+    <GlassCard 
       ref={cardRef}
-      className={`relative group luxury-card rounded-2xl overflow-hidden transform-gpu ${viewMode === 'list' ? 'w-full' : ''} bg-gradient-to-br from-gray-900/50 to-gray-800/30 backdrop-blur-sm border border-gray-700/30`}
+      className={`group luxury-card ${viewMode === 'list' ? 'w-full' : ''}`}
+      variant="gradient"
+      intensity="medium"
+      glow={true}
+      hoverable={true}
       initial="hidden"
       animate={isInView ? "visible" : "hidden"}
       variants={cardVariants}
-      whileHover="hover"
+      transition={cardTransition}
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
     >
@@ -230,7 +239,7 @@ const EnhancedCarCard = ({ car, index, compareList, handleToggleCompare, viewMod
           </div>
         </div>
       </div>
-    </motion.div>
+    </GlassCard>
   );
 };
 
@@ -346,7 +355,7 @@ const Cars = () => {
     offset: currentPage * carsPerPage
   });
   
-  const allCars = carsData?.cars || [];
+  const allCars = useMemo(() => carsData?.cars || [], [carsData?.cars]);
   const totalCars = carsData?.total || 0;
   
   const titleRef = useRef<HTMLDivElement>(null);
@@ -431,12 +440,13 @@ const Cars = () => {
 
   // Enhanced title animation
   useEffect(() => {
-    if (!titleRef.current) return;
+    const titleElement = titleRef.current;
+    if (!titleElement) return;
     
-    if (titleRef.current && titleRef.current.children && titleRef.current.children.length > 0) {
+    if (titleElement && titleElement.children && titleElement.children.length > 0) {
       try {
         gsap.fromTo(
-          titleRef.current.children,
+          titleElement.children,
           { y: 50, opacity: 0, filter: "blur(10px)", scale: 0.9 },
           {
             y: 0,
@@ -447,7 +457,7 @@ const Cars = () => {
             duration: 1.2,
             ease: "power3.out",
             scrollTrigger: {
-              trigger: titleRef.current,
+              trigger: titleElement,
               start: "top bottom-=100",
               toggleActions: "play none none none"
             }
@@ -455,8 +465,8 @@ const Cars = () => {
         );
         
         return () => {
-          if (titleRef.current) {
-            gsap.killTweensOf(titleRef.current.children);
+          if (titleElement && titleElement.children) {
+            gsap.killTweensOf(titleElement.children);
           }
         };
       } catch (error) {
@@ -658,22 +668,18 @@ const Cars = () => {
           {/* Enhanced content section */}
           {isLoading ? (
             <motion.div 
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-              initial={{ opacity: 0.5 }}
+              className="flex items-center justify-center py-20"
+              initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
             >
-              {Array.from({ length: 6 }, (_, idx) => (
-                <div key={idx} className="glass-card rounded-2xl overflow-hidden h-[500px] relative border border-gray-700/30">
-                  <Skeleton className="h-[250px] w-full bg-gray-700/30" />
-                  <div className="p-6">
-                    <Skeleton className="h-8 w-3/4 mb-3 bg-gray-700/30" />
-                    <Skeleton className="h-6 w-1/2 mb-4 bg-gray-700/30" />
-                    <Skeleton className="h-4 w-full mb-3 bg-gray-700/30" />
-                    <Skeleton className="h-4 w-5/6 bg-gray-700/30" />
-                  </div>
-                </div>
-              ))}
+              <ModernLoader 
+                variant="luxury" 
+                size="lg" 
+                text="Loading premium vehicles..." 
+                color="primary"
+                className="text-center"
+              />
             </motion.div>
           ) : filteredAndSortedCars.length > 0 ? (
             <motion.div 

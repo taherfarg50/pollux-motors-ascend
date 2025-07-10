@@ -19,6 +19,50 @@ import { SmartCarImage } from '@/components/SmartCarImage';
 import { OptimizedCarCard } from '@/components/OptimizedCarCard';
 import { Badge } from '@/components/ui/badge';
 
+// Car interface for type safety
+interface Car {
+  id: number;
+  name: string;
+  model?: string;
+  category?: string;
+  year?: number | string;
+  price?: string;
+  image?: string;
+  gallery?: string[];
+  description?: string;
+  featured?: boolean;
+  color?: string;
+  specs?: {
+    engineType?: string;
+    power?: string;
+    torque?: string;
+    speed?: string;
+    acceleration?: string;
+    transmission?: string;
+    driveType?: string;
+    fuelType?: string;
+    fuelEconomy?: string;
+    range?: string;
+    length?: string;
+    width?: string;
+    height?: string;
+    wheelbase?: string;
+    weight?: string;
+    infotainment?: string;
+    safetyRating?: string;
+    driverAssistance?: string;
+    seating?: string;
+    previousOwners?: string;
+    serviceHistory?: string;
+    accidentHistory?: string;
+    warranty?: string;
+  };
+  models_3d?: Array<{
+    model_path: string;
+    is_default?: boolean;
+  }>;
+}
+
 // Lazy load the 3D viewer component for better performance
 const CarViewer3D = lazy(() => import('@/components/CarViewer3D'));
 
@@ -48,11 +92,11 @@ const fallbackCar = {
 };
 
 // Helper function to get model path based on car make and model
-const getModelPath = (car: any | null): string => {
+const getModelPath = (car: Car | null): string => {
   // Check if the car has 3D models from Supabase
   if (car?.models_3d && car.models_3d.length > 0) {
     // Find the default model or use the first one
-    const defaultModel = car.models_3d.find((model: any) => model.is_default) || car.models_3d[0];
+    const defaultModel = car.models_3d.find((model) => model.is_default) || car.models_3d[0];
     return defaultModel.model_path;
   }
   
@@ -76,7 +120,7 @@ const getModelPath = (car: any | null): string => {
 };
 
 // Convert car color to hex code
-const getCarColor = (car: any | null): string => {
+const getCarColor = (car: Car | null): string => {
   const colorMap: Record<string, string> = {
     'black': '#1a1a1a',
     'white': '#f5f5f5',
@@ -174,7 +218,7 @@ const ImageGallery = ({
   prevImage,
   imageRef 
 }: { 
-  car: any,
+  car: Car,
   activeImageIndex: number,
   setActiveImageIndex: (index: number) => void,
   nextImage: () => void,
@@ -286,7 +330,7 @@ const ImageGallery = ({
 };
 
 // Enhanced Specifications Component
-const DetailedSpecifications = ({ car }: { car: any }) => {
+const DetailedSpecifications = ({ car }: { car: Car }) => {
   if (!car) return null;
   
   const specCategories = [
@@ -366,7 +410,7 @@ const DetailedSpecifications = ({ car }: { car: any }) => {
 };
 
 // Enhanced Vehicle History Component
-const VehicleHistory = ({ car }: { car: any }) => {
+const VehicleHistory = ({ car }: { car: Car }) => {
   if (!car) return null;
   
   const historyItems = [

@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Canvas, useFrame, useLoader } from '@react-three/fiber';
 import { OrbitControls, Environment, useGLTF } from '@react-three/drei';
+import * as THREE from 'three';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -58,8 +59,14 @@ interface FeatureOption {
 }
 
 // 3D Car Model Component
-const CarModel = ({ color, wheelType, ...props }: any) => {
-  const groupRef = useRef<any>();
+interface CarModelProps {
+  color: string;
+  wheelType?: string;
+  [key: string]: unknown;
+}
+
+const CarModel = ({ color, wheelType, ...props }: CarModelProps) => {
+  const groupRef = useRef<THREE.Group>(null);
   const { scene } = useGLTF('/media/models/luxury_sedan.glb');
   
   useFrame((state) => {
@@ -71,10 +78,12 @@ const CarModel = ({ color, wheelType, ...props }: any) => {
   useEffect(() => {
     if (scene) {
       // Apply color to the car model
-      scene.traverse((child: any) => {
-        if (child.isMesh && child.material) {
+      scene.traverse((child) => {
+        if ('isMesh' in child && child.isMesh && 'material' in child && child.material) {
+          const mesh = child as THREE.Mesh<THREE.BufferGeometry, THREE.Material>;
+          const material = mesh.material as THREE.MeshStandardMaterial;
           if (child.name.includes('Body')) {
-            child.material.color.set(color);
+            material.color.set(color);
           }
         }
       });

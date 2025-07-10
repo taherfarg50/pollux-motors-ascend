@@ -145,7 +145,7 @@ const VehicleModel = ({ modelPath, color, showInterior, openDoors }: {
   const [modelError, setModelError] = useState(false);
   const [modelLoaded, setModelLoaded] = useState(false);
   
-  // Determine if we should actually use the model data
+  // Always call the hook - handle loading conditionally
   const shouldLoadModel = useMemo(() => {
     return modelPath && 
            typeof modelPath === 'string' && 
@@ -153,23 +153,26 @@ const VehicleModel = ({ modelPath, color, showInterior, openDoors }: {
            modelPath !== '/media/models/luxury_sedan.glb';
   }, [modelPath]);
   
-  // Always call useGLTF with a valid path to avoid hook rule violations
-  // Use a placeholder path when the actual model shouldn't be loaded
-  const effectiveModelPath = shouldLoadModel ? modelPath : '/placeholder.glb';
+  // Always call useGLTF with a valid path - use a default model if needed
+  const effectiveModelPath = shouldLoadModel ? modelPath : '/media/models/default.glb';
   
-  // Always call the hook - this is required by React Rules of Hooks
-  const gltfData = useGLTF(effectiveModelPath);
+  // Always call the hook unconditionally - this fixes the React Hooks rule violation
+  const gltfResult = useGLTF(effectiveModelPath);
   
-  // Conditionally use the data based on our loading logic
-  const modelData: { scene: Object3D | null; nodes: Record<string, Object3D> | null; materials: Record<string, Material> | null } = shouldLoadModel ? {
-    scene: gltfData.scene,
-    nodes: gltfData.nodes,
-    materials: gltfData.materials
-  } : { 
-    scene: null, 
-    nodes: null, 
-    materials: null 
-  };
+  // Handle the case where we don't want to load the model
+  const modelData = useMemo(() => {
+    if (!shouldLoadModel) {
+      return { scene: null, nodes: null, materials: null };
+    }
+    
+    try {
+      return gltfResult as { scene: Object3D; nodes: Record<string, Object3D>; materials: Record<string, Material> };
+    } catch (error) {
+      console.error('Error using model data:', error);
+      setModelError(true);
+      return { scene: null, nodes: null, materials: null };
+    }
+  }, [gltfResult, shouldLoadModel]);
   
   const { scene, nodes, materials } = modelData;
   
@@ -194,7 +197,7 @@ const VehicleModel = ({ modelPath, color, showInterior, openDoors }: {
     } else {
       setModelLoaded(true);
       setModelError(false);
-    }
+  }
   }, [modelPath, scene, shouldLoadModel]);
   
   // Apply color to the vehicle body material

@@ -69,7 +69,7 @@ const PerformanceMonitor: React.FC = () => {
             for (const entry of entryList.getEntries()) {
               const layoutShiftEntry = entry as PerformanceEntry & { 
                 hadRecentInput?: boolean; 
-                value?: number; 
+                value?: number 
               };
               if (!layoutShiftEntry.hadRecentInput) {
                 cumulativeLayoutShift += layoutShiftEntry.value || 0;

@@ -83,7 +83,7 @@ if (typeof window !== 'undefined') {
 }
 
 // Export enhanced error handler for Supabase operations
-export const handleSupabaseError = (error: any, operation: string, context?: string) => {
+export const handleSupabaseError = (error: Error | Record<string, unknown> | null, operation: string, context?: string) => {
   const errorMessage = error?.message || 'Unknown Supabase error';
   const errorCode = error?.code || 'UNKNOWN_ERROR';
   

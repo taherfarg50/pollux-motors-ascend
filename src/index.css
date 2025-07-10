@@ -805,6 +805,37 @@ body {
   min-height: 64px !important;
 }
 
+/* Desktop navigation - always visible on medium+ screens */
+.desktop-nav {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Mobile navigation controls */
+.mobile-menu-btn {
+  display: none !important;
+}
+
+.mobile-menu {
+  display: none !important;
+}
+
+/* Responsive breakpoints */
+@media (max-width: 768px) {
+  .desktop-nav {
+    display: none !important;
+  }
+  
+  .mobile-menu-btn {
+    display: block !important;
+  }
+  
+  .mobile-menu {
+    display: block !important;
+  }
+}
+
 /* Smooth scroll behavior */
 html {
   scroll-behavior: smooth;

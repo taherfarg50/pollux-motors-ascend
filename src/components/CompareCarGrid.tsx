@@ -35,7 +35,7 @@ interface ComparisonMetric {
   icon: React.ReactNode;
   category: 'performance' | 'efficiency' | 'luxury' | 'safety';
   higher_is_better: boolean;
-  format?: (value: any) => string;
+  format?: (value: string | number | null | undefined) => string;
 }
 
 interface CompareCarGridProps {

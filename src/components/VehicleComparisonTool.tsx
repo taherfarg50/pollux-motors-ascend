@@ -431,7 +431,7 @@ const VehicleComparisonTool: React.FC = () => {
     const metrics = ['performance', 'comfort', 'efficiency', 'technology', 'safety', 'value'];
     
     return metrics.map(metric => {
-      const dataPoint: any = { metric: metric.charAt(0).toUpperCase() + metric.slice(1) };
+      const dataPoint: Record<string, string | number> = { metric: metric.charAt(0).toUpperCase() + metric.slice(1) };
       selectedVehicles.forEach(vehicle => {
         if (vehicle.ratings) {
           dataPoint[vehicle.name] = vehicle.ratings[metric as keyof typeof vehicle.ratings];
@@ -451,7 +451,7 @@ const VehicleComparisonTool: React.FC = () => {
     ];
 
     return specs.map(spec => {
-      const dataPoint: any = { specification: spec.label };
+      const dataPoint: Record<string, string | number> = { specification: spec.label };
       selectedVehicles.forEach(vehicle => {
         const value = vehicle.specifications[spec.key as keyof typeof vehicle.specifications];
         // Extract numeric value for comparison

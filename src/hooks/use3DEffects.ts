@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useMemo } from 'react';
 import { 
   apply3DTilt, 
   apply3DHoverToCollection, 
@@ -79,15 +79,20 @@ export function useFloatingAnimation(
   selector: string,
   options = { duration: 3, distance: 15, delay: 0 }
 ) {
+  const { duration, distance, delay } = options;
+  
   useEffect(() => {
     const elements = document.querySelectorAll<HTMLElement>(selector);
     const cleanupFunctions: Array<() => void> = [];
     
     elements.forEach((element, index) => {
       const cleanup = applyFloatingAnimation({ current: element }, {
-        duration: options.duration,
-        distance: options.distance,
-        delay: index * 0.2
+        duration,
+        distance,
+        delay: index * 0.2,
+        repeat: -1,
+        yoyo: true,
+        ease: "power1.inOut"
       });
       
       if (cleanup) cleanupFunctions.push(cleanup);
@@ -97,7 +102,7 @@ export function useFloatingAnimation(
     return () => {
       cleanupFunctions.forEach(cleanup => cleanup());
     };
-  }, [selector, options.duration, options.distance, options.delay]);
+  }, [selector, duration, distance, delay]);
 }
 
 /**
@@ -149,50 +154,63 @@ export function usePagewide3DEffects(options = {
     content: '.hero-content'
   }
 }) {
+  // Destructure options to ensure stable references
+  const {
+    tiltSelectors,
+    parallaxContainer,
+    cardFlip,
+    floating,
+    rotateOnScroll,
+    heroEffect
+  } = options;
+  
   // Apply 3D hover effects
   useEffect(() => {
     const cleanupFunctions: Array<() => void> = [];
     
-    options.tiltSelectors.forEach(selector => {
+    tiltSelectors.forEach(selector => {
       const cleanup = apply3DHoverToCollection(selector);
       if (cleanup) cleanupFunctions.push(cleanup);
     });
     
     // Apply parallax layers if container exists
-    const parallaxContainer = document.querySelector<HTMLElement>(options.parallaxContainer);
-    if (parallaxContainer) {
-      const cleanup = applyParallaxLayers(parallaxContainer);
+    const parallaxContainerEl = document.querySelector<HTMLElement>(parallaxContainer);
+    if (parallaxContainerEl) {
+      const cleanup = applyParallaxLayers(parallaxContainerEl);
       if (cleanup) cleanupFunctions.push(cleanup);
     }
     
     // Setup card flip effects
     createCardFlipEffect(
-      options.cardFlip.card,
-      options.cardFlip.front,
-      options.cardFlip.back
+      cardFlip.card,
+      cardFlip.front,
+      cardFlip.back
     );
     
     // Apply floating animations
-    const floatingElements = document.querySelectorAll<HTMLElement>(options.floating);
+    const floatingElements = document.querySelectorAll<HTMLElement>(floating);
     floatingElements.forEach((element, index) => {
       if (element) {
         const cleanup = applyFloatingAnimation({ current: element }, {
           duration: 3 + (index % 3),
           distance: 10 + (index % 5),
-          delay: index * 0.2
+          delay: index * 0.2,
+          repeat: -1,
+          yoyo: true,
+          ease: "power1.inOut"
         });
         if (cleanup) cleanupFunctions.push(cleanup);
       }
     });
     
     // Apply rotate on scroll
-    const rotateCleanup = applyRotateOnScroll(options.rotateOnScroll);
+    const rotateCleanup = applyRotateOnScroll(rotateOnScroll);
     if (rotateCleanup) cleanupFunctions.push(rotateCleanup);
     
     // Apply hero effect
     const heroCleanup = apply3DHeroEffect(
-      options.heroEffect.hero, 
-      options.heroEffect.content
+      heroEffect.hero, 
+      heroEffect.content
     );
     if (heroCleanup) cleanupFunctions.push(heroCleanup);
     
@@ -200,15 +218,6 @@ export function usePagewide3DEffects(options = {
     return () => {
       cleanupFunctions.forEach(cleanup => cleanup());
     };
-  }, [
-    options.tiltSelectors,
-    options.parallaxContainer,
-    options.cardFlip.card,
-    options.cardFlip.front,
-    options.cardFlip.back,
-    options.floating,
-    options.rotateOnScroll,
-    options.heroEffect.hero,
-    options.heroEffect.content
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tiltSelectors, parallaxContainer, cardFlip, floating, rotateOnScroll, heroEffect]);
 } 

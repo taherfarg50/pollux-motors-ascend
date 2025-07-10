@@ -60,8 +60,8 @@ export default function Chatbot() {
   const viewportRef = useRef<HTMLDivElement>(null);
 
   // Create a debounced version of the scroll function for better performance
-  const debouncedScrollToBottom = useCallback(
-    debounce(() => {
+  const debouncedScrollToBottom = useCallback(() => {
+    const scrollFn = debounce(() => {
       if (messagesEndRef.current && viewportRef.current) {
         // Two different scroll methods for better compatibility
         // Method 1: Using scrollIntoView
@@ -76,9 +76,10 @@ export default function Chatbot() {
           viewportRef.current.scrollTop = viewportRef.current.scrollHeight;
         }
       }
-    }, 50),
-    [messagesEndRef, viewportRef]
-  );
+    }, 50);
+    
+    scrollFn();
+  }, []);
   
   // Improved scroll function that ensures reliable scrolling
   const scrollToBottom = useCallback(() => {

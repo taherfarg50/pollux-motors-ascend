@@ -298,7 +298,7 @@ export function getCarFolderStats(): {
   averageImagesPerCar: number;
 } {
   const totalFolders = Object.keys(carFolderMap).length;
-  const totalImages = Object.values(CAR_DATA).reduce((sum: number, car: any) => sum + car.image_count, 0);
+  const totalImages = Object.values(CAR_DATA).reduce((sum: number, car: { image_count: number }) => sum + car.image_count, 0);
   const averageImagesPerCar = Math.round(totalImages / totalFolders);
   
   return {
@@ -324,7 +324,12 @@ export async function validateImageUrl(url: string): Promise<boolean> {
 export const CAR_FOLDERS = carFolderMap;
 
 // Car data with image counts (for reference)
-export const CAR_DATA: Record<string, any> = {
+export const CAR_DATA: Record<string, {
+  folder: string;
+  image_count: number;
+  first_image_ext: string;
+  sample_images: string[];
+}> = {
   "ACADIA": {
     "folder": "acadia",
     "image_count": 20,

@@ -14,14 +14,17 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import FeaturedCars from '@/components/FeaturedCars';
+import { FeaturedCars, ComponentLoadingSpinner, preloadCriticalComponents } from '@/components/LazyComponents';
 import CustomerTestimonials from '@/components/CustomerTestimonials';
 import BrandPartners from '@/components/BrandPartners';
 import SocialSidebar from '@/components/SocialSidebar';
+import { GlassCard } from '@/components/ui/glass-card';
+import { GradientButton } from '@/components/ui/gradient-button';
+import ParticleBackground from '@/components/ui/particle-background';
 
 
 
-import Spline from '@splinetool/react-spline';
+const Spline = React.lazy(() => import('@splinetool/react-spline'));
 
 // Error Boundary for Spline component
 class SplineErrorBoundary extends React.Component<
@@ -38,7 +41,10 @@ class SplineErrorBoundary extends React.Component<
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.log('Spline Error:', error, errorInfo);
+    // Log error only in development
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Spline Error:', error, errorInfo);
+    }
   }
 
   render() {
@@ -56,38 +62,56 @@ const Home = () => {
   const [splineTimeout, setSplineTimeout] = useState(false);
 
   const handleSplineLoad = useCallback(() => {
-    console.log('✅ Spline loaded successfully');
+    if (process.env.NODE_ENV === 'development') {
+      console.log('✅ Spline loaded successfully');
+    }
     setSplineLoaded(true);
   }, []);
 
   const handleSplineError = useCallback((error: Error | unknown) => {
-    console.error('❌ Spline loading error:', error);
+    if (process.env.NODE_ENV === 'development') {
+      console.error('❌ Spline loading error:', error);
+    }
     setSplineError(true);
   }, []);
 
-  // Add timeout for Spline loading (8 seconds)
+  // Add timeout for Spline loading (8 seconds) and preload components
   useEffect(() => {
-    console.log('🚀 Starting Spline timeout timer...');
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🚀 Starting Spline timeout timer...');
+    }
     const timer = setTimeout(() => {
       if (!splineLoaded && !splineError) {
-        console.log('⏰ Spline loading timeout - switching to fallback');
+        if (process.env.NODE_ENV === 'development') {
+          console.log('⏰ Spline loading timeout - switching to fallback');
+        }
         setSplineTimeout(true);
       }
     }, 8000);
 
+    // Preload critical components after a short delay
+    const preloadTimer = setTimeout(() => {
+      preloadCriticalComponents();
+    }, 2000);
+
     return () => {
-      console.log('🧹 Cleaning up Spline timeout timer');
+      if (process.env.NODE_ENV === 'development') {
+        console.log('🧹 Cleaning up Spline timeout timer');
+      }
       clearTimeout(timer);
+      clearTimeout(preloadTimer);
     };
   }, [splineLoaded, splineError]);
 
   // Log current state for debugging
   useEffect(() => {
-    console.log('📊 Spline State:', { 
-      loaded: splineLoaded, 
-      error: splineError, 
-      timeout: splineTimeout 
-    });
+    if (process.env.NODE_ENV === 'development') {
+      console.log('📊 Spline State:', { 
+        loaded: splineLoaded, 
+        error: splineError, 
+        timeout: splineTimeout 
+      });
+    }
   }, [splineLoaded, splineError, splineTimeout]);
 
   // Fallback Hero Background Component
@@ -155,8 +179,17 @@ const Home = () => {
       <SocialSidebar />
       {/* Hero Section with 3D Car */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
+        {/* Particle Background */}
+        <ParticleBackground 
+          variant="luxury" 
+          particleCount={80} 
+          speed={0.5} 
+          interactive={true}
+          className="z-0"
+        />
+        
         {/* 3D Background - Always try to load */}
-        <div className="absolute inset-0 z-0">
+        <div className="absolute inset-0 z-10">
           {!splineError && !splineTimeout ? (
             <SplineErrorBoundary fallback={<HeroFallback />}>
               <Suspense fallback={<SplineLoading />}>
@@ -295,16 +328,19 @@ const Home = () => {
             ].map((stat, index) => {
               const Icon = stat.icon;
               return (
-                <motion.div
+                <GlassCard
                   key={index}
-                  className="text-center p-4 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10"
-                  whileHover={{ scale: 1.05, backgroundColor: "rgba(255,255,255,0.1)" }}
-                  transition={{ duration: 0.2 }}
+                  variant="minimal"
+                  hoverable={true}
+                  className="text-center p-4"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
                 >
                   <Icon className="h-8 w-8 text-blue-400 mx-auto mb-2" />
                   <div className="text-2xl md:text-3xl font-bold text-white">{stat.number}</div>
                   <div className="text-gray-300 text-sm">{stat.label}</div>
-                </motion.div>
+                </GlassCard>
               );
             })}
           </motion.div>
@@ -383,35 +419,35 @@ const Home = () => {
                 whileHover={{ y: -10 }}
               >
                 <Link to={service.link}>
-                  <Card className="bg-gradient-to-br from-gray-900/80 to-gray-800/60 border-gray-700/50 h-full hover:border-blue-500/50 transition-all duration-300 cursor-pointer group backdrop-blur-sm overflow-hidden">
-                    <CardContent className="p-8 text-center relative">
-                      {/* Hover Glow Effect */}
-                      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                      
-                      <motion.div 
-                        className="w-24 h-24 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-2xl flex items-center justify-center text-blue-400 mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 relative z-10"
-                        whileHover={{ rotate: 5 }}
-                      >
-                        {service.icon}
-                      </motion.div>
-                      
-                      <h3 className="text-xl font-bold text-white mb-4 group-hover:text-blue-300 transition-colors relative z-10">
-                        {service.title}
-                      </h3>
-                      <p className="text-gray-400 group-hover:text-gray-300 transition-colors leading-relaxed relative z-10">
-                        {service.description}
-                      </p>
-                      
-                      {/* Arrow indicator */}
-                      <motion.div 
-                        className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity"
-                        initial={{ x: -10 }}
-                        whileHover={{ x: 0 }}
-                      >
-                        <ArrowRight className="h-5 w-5 text-blue-400" />
-                      </motion.div>
-                    </CardContent>
-                  </Card>
+                  <GlassCard 
+                    variant="gradient" 
+                    glow={true} 
+                    hoverable={true}
+                    className="h-full cursor-pointer group p-8 text-center"
+                  >
+                    <motion.div 
+                      className="w-24 h-24 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-2xl flex items-center justify-center text-blue-400 mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 relative z-10"
+                      whileHover={{ rotate: 5 }}
+                    >
+                      {service.icon}
+                    </motion.div>
+                    
+                    <h3 className="text-xl font-bold text-white mb-4 group-hover:text-blue-300 transition-colors relative z-10">
+                      {service.title}
+                    </h3>
+                    <p className="text-gray-400 group-hover:text-gray-300 transition-colors leading-relaxed relative z-10">
+                      {service.description}
+                    </p>
+                    
+                    {/* Arrow indicator */}
+                    <motion.div 
+                      className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity"
+                      initial={{ x: -10 }}
+                      whileHover={{ x: 0 }}
+                    >
+                      <ArrowRight className="h-5 w-5 text-blue-400" />
+                    </motion.div>
+                  </GlassCard>
                 </Link>
               </motion.div>
             ))}
@@ -475,12 +511,14 @@ const Home = () => {
       </section>
 
       {/* Featured Cars */}
-      <section className="py-20">
+      <section className="py-20 bg-black">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <FeaturedCars />
+          <Suspense fallback={<ComponentLoadingSpinner />}>
+            <FeaturedCars />
+          </Suspense>
           <div className="text-center mt-12">
             <Link to="/cars">
-              <Button size="lg" variant="outline" className="group">
+              <Button size="lg" variant="outline" className="group border-pollux-blue/30 text-pollux-blue hover:bg-pollux-blue/10 hover:border-pollux-blue">
                 View All Vehicles
                 <ChevronRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Button>
@@ -602,14 +640,16 @@ const Home = () => {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/contact">
-              <Button size="lg" className="bg-white text-pollux-blue hover:bg-gray-100">
+              <GradientButton size="lg" variant="luxury" glow={true}>
                 Contact Us
-              </Button>
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </GradientButton>
             </Link>
             <Link to="/cars">
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-pollux-blue">
+              <GradientButton size="lg" variant="secondary">
                 Browse Inventory
-              </Button>
+                <Car className="ml-2 h-5 w-5" />
+              </GradientButton>
             </Link>
           </div>
         </div>

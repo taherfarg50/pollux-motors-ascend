@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from '@/components/ui/toaster';
 import { AuthProvider } from '@/context/AuthContext';
@@ -12,21 +12,28 @@ import PerformanceMonitor from '@/components/PerformanceMonitor';
 import { log } from '@/utils/logger';
 import { perf } from '@/utils/performance';
 
-// Import components directly to fix dynamic import issues
-import Home from '@/pages/Home';
-import Cars from '@/pages/Cars';
-import CarDetail from '@/pages/CarDetail';
-import ExportServices from '@/pages/ExportServices';
-import About from '@/pages/About';
-import Contact from '@/pages/Contact';
-import Auth from '@/pages/Auth';
-import Profile from '@/pages/Profile';
-import CarComparison from '@/pages/CarComparison';
-import ChatPage from '@/pages/ChatPage';
-import Blog from '@/pages/Blog';
-import SmartFinancingPage from '@/pages/SmartFinancingPage';
-import DatabaseAdmin from '@/pages/DatabaseAdmin';
-import NotFound from '@/pages/NotFound';
+// Loading component
+const LoadingSpinner = () => (
+  <div className="flex items-center justify-center min-h-screen bg-black">
+    <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-white"></div>
+  </div>
+);
+
+// Lazy load page components for better code splitting
+const Home = lazy(() => import('@/pages/Home'));
+const Cars = lazy(() => import('@/pages/Cars'));
+const CarDetail = lazy(() => import('@/pages/CarDetail'));
+const ExportServices = lazy(() => import('@/pages/ExportServices'));
+const About = lazy(() => import('@/pages/About'));
+const Contact = lazy(() => import('@/pages/Contact'));
+const Auth = lazy(() => import('@/pages/Auth'));
+const Profile = lazy(() => import('@/pages/Profile'));
+const CarComparison = lazy(() => import('@/pages/CarComparison'));
+const ChatPage = lazy(() => import('@/pages/ChatPage'));
+const Blog = lazy(() => import('@/pages/Blog'));
+const SmartFinancingPage = lazy(() => import('@/pages/SmartFinancingPage'));
+const DatabaseAdmin = lazy(() => import('@/pages/DatabaseAdmin'));
+const NotFound = lazy(() => import('@/pages/NotFound'));
 
 
 
@@ -56,29 +63,31 @@ function App() {
         <ChatbotProvider>
           <Router>
             <ScrollProvider>
-              <div className="App min-h-screen bg-black text-white">
+              <div className="App dark min-h-screen bg-black text-white">
                 <SimpleNavbar />
                 
                 <main className="relative">
-                  <Routes>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/cars" element={<Cars />} />
-                    <Route path="/cars/:id" element={<CarDetail />} />
-                    <Route path="/export" element={<ExportServices />} />
-                    <Route path="/about" element={<About />} />
-                    <Route path="/contact" element={<Contact />} />
-                    <Route path="/signin" element={<Auth />} />
-                    <Route path="/signup" element={<Auth />} />
-                    <Route path="/profile" element={<Profile />} />
-                    <Route path="/compare" element={<CarComparison />} />
-                    <Route path="/chat" element={<ChatPage />} />
-                    <Route path="/blog" element={<Blog />} />
-                    <Route path="/financing" element={<SmartFinancingPage />} />
-                    <Route path="/admin/database" element={<DatabaseAdmin />} />
-                    
-                    {/* Fallback route for 404 */}
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <Routes>
+                      <Route path="/" element={<Home />} />
+                      <Route path="/cars" element={<Cars />} />
+                      <Route path="/cars/:id" element={<CarDetail />} />
+                      <Route path="/export" element={<ExportServices />} />
+                      <Route path="/about" element={<About />} />
+                      <Route path="/contact" element={<Contact />} />
+                      <Route path="/signin" element={<Auth />} />
+                      <Route path="/signup" element={<Auth />} />
+                      <Route path="/profile" element={<Profile />} />
+                      <Route path="/compare" element={<CarComparison />} />
+                      <Route path="/chat" element={<ChatPage />} />
+                      <Route path="/blog" element={<Blog />} />
+                      <Route path="/financing" element={<SmartFinancingPage />} />
+                      <Route path="/admin/database" element={<DatabaseAdmin />} />
+                      
+                      {/* Fallback route for 404 */}
+                      <Route path="*" element={<NotFound />} />
+                    </Routes>
+                  </Suspense>
                 </main>
                 
                 {/* Footer */}

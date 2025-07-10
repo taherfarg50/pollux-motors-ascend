@@ -105,8 +105,16 @@ const SimpleNavbar: React.FC = () => {
               </Link>
             </div>
 
-            {/* Desktop Navigation - Force Visible on Large Screens */}
-            <div className="hidden md:flex items-center space-x-6">
+            {/* Desktop Navigation - Always Visible on Desktop */}
+            <div 
+              className="desktop-nav flex items-center space-x-6"
+              style={{
+                display: 'flex',
+                visibility: 'visible',
+                opacity: 1,
+                minWidth: '300px'
+              }}
+            >
               {navItems.map((item) => {
                 const Icon = item.icon;
                 return (
@@ -118,7 +126,11 @@ const SimpleNavbar: React.FC = () => {
                         ? 'bg-blue-600 text-white'
                         : 'text-gray-300 hover:text-white hover:bg-gray-700'
                     }`}
-                    style={{ color: isActive(item.href) ? '#ffffff' : '#d1d5db' }}
+                    style={{ 
+                      color: isActive(item.href) ? '#ffffff' : '#d1d5db',
+                      display: 'flex',
+                      alignItems: 'center'
+                    }}
                   >
                     <Icon className="w-4 h-4" />
                     <span>{item.name}</span>
@@ -190,7 +202,7 @@ const SimpleNavbar: React.FC = () => {
               {/* Mobile Menu Button - Show on small screens */}
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="md:hidden p-2 rounded-lg text-gray-300 hover:text-white hover:bg-gray-700 transition-colors"
+                className="mobile-menu-btn p-2 rounded-lg text-gray-300 hover:text-white hover:bg-gray-700 transition-colors"
                 aria-label="Toggle menu"
                 style={{ color: '#d1d5db' }}
               >
@@ -202,7 +214,7 @@ const SimpleNavbar: React.FC = () => {
 
         {/* Mobile Menu - Only show on small screens */}
         {isMobileMenuOpen && (
-          <div className="md:hidden bg-gray-900 border-t border-gray-700" style={{ backgroundColor: '#111827' }}>
+          <div className="mobile-menu bg-gray-900 border-t border-gray-700" style={{ backgroundColor: '#111827' }}>
             <div className="px-4 py-6 space-y-3">
               
               {/* Mobile Navigation Links */}

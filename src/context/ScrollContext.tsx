@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
+import React, { createContext, useContext, useEffect, useState, useRef, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import Lenis from '@studio-freight/lenis';
 
@@ -66,36 +66,32 @@ export const ScrollProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const rafRef = useRef<number | null>(null);
 
   // Emergency native scroll enabler
-  const enableNativeScroll = () => {
+  const enableNativeScroll = useCallback(() => {
     console.log('Enabling native scroll as fallback...');
     setUseNativeScroll(true);
     window.__SCROLL_DISABLED = false;
     
-    if (lenis) {
-      try {
-        lenis.destroy();
-      } catch (error) {
-        console.warn('Error destroying Lenis:', error);
+    // Use current lenis instance without dependency
+    setLenis((currentLenis) => {
+      if (currentLenis) {
+        try {
+          currentLenis.destroy();
+        } catch (error) {
+          console.warn('Error destroying Lenis:', error);
+        }
       }
-      setLenis(null);
-    }
+      return null;
+    });
     
     // Ensure body can scroll
     document.body.style.overflow = 'auto';
     document.documentElement.style.overflow = 'auto';
     document.body.style.height = 'auto';
     document.documentElement.style.height = 'auto';
-  };
-
-  // Re-enable smooth scroll
-  const enableSmoothScroll = () => {
-    console.log('Re-enabling smooth scroll...');
-    setUseNativeScroll(false);
-    setupLenis();
-  };
+  }, []); // Removed lenis dependency
 
   // Detect if we're on mobile or problematic browser
-  const shouldUseNativeScroll = () => {
+  const shouldUseNativeScroll = useCallback(() => {
     if (typeof window === 'undefined') return true;
     
     const isMobile = window.innerWidth < 768 || 
@@ -104,10 +100,10 @@ export const ScrollProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const isProblematicBrowser = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
     
     return isMobile || isProblematicBrowser;
-  };
+  }, []);
 
   // Setup Lenis with better error handling
-  const setupLenis = () => {
+  const setupLenis = useCallback(() => {
     // Don't setup if native scroll is preferred
     if (useNativeScroll || shouldUseNativeScroll()) {
       enableNativeScroll();
@@ -115,10 +111,17 @@ export const ScrollProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
 
     try {
-      // Clean up existing instance
-      if (lenis) {
-        lenis.destroy();
-      }
+      // Clean up existing instance using functional update to avoid dependency
+      setLenis((currentLenis) => {
+        if (currentLenis) {
+          try {
+            currentLenis.destroy();
+          } catch (error) {
+            console.warn('Error destroying previous Lenis instance:', error);
+          }
+        }
+        return currentLenis; // Return current to avoid changing state yet
+      });
 
       // Create new Lenis instance with conservative settings
       const lenisInstance = new Lenis({
@@ -185,7 +188,14 @@ export const ScrollProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       enableNativeScroll();
       return null;
     }
-  };
+  }, [useNativeScroll, shouldUseNativeScroll, enableNativeScroll]); // Removed 'lenis' to break circular dependency
+
+  // Re-enable smooth scroll
+  const enableSmoothScroll = useCallback(() => {
+    console.log('Re-enabling smooth scroll...');
+    setUseNativeScroll(false);
+    setupLenis();
+  }, [setupLenis]);
 
   // Native scroll progress tracking
   useEffect(() => {
@@ -260,7 +270,7 @@ export const ScrollProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         clearTimeout(scrollTimeout.current);
       }
     };
-  }, []);
+  }, [setupLenis, enableNativeScroll, useNativeScroll]);
 
   // Route change handling
   useEffect(() => {

@@ -213,38 +213,38 @@ const FeaturedCars = () => {
   // If we're in a loading state, show a simpler skeleton without animations
   if (isLoading) {
     return (
-      <section className="py-24 relative overflow-hidden">
+      <section className="py-24 relative overflow-hidden bg-black">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-16">
-            <Skeleton className="h-4 w-32 mx-auto mb-4" />
-            <Skeleton className="h-8 w-64 mx-auto" />
+            <Skeleton className="h-4 w-32 mx-auto mb-4 bg-gray-800" />
+            <Skeleton className="h-8 w-64 mx-auto bg-gray-800" />
           </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             <div className="order-2 lg:order-1">
               <div className="max-w-lg mx-auto lg:mx-0">
-                <Skeleton className="h-12 w-3/4 mb-2" />
-                <Skeleton className="h-6 w-1/2 mb-8" />
+                <Skeleton className="h-12 w-3/4 mb-2 bg-gray-800" />
+                <Skeleton className="h-6 w-1/2 mb-8 bg-gray-800" />
                 
                 <div className="mt-8 grid grid-cols-3 gap-4">
                   {[1, 2, 3].map((i) => (
                     <div key={i} className="border-l-2 pl-4 border-gray-600">
-                      <Skeleton className="h-4 w-20 mb-2" />
-                      <Skeleton className="h-6 w-16" />
+                      <Skeleton className="h-4 w-20 mb-2 bg-gray-800" />
+                      <Skeleton className="h-6 w-16 bg-gray-800" />
                     </div>
                   ))}
                 </div>
                 
                 <div className="mt-12 flex items-center">
-                  <Skeleton className="h-8 w-24 mr-6" />
-                  <Skeleton className="h-10 w-24" />
+                  <Skeleton className="h-8 w-24 mr-6 bg-gray-800" />
+                  <Skeleton className="h-10 w-24 bg-gray-800" />
                 </div>
               </div>
             </div>
             
             <div className="order-1 lg:order-2 mb-8 lg:mb-0">
               <div className="aspect-[16/9] overflow-hidden rounded-lg">
-                <Skeleton className="w-full h-full" />
+                <Skeleton className="w-full h-full bg-gray-800" />
               </div>
             </div>
           </div>
@@ -539,7 +539,7 @@ const FeaturedCars = () => {
   };
 
   return (
-    <section ref={sectionRef} className="py-24 relative overflow-hidden" id="featured-cars">
+    <section ref={sectionRef} className="py-24 relative overflow-hidden bg-black" id="featured-cars">
       <div className="absolute inset-0 opacity-10">
         <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
           <defs>
